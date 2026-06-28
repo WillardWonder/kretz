@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +62,10 @@
   .btn.sm{font-size:13px;padding:8px 13px;min-height:auto;} .btn:disabled{opacity:.5;cursor:default;box-shadow:none;}
   .btnrow{display:flex;gap:8px;flex-wrap:wrap;}
   .ico{width:17px;height:17px;}
+  .optrow{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);margin:4px 0 8px;cursor:pointer;}
+  .optrow input{margin-top:2px;width:18px;height:18px;accent-color:var(--pine);flex:none;}
+  .optrow b{font-size:13.5px;} .optrow small{color:var(--ink2);font-size:11.5px;}
+  details.adv{margin-bottom:8px;} details.adv summary{font-size:12.5px;font-weight:600;color:var(--pine);cursor:pointer;padding:4px 0;list-style:none;} details.adv summary::-webkit-details-marker{display:none;} details.adv summary::before{content:"\2699  ";}
 
   .toolbtns{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
   .seg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;}
@@ -211,7 +216,9 @@
         <div><label class="lab" for="road">Road factor</label><input id="road" type="number" min="1" step="0.05" value="1.3"></div>
         <div><label class="lab" for="service">Min / stop</label><input id="service" type="number" min="0" step="1" value="20"></div>
       </div>
-      <div class="mini">Leave trucks or load blank for “as many / as much as needed.” Road factor turns straight-line miles into realistic road miles (1.3 ≈ typical rural Wisconsin).</div>
+      <label class="optrow"><input type="checkbox" id="useRoad" checked><span><b>Use real road distances (OpenStreetMap)</b><br><small>Mileage, drive times, and the map lines follow actual roads. Uncheck for instant straight-line estimates that work with no internet.</small></span></label>
+      <details class="adv"><summary>Routing server (advanced)</summary><input id="osrmUrl" type="text" value="https://router.project-osrm.org"><div class="mini">Free shared OpenStreetMap routing. For heavy or private daily use, self-host OSRM and paste its web address here.</div></details>
+      <div class="mini">Leave trucks or load blank for “as many / as much as needed.” Road factor only applies to straight-line mode (1.3 ≈ typical rural Wisconsin).</div>
       <button class="btn primary" id="optimize" style="margin-top:14px" disabled>
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
         Optimize routes
@@ -236,7 +243,7 @@
     </div>
 
     <p class="foot">
-      Routing uses the Clarke-Wright savings algorithm with 2-opt and Or-opt local search — a capacitated vehicle-routing solver that runs entirely in your browser. Distances are great-circle miles scaled by the road factor; they’re strong planning estimates, not live traffic or turn-by-turn mileage. Each truck’s “Open in Google Maps” link carries the stops in optimized order (Google may cap very long routes — the printed route sheet always holds the full ordered list). Map tiles © Esri / © OpenStreetMap contributors; address search © OpenStreetMap Nominatim. Nothing is uploaded — all routing happens on this page.
+      Stop sequencing uses the Clarke-Wright savings algorithm with 2-opt and Or-opt local search — a capacitated vehicle-routing solver that runs in your browser. With “real road distances” on, the mileage, drive times, and the lines on the map come from the OpenStreetMap road network (OSRM); turn it off for instant straight-line estimates with no internet. The shared OSRM server is free and best for light daily use — self-host OSRM and set its address under “Routing server” for heavy or private use. Each truck’s Google Maps link carries the stops in optimized order (Google may cap very long routes — the printed route sheet always holds the full list). Map tiles © Esri / © OpenStreetMap; routing &amp; address search © OpenStreetMap (OSRM, Nominatim). Nothing is uploaded — optimization happens on this page.
     </p>
   </div>
 </div>
@@ -246,6 +253,7 @@
 const LEAFLET_JS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
 const LEAFLET_CSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
 const PALETTE=["#C2611A","#1E4031","#3D5A80","#8A2D2D","#7B4B94","#A8730F","#155E63","#2C5C44","#9C4221","#4A5759","#6B0F1A","#33571E","#1B5299","#7A4419"];
+const OSRM_DEFAULT="https://router.project-osrm.org";
 const $=id=>document.getElementById(id);
 
 let stops=[]; // {id,label,lat,lon,load}
@@ -343,14 +351,34 @@ function capRoutes(routes,D,dem,Q,maxStops,limit){
   }
   return routes;
 }
-function solve(pts,dem,opts){
+function solve(pts,dem,opts,Dprovided){
   const Q=opts.capacity||0,maxStops=opts.maxStops||0,road=opts.roadFactor||1.3,limit=opts.vehicles||0;
-  const D=matrix(pts,road);
+  const D=Dprovided||matrix(pts,road);
   let routes=clarkeWright(D,dem,Q,maxStops);
   routes=routes.map(r=>twoOpt(r,D));
   routes=orOpt(routes,D,dem,Q,maxStops);
   if(limit&&routes.length>limit){routes=capRoutes(routes,D,dem,Q,maxStops,limit);routes=routes.map(r=>twoOpt(r,D));routes=orOpt(routes,D,dem,Q,maxStops);}
   return {routes,total:totalDist(routes,D),D};
+}
+
+/* ---------- OpenStreetMap road routing (OSRM) ---------- */
+// coords are [lat,lon]; OSRM expects lon,lat. Distances in meters, durations in seconds.
+async function osrmTable(coords,base){
+  const cs=coords.map(c=>c[1]+","+c[0]).join(";");
+  const r=await fetch(base+"/table/v1/driving/"+cs+"?annotations=distance,duration");
+  if(!r.ok)throw new Error("table HTTP "+r.status);
+  const d=await r.json();
+  if(d.code!=="Ok")throw new Error("OSRM "+d.code);
+  return {distances:d.distances||null,durations:d.durations||null};
+}
+async function osrmRoute(coords,base){
+  const cs=coords.map(c=>c[1]+","+c[0]).join(";");
+  const r=await fetch(base+"/route/v1/driving/"+cs+"?overview=full&geometries=geojson");
+  if(!r.ok)throw new Error("route HTTP "+r.status);
+  const d=await r.json();
+  if(d.code!=="Ok"||!d.routes||!d.routes[0])throw new Error("OSRM "+(d.code||"no route"));
+  const rt=d.routes[0];
+  return {distance:rt.distance,duration:rt.duration,geometry:((rt.geometry&&rt.geometry.coordinates)||[]).map(c=>[c[1],c[0]])};
 }
 
 /* ---------- map (lazy, robust) ---------- */
@@ -404,9 +432,10 @@ function drawAll(){
   });
   // route polylines
   if(routes.length){
+    const info=(lastSolve&&lastSolve.routeInfo)||[];
     routes.forEach((r,ti)=>{const col=PALETTE[ti%PALETTE.length];
-      const pts=[[depot.lat,depot.lon],...r.map(si=>[stops[si-1].lat,stops[si-1].lon]),[depot.lat,depot.lon]];
-      L.polyline(pts,{color:col,weight:3.5,opacity:.85}).addTo(routeLayer);
+      const line=(info[ti]&&info[ti].geometry&&info[ti].geometry.length)?info[ti].geometry:[[depot.lat,depot.lon],...r.map(si=>[stops[si-1].lat,stops[si-1].lon]),[depot.lat,depot.lon]];
+      L.polyline(line,{color:col,weight:4,opacity:.85}).addTo(routeLayer);
     });
   }
   fitMap();
@@ -471,36 +500,47 @@ function clearResults(){routes.length||($("results").innerHTML='<div class="card
 /* ---------- optimize + render ---------- */
 function fmtMi(m){return Math.round(m).toLocaleString()+" mi";}
 function fmtTime(min){min=Math.round(min);const h=Math.floor(min/60),m=min%60;return h?`${h}h ${m}m`:`${m}m`;}
-function runOptimize(){
+async function runOptimize(){
   if(stops.length<1)return;
   depot.lat=+$("depotLat").value;depot.lon=+$("depotLon").value;depot.label=$("depotLabel").value||"Mill";
   if(!isFinite(depot.lat)||!isFinite(depot.lon)){showBanner("err","The mill needs a valid latitude and longitude.");return;}
-  const opts={
-    capacity:+$("capacity").value||0, maxStops:+$("maxStops").value||0,
-    roadFactor:+$("road").value||1.3, vehicles:+$("trucks").value||0
-  };
+  const opts={capacity:+$("capacity").value||0, maxStops:+$("maxStops").value||0, roadFactor:+$("road").value||1.3, vehicles:+$("trucks").value||0};
   const dem=[0,...stops.map(s=>+s.load||0)];
   const totalDemand=dem.reduce((a,b)=>a+b,0);
-  // feasibility
-  let minByCap=opts.capacity>0?Math.ceil(totalDemand/opts.capacity):1;
-  let minByStops=opts.maxStops>0?Math.ceil(stops.length/opts.maxStops):1;
-  const minTrucks=Math.max(minByCap,minByStops);
-  let warn="";
+  const minTrucks=Math.max(opts.capacity>0?Math.ceil(totalDemand/opts.capacity):1, opts.maxStops>0?Math.ceil(stops.length/opts.maxStops):1);
   if(opts.vehicles&&opts.vehicles<minTrucks){
-    showBanner("err",`These stops can’t fit in ${opts.vehicles} truck${opts.vehicles===1?"":"s"}. With this load limit and max stops, you need at least <b>${minTrucks}</b>. Add trucks, raise the load per truck, or raise max stops.`);
-    return;
+    showBanner("err",`These stops can’t fit in ${opts.vehicles} truck${opts.vehicles===1?"":"s"}. With this load limit and max stops, you need at least <b>${minTrucks}</b>. Add trucks, raise the load per truck, or raise max stops.`);return;
   }
   const pts=[[depot.lat,depot.lon],...stops.map(s=>[s.lat,s.lon])];
-  $("optimize").disabled=true;$("optimize").innerHTML='<span class="spin"></span>&nbsp;Optimizing…';
-  setTimeout(()=>{
-    try{
-      const res=solve(pts,dem,opts);
-      routes=res.routes;lastSolve={...res,dem,opts,totalDemand};
-      if(opts.vehicles&&routes.length>opts.vehicles)warn=`Couldn’t fit everything into ${opts.vehicles} trucks under these limits — showing ${routes.length}. Raise the load per truck or max stops to consolidate further.`;
-      renderResults(warn);renderStops();drawAll();
-    }catch(e){showBanner("err","Something went wrong optimizing: "+e.message);}
-    $("optimize").disabled=false;$("optimize").innerHTML='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg> Optimize routes';
-  },30);
+  const useRoad=$("useRoad").checked;
+  const base=($("osrmUrl").value||OSRM_DEFAULT).replace(/\/+$/,"");
+  $("optimize").disabled=true;$("optimize").innerHTML='<span class="spin"></span>&nbsp;'+(useRoad?"Routing roads…":"Optimizing…");
+  let D=null,durM=null,mode="straight",note="";
+  try{
+    if(useRoad&&pts.length<=100){
+      try{
+        const t=await osrmTable(pts,base);
+        if(t.distances){D=t.distances.map(row=>row.map(m=>m==null?1e7:m/1609.344));durM=t.durations;mode="road";}
+        else if(t.durations){const sp=+$("speed").value||45;D=t.durations.map(row=>row.map(s=>s==null?1e7:(s/3600)*sp));durM=t.durations;mode="road";note="Using road-network drive times (road distances weren’t returned, so mileage is estimated from time).";}
+        else throw new Error("empty matrix");
+      }catch(err){mode="straight";note="Road-network routing was unavailable just now, so this run uses straight-line estimates. Routes are still optimized — try again, or check the routing server.";}
+    }else if(useRoad&&pts.length>100){mode="straight";note="Over 100 stops: using straight-line estimates (the shared road-routing matrix is limited to 100 points). Split the run or self-host OSRM for more.";}
+
+    const res=solve(pts,dem,opts,D);
+    routes=res.routes;
+    let routeInfo=routes.map(()=>null);
+    if(mode==="road"){
+      routeInfo=await Promise.all(routes.map(r=>{
+        const ordered=[[depot.lat,depot.lon],...r.map(si=>[stops[si-1].lat,stops[si-1].lon]),[depot.lat,depot.lon]];
+        return osrmRoute(ordered,base).catch(()=>null);
+      }));
+    }
+    let warn=note;
+    if(opts.vehicles&&routes.length>opts.vehicles)warn=(note?note+" ":"")+`Couldn’t fit everything into ${opts.vehicles} trucks under these limits — showing ${routes.length}. Raise the load per truck or max stops to consolidate further.`;
+    lastSolve={...res,dem,opts,mode,durM,routeInfo,base};
+    renderResults(warn);renderStops();drawAll();
+  }catch(e){showBanner("err","Something went wrong optimizing: "+e.message);}
+  $("optimize").disabled=false;$("optimize").innerHTML='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg> Optimize routes';
 }
 function showBanner(type,msg){$("results").innerHTML=`<div class="banner ${type}">${msg}</div>`+($("results").dataset.keep||"");}
 function navUrl(route){
@@ -509,11 +549,17 @@ function navUrl(route){
   return `https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=${depot.lat},${depot.lon}&destination=${depot.lat},${depot.lon}&waypoints=${encodeURIComponent(wp)}`;
 }
 function renderResults(warn){
-  const D=lastSolve.D,dem=lastSolve.dem,opts=lastSolve.opts,speed=+$("speed").value||45,svc=+$("service").value||0;
-  const fleetMi=lastSolve.total;
+  const D=lastSolve.D,dem=lastSolve.dem,opts=lastSolve.opts,speed=+$("speed").value||45,svc=+$("service").value||0,info=lastSolve.routeInfo||[],mode=lastSolve.mode;
+  const perMi=[],perMin=[];
+  routes.forEach((r,ti)=>{
+    if(info[ti]){perMi[ti]=info[ti].distance/1609.344;perMin[ti]=info[ti].duration/60+r.length*svc;}
+    else{perMi[ti]=routeDist(r,D);perMin[ti]=routeDist(r,D)/speed*60+r.length*svc;}
+  });
+  lastSolve.perMi=perMi;lastSolve.perMin=perMin;
+  const fleetMi=perMi.reduce((a,b)=>a+b,0), totalMin=perMin.reduce((a,b)=>a+b,0);
   const naive=stops.reduce((s,_,k)=>s+2*D[0][k+1],0);
   const savePct=naive>0?Math.max(0,Math.round(100*(1-fleetMi/naive))):0;
-  let totalMin=0;routes.forEach(r=>{totalMin+=routeDist(r,D)/speed*60+r.length*svc;});
+  const srcLabel=mode==="road"?'<span style="color:#235139">●</span> Distances, drive times &amp; map routes from the OpenStreetMap road network':'<span style="color:#A8730F">●</span> Straight-line estimate (road factor applied — turn on “real road distances” for road-network accuracy)';
   let h="";
   if(warn)h+=`<div class="banner warn">${warn}</div>`;
   h+=`<div class="summary">
@@ -523,13 +569,14 @@ function renderResults(warn){
     <div class="s"><b>${fmtTime(totalMin)}</b><span>Fleet time</span></div>
     <div class="save"><b>${savePct}%</b><span>fewer miles than<br>one trip per stop</span></div>
   </div>
+  <div style="font-size:12px;color:var(--ink2);margin:-8px 0 14px">${srcLabel}</div>
   <div class="exportrow btnrow" style="margin-bottom:16px">
     <button class="btn pine sm" id="printSheets">🖨️ Print route sheets</button>
     <button class="btn ghost sm" id="csvOut">⬇️ Export routes (CSV)</button>
   </div>
   <div class="trucks">`;
   routes.forEach((r,ti)=>{
-    const col=PALETTE[ti%PALETTE.length],mi=routeDist(r,D),tmin=mi/speed*60+r.length*svc,ld=loadOf(r,dem);
+    const col=PALETTE[ti%PALETTE.length],mi=perMi[ti],tmin=perMin[ti],ld=loadOf(r,dem);
     h+=`<div class="truck"><div class="thead"><span class="swatch" style="background:${col}"></span><span class="tname">Truck ${ti+1}</span>
       <span class="tstat"><b>${r.length}</b> stops · <b>${fmtMi(mi)}</b><br>load ${Math.round(ld*100)/100}${opts.capacity?` / ${opts.capacity}`:""} · ${fmtTime(tmin)}</span></div>
       <div class="tbody"><ul class="stoplist">
@@ -547,7 +594,7 @@ function printSheets(){
   const D=lastSolve.D,dem=lastSolve.dem,speed=+$("speed").value||45,svc=+$("service").value||0;
   const today=new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
   let h="";
-  routes.forEach((r,ti)=>{const mi=routeDist(r,D),tmin=mi/speed*60+r.length*svc,ld=loadOf(r,dem);
+  routes.forEach((r,ti)=>{const mi=(lastSolve.perMi&&lastSolve.perMi[ti]!=null)?lastSolve.perMi[ti]:routeDist(r,D),tmin=(lastSolve.perMin&&lastSolve.perMin[ti]!=null)?lastSolve.perMin[ti]:(routeDist(r,D)/speed*60+r.length*svc),ld=loadOf(r,dem);
     h+=`<div class="sheet"><h3>Kretz Haul — Truck ${ti+1}</h3>
       <div style="font-size:12px;color:#444">${today} &nbsp;·&nbsp; ${r.length} stops &nbsp;·&nbsp; ${Math.round(mi)} mi &nbsp;·&nbsp; est. ${fmtTime(tmin)} &nbsp;·&nbsp; load ${Math.round(ld*100)/100}</div>
       <table><thead><tr><th style="width:38px">#</th><th>Stop</th><th style="width:70px">Load</th><th style="width:150px">Coordinates</th><th style="width:60px">✓</th></tr></thead><tbody>
@@ -561,7 +608,7 @@ function exportRoutesCSV(){
   const D=lastSolve.D,dem=lastSolve.dem,speed=+$("speed").value||45,svc=+$("service").value||0;
   const cell=v=>{let s=v==null?"":String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
   const lines=[["Truck","Sequence","Stop","Load","Lat","Lon","Truck Stops","Truck Miles","Truck Est Min"].join(",")];
-  routes.forEach((r,ti)=>{const mi=Math.round(routeDist(r,D)),tmin=Math.round(routeDist(r,D)/speed*60+r.length*svc);
+  routes.forEach((r,ti)=>{const mi=Math.round((lastSolve.perMi&&lastSolve.perMi[ti]!=null)?lastSolve.perMi[ti]:routeDist(r,D)),tmin=Math.round((lastSolve.perMin&&lastSolve.perMin[ti]!=null)?lastSolve.perMin[ti]:(routeDist(r,D)/speed*60+r.length*svc));
     r.forEach((si,pos)=>{const s=stops[si-1];lines.push([ti+1,pos+1,s.label,s.load,s.lat.toFixed(6),s.lon.toFixed(6),r.length,mi,tmin].map(cell).join(","));});});
   const blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kretz_haul_routes.csv";a.click();URL.revokeObjectURL(a.href);
