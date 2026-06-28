@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kretz Lumber · Haul Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4EEE1; --paper2:#EBE2D1; --card:#FFFDF8;
+    --ink:#231B11; --ink2:#6A5F4F; --ink3:#948975;
+    --line:#E1D6C1; --line2:#EEE7D8;
+    --pine:#1E4031; --pine2:#2C5C44; --pine-deep:#15301F;
+    --amber:#C2611A; --amber2:#A8520F;
+    --good:#235139; --good-bg:#E7F0E9; --bad:#8A2D2D;
+    --slab:"Zilla Slab", Rockwell, "Roboto Slab", Georgia, serif;
+    --sans:-apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono:ui-monospace, Menlo, Consolas, monospace;
+    --shadow:0 1px 2px rgba(35,27,17,.05), 0 8px 24px rgba(35,27,17,.05);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;}
+
+  .appbar{background:var(--pine);color:#F4EEE1;}
+  .appbar .inner{max-width:1320px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;}
+  .logmark{flex:none;width:36px;height:36px;}
+  .wordmark{display:flex;flex-direction:column;line-height:1.05;}
+  .wordmark .co{font-family:var(--slab);font-weight:700;font-size:18px;letter-spacing:.06em;}
+  .wordmark .tag{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#B9C9BE;margin-top:2px;}
+  .appbar .est{margin-left:auto;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9FB6A7;text-align:right;}
+  .creed{background:var(--pine-deep);color:#CFDBD2;font-size:12px;font-family:var(--slab);font-style:italic;text-align:center;padding:6px 16px;}
+
+  .layout{max-width:1320px;margin:0 auto;padding:18px 20px 90px;display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start;}
+  @media (max-width:1000px){ .layout{grid-template-columns:1fr;} }
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);}
+  .card-pad{padding:18px;}
+  .panel{position:sticky;top:14px;display:flex;flex-direction:column;gap:14px;}
+  @media (max-width:1000px){ .panel{position:static;} }
+
+  h2.sec{font-family:var(--slab);font-weight:600;font-size:16px;margin:0 0 3px;letter-spacing:.01em;}
+  h2.sec .step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pine);color:#fff;font-size:12px;font-weight:700;margin-right:8px;vertical-align:1px;}
+  .hint{font-size:12.5px;color:var(--ink2);margin:0 0 12px;}
+
+  label.lab{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px;}
+  input[type=text],input[type=number],textarea,select{font-family:var(--sans);font-size:15px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;width:100%;}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pine);box-shadow:0 0 0 3px rgba(30,64,49,.12);}
+  textarea{font-family:var(--mono);font-size:12.5px;line-height:1.5;resize:vertical;min-height:74px;}
+  .row2{display:flex;gap:10px;} .row2>div{flex:1;}
+  .row3{display:flex;gap:8px;} .row3>div{flex:1;}
+  .mini{font-size:11.5px;color:var(--ink3);margin-top:5px;}
+
+  .btn{font-family:var(--sans);font-weight:650;font-size:15px;cursor:pointer;border-radius:10px;padding:11px 18px;border:1.5px solid transparent;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:.12s;}
+  .btn.primary{background:var(--amber);color:#fff;border-color:var(--amber);box-shadow:0 2px 0 var(--amber2);width:100%;font-size:16px;padding:13px;}
+  .btn.primary:hover:not(:disabled){background:var(--amber2);} .btn.primary:active{transform:translateY(1px);box-shadow:none;}
+  .btn.pine{background:var(--pine);color:#fff;border-color:var(--pine);} .btn.pine:hover:not(:disabled){background:var(--pine2);}
+  .btn.ghost{background:#fff;color:var(--pine);border-color:var(--line);} .btn.ghost:hover:not(:disabled){border-color:var(--pine2);background:var(--paper);}
+  .btn.sm{font-size:13px;padding:8px 13px;min-height:auto;} .btn:disabled{opacity:.5;cursor:default;box-shadow:none;}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;}
+  .ico{width:17px;height:17px;}
+
+  .toolbtns{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+  .seg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;}
+  .seg button{background:#fff;border:none;border-right:1.5px solid var(--line);font-family:var(--sans);font-weight:600;font-size:12.5px;padding:8px 12px;cursor:pointer;color:var(--ink2);}
+  .seg button:last-child{border-right:none;} .seg button.on{background:var(--pine);color:#fff;}
+
+  .stopstable{max-height:280px;overflow-y:auto;border:1px solid var(--line2);border-radius:9px;}
+  table.st{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.st th{position:sticky;top:0;background:var(--paper2);text-align:left;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink2);padding:7px 8px;border-bottom:1px solid var(--line);}
+  table.st td{padding:5px 8px;border-bottom:1px solid var(--line2);vertical-align:middle;}
+  table.st tr:last-child td{border-bottom:none;}
+  table.st input{padding:5px 7px;font-size:12.5px;border-radius:6px;}
+  table.st .seqdot{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;}
+  .delx{background:none;border:none;color:var(--bad);cursor:pointer;font-size:16px;line-height:1;padding:2px 5px;border-radius:5px;} .delx:hover{background:#f6e2e2;}
+  .tablefoot{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 0;font-size:12px;color:var(--ink2);}
+
+  /* map */
+  #mapWrap{position:relative;}
+  #mapBar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;}
+  #mapMeta{font-size:12.5px;color:var(--ink2);margin-left:auto;} #mapMeta b{color:var(--pine);}
+  .map-note{font-size:12px;color:var(--amber2);background:#F6E9E0;border:1px solid #E3C7B3;padding:3px 8px;border-radius:7px;}
+  #map{height:560px;width:100%;border:1px solid var(--line);border-radius:13px;background:#e9e4d8;z-index:0;}
+  @media (max-width:1000px){ #map{height:62vh;} }
+  .map-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(244,238,225,.85);border-radius:13px;z-index:500;font-size:14px;color:var(--ink2);}
+  .map-fallback{height:560px;border:1px dashed #E3C7B3;border-radius:13px;display:grid;place-items:center;text-align:center;color:var(--ink2);background:#F6E9E0;padding:24px;font-size:14px;line-height:1.6;}
+  .spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--pine);border-radius:50%;animation:sp .7s linear infinite;flex:none;} @keyframes sp{to{transform:rotate(360deg);}}
+  .baseseg{display:inline-flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;}
+  .baseseg button{background:#fff;border:none;border-right:1.5px solid var(--line);font-size:12px;font-weight:600;padding:7px 11px;cursor:pointer;color:var(--ink2);} .baseseg button:last-child{border-right:none;} .baseseg button.on{background:var(--pine);color:#fff;}
+  .clickmode{font-size:12.5px;font-weight:600;color:var(--amber2);display:flex;align-items:center;gap:6px;}
+  .mkr-depot{width:24px;height:24px;background:#231B11;border:3px solid #fff;border-radius:5px;box-shadow:0 1px 4px rgba(0,0,0,.4);display:grid;place-items:center;}
+  .mkr-stop{display:grid;place-items:center;border-radius:50%;color:#fff;font-weight:700;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);}
+  .leaflet-popup-content{margin:10px 12px;font-size:13px;}
+
+  /* results */
+  #results{margin-top:18px;}
+  .summary{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:baseline;padding:16px 20px;background:var(--pine);color:#EAF1EC;border-radius:13px;margin-bottom:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .summary .big{font-family:var(--slab);font-weight:700;font-size:30px;color:#fff;line-height:1;}
+  .summary .s{display:flex;flex-direction:column;gap:2px;} .summary .s b{font-family:var(--slab);font-weight:600;font-size:21px;color:#fff;line-height:1;}
+  .summary .s span{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9FB6A7;}
+  .summary .save{margin-left:auto;background:var(--amber);color:#fff;border-radius:10px;padding:9px 15px;text-align:center;}
+  .summary .save b{font-family:var(--slab);font-size:22px;display:block;line-height:1.05;} .summary .save span{font-size:10px;letter-spacing:.04em;text-transform:uppercase;opacity:.92;}
+
+  .trucks{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;}
+  .truck{border:1px solid var(--line);border-radius:13px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;}
+  .truck .thead{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line2);}
+  .truck .swatch{width:14px;height:14px;border-radius:4px;flex:none;}
+  .truck .tname{font-family:var(--slab);font-weight:700;font-size:16px;}
+  .truck .tstat{margin-left:auto;font-size:12px;color:var(--ink2);text-align:right;}
+  .truck .tstat b{color:var(--pine);font-size:13px;}
+  .truck .tbody{padding:12px 16px;}
+  .stoplist{list-style:none;margin:0 0 12px;padding:0;}
+  .stoplist li{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px dashed var(--line2);font-size:13px;}
+  .stoplist li:last-child{border-bottom:none;}
+  .stoplist .seq{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;flex:none;}
+  .stoplist .nm{flex:1;} .stoplist .ld{font-size:11.5px;color:var(--ink3);font-family:var(--mono);}
+  .stoplist .depot{color:var(--ink3);font-style:italic;}
+  .navbtn{display:inline-flex;align-items:center;gap:7px;width:100%;justify-content:center;background:#fff;color:var(--pine);border:1.5px solid var(--line);border-radius:9px;padding:9px;font-weight:650;font-size:13.5px;text-decoration:none;}
+  .navbtn:hover{border-color:var(--pine2);background:var(--paper);}
+
+  .banner{padding:11px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;}
+  .banner.warn{background:#F6E9E0;border:1px solid #E3C7B3;color:#6b3417;}
+  .banner.err{background:#F6E2E2;border:1px solid #E3B3B3;color:#7a2020;}
+  .empty{padding:40px 24px;text-align:center;color:var(--ink2);font-size:14.5px;line-height:1.6;}
+
+  .foot{margin-top:24px;font-size:11.5px;color:var(--ink3);line-height:1.6;max-width:90ch;} .foot code{font-family:var(--mono);font-size:11px;background:var(--card);border:1px solid var(--line2);padding:1px 5px;border-radius:4px;}
+
+  #print-area{display:none;}
+  @media print{
+    .appbar,.creed,.panel,#mapWrap,.foot,.exportrow{display:none !important;}
+    .layout{display:block;padding:0;} body{background:#fff;}
+    #print-area{display:block;}
+    .sheet{page-break-after:always;padding:0.5in 0.55in;font-family:var(--sans);color:#000;}
+    .sheet:last-child{page-break-after:auto;}
+    .sheet h3{font-family:var(--slab);font-size:18px;margin:0 0 4px;}
+    .sheet table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;}
+    .sheet th,.sheet td{border:1px solid #bbb;padding:6px 8px;text-align:left;}
+    .sheet th{background:#eee;}
+  }
+</style>
+</head>
+<body>
+<div class="appbar"><div class="inner">
+  <svg class="logmark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <circle cx="20" cy="20" r="18.5" fill="#2C5C44" stroke="#B9C9BE" stroke-width="1.4"/>
+    <circle cx="21" cy="19" r="12.5" fill="none" stroke="#A6BCAC" stroke-width="1.2"/>
+    <circle cx="22" cy="18.5" r="7.5" fill="none" stroke="#90A998" stroke-width="1.1"/>
+    <circle cx="22.5" cy="18" r="3" fill="#F4EEE1"/>
+  </svg>
+  <div class="wordmark"><span class="co">KRETZ LUMBER CO.</span><span class="tag">Haul Planner · Fleet Route Optimizer</span></div>
+  <div class="est">Employee-owned · Antigo, WI</div>
+</div></div>
+<div class="creed">Fewer empty miles. More wood to the mill. Every truck planned.</div>
+
+<div class="layout">
+  <!-- LEFT: controls -->
+  <div class="panel">
+    <div class="card card-pad">
+      <h2 class="sec"><span class="step">1</span>The mill (start &amp; end)</h2>
+      <p class="hint">Every truck leaves here and returns here. Pre-set to the Antigo mill — edit if you’re routing from another yard.</p>
+      <label class="lab" for="depotLabel">Name</label>
+      <input id="depotLabel" type="text" value="Kretz Mill — Antigo">
+      <div class="row2" style="margin-top:10px">
+        <div><label class="lab" for="depotLat">Latitude</label><input id="depotLat" type="number" step="any" value="45.1166"></div>
+        <div><label class="lab" for="depotLon">Longitude</label><input id="depotLon" type="number" step="any" value="-89.1731"></div>
+      </div>
+      <button class="btn ghost sm" id="setDepotMap" style="margin-top:10px">📍 Set the mill by clicking the map</button>
+    </div>
+
+    <div class="card card-pad">
+      <h2 class="sec"><span class="step">2</span>Stops to hit</h2>
+      <p class="hint">Add every landing / pickup the trucks need to reach. Three ways — mix them freely.</p>
+      <div class="toolbtns">
+        <button class="btn ghost sm" id="clickAdd">🗺️ Click map to add</button>
+        <button class="btn ghost sm" id="showPaste">📋 Paste list</button>
+        <label class="btn ghost sm" style="margin:0"><input id="csvFile" type="file" accept=".csv,.txt" hidden>📄 Upload CSV</label>
+      </div>
+
+      <div id="pasteWrap" style="display:none;margin-bottom:10px">
+        <textarea id="pasteBox" placeholder="One stop per line:  latitude, longitude, name, load
+45.32, -89.05, Bauer landing, 4
+45.18, -88.77, Olson 40, 3"></textarea>
+        <div class="row2" style="margin-top:8px">
+          <button class="btn pine sm" id="addPaste">Add these stops</button>
+          <button class="btn ghost sm" id="addrTry">Find an address instead</button>
+        </div>
+        <div id="addrWrap" style="display:none;margin-top:8px">
+          <input id="addrBox" type="text" placeholder="e.g. County Road A & Hwy 64, Antigo WI">
+          <div class="mini">One address at a time · search powered by OpenStreetMap. For many stops, clicking the map or pasting coordinates is faster and more reliable.</div>
+        </div>
+        <div class="mini">Name &amp; load are optional. Load can be tons, cords, MBF — whatever you measure trucks in (defaults to 1 per stop).</div>
+      </div>
+
+      <div class="stopstable"><table class="st" id="stopsTable"><thead><tr><th style="width:34px">#</th><th>Stop</th><th style="width:62px">Load</th><th style="width:30px"></th></tr></thead><tbody id="stopsBody"></tbody></table></div>
+      <div class="tablefoot"><span id="stopCount">0 stops</span><button class="btn ghost sm" id="clearStops">Clear all</button></div>
+    </div>
+
+    <div class="card card-pad">
+      <h2 class="sec"><span class="step">3</span>The fleet</h2>
+      <div class="row2">
+        <div><label class="lab" for="trucks">Trucks available</label><input id="trucks" type="number" min="1" step="1" placeholder="auto"></div>
+        <div><label class="lab" for="capacity">Load per truck</label><input id="capacity" type="number" min="0" step="any" placeholder="no limit"></div>
+      </div>
+      <div class="row2" style="margin-top:10px">
+        <div><label class="lab" for="maxStops">Max stops / truck</label><input id="maxStops" type="number" min="1" step="1" value="14"></div>
+        <div><label class="lab" for="speed">Avg speed (mph)</label><input id="speed" type="number" min="5" step="1" value="45"></div>
+      </div>
+      <div class="row2" style="margin-top:10px">
+        <div><label class="lab" for="road">Road factor</label><input id="road" type="number" min="1" step="0.05" value="1.3"></div>
+        <div><label class="lab" for="service">Min / stop</label><input id="service" type="number" min="0" step="1" value="20"></div>
+      </div>
+      <div class="mini">Leave trucks or load blank for “as many / as much as needed.” Road factor turns straight-line miles into realistic road miles (1.3 ≈ typical rural Wisconsin).</div>
+      <button class="btn primary" id="optimize" style="margin-top:14px" disabled>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+        Optimize routes
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT: map + results -->
+  <div>
+    <div id="mapWrap">
+      <div id="mapBar">
+        <div class="baseseg" id="baseSeg"><button data-b="topo" class="on">Topo</button><button data-b="sat">Satellite</button><button data-b="osm">Streets</button></div>
+        <span class="clickmode" id="clickModeLabel" style="display:none">● Click the map to drop a stop — <button class="btn ghost sm" id="clickDone" style="padding:3px 9px">done</button></span>
+        <span id="mapMeta"></span><span id="mapNote" class="map-note" style="display:none"></span>
+      </div>
+      <div id="mapStage" style="position:relative"><div id="map"></div><div id="mapLoading" class="map-overlay" style="display:none"><span class="spin"></span>&nbsp;Loading map…</div></div>
+      <div id="mapFallback" class="map-fallback" style="display:none">The map couldn’t load on this network — but you can still paste coordinates or upload a CSV, optimize, and use the route sheets &amp; nav links.<br><button class="btn ghost" id="mapRetry" style="margin-top:12px">Try the map again</button></div>
+    </div>
+
+    <div id="results">
+      <div class="card"><div class="empty" id="emptyMsg">Add the mill and your stops, set the fleet, then <b>Optimize routes</b>.<br>Optimized routes will appear here and on the map.</div></div>
+    </div>
+
+    <p class="foot">
+      Routing uses the Clarke-Wright savings algorithm with 2-opt and Or-opt local search — a capacitated vehicle-routing solver that runs entirely in your browser. Distances are great-circle miles scaled by the road factor; they’re strong planning estimates, not live traffic or turn-by-turn mileage. Each truck’s “Open in Google Maps” link carries the stops in optimized order (Google may cap very long routes — the printed route sheet always holds the full ordered list). Map tiles © Esri / © OpenStreetMap contributors; address search © OpenStreetMap Nominatim. Nothing is uploaded — all routing happens on this page.
+    </p>
+  </div>
+</div>
+<div id="print-area"></div>
+
+<script>
+const LEAFLET_JS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+const LEAFLET_CSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+const PALETTE=["#C2611A","#1E4031","#3D5A80","#8A2D2D","#7B4B94","#A8730F","#155E63","#2C5C44","#9C4221","#4A5759","#6B0F1A","#33571E","#1B5299","#7A4419"];
+const $=id=>document.getElementById(id);
+
+let stops=[]; // {id,label,lat,lon,load}
+let nextId=1;
+let routes=[]; // array of arrays of pts-indices (1..n)
+let lastSolve=null;
+let depot={lat:45.1166,lon:-89.1731,label:"Kretz Mill — Antigo"};
+
+/* ---------- VRP solver (validated) ---------- */
+const haversineMi=(a,b)=>{const R=3958.8,t=Math.PI/180,dLa=(b[0]-a[0])*t,dLo=(b[1]-a[1])*t,s=Math.sin(dLa/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(s));};
+function matrix(pts,road){const n=pts.length,D=Array.from({length:n},()=>new Array(n).fill(0));for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const d=haversineMi(pts[i],pts[j])*road;D[i][j]=D[j][i]=d;}return D;}
+const routeDist=(r,D)=>{if(!r.length)return 0;let d=D[0][r[0]];for(let i=0;i<r.length-1;i++)d+=D[r[i]][r[i+1]];return d+D[r[r.length-1]][0];};
+const totalDist=(rs,D)=>rs.reduce((s,r)=>s+routeDist(r,D),0);
+const loadOf=(r,dem)=>r.reduce((s,i)=>s+dem[i],0);
+function clarkeWright(D,dem,Q,maxStops){
+  const n=D.length-1; let routes=[]; const rOf={};
+  for(let i=1;i<=n;i++){routes.push([i]);rOf[i]=routes.length-1;}
+  const sav=[];
+  for(let i=1;i<=n;i++)for(let j=i+1;j<=n;j++)sav.push([D[0][i]+D[0][j]-D[i][j],i,j]);
+  sav.sort((a,b)=>b[0]-a[0]);
+  for(const [s,i,j] of sav){
+    if(s<=0)break;
+    const ri=rOf[i],rj=rOf[j]; if(ri===rj)continue;
+    const A=routes[ri],B=routes[rj]; if(!A.length||!B.length)continue;
+    const iEnd=A[A.length-1]===i,iStart=A[0]===i,jEnd=B[B.length-1]===j,jStart=B[0]===j;
+    if(!(iEnd||iStart)||!(jEnd||jStart))continue;
+    if(Q>0 && loadOf(A,dem)+loadOf(B,dem)>Q+1e-9)continue;
+    if(maxStops>0 && A.length+B.length>maxStops)continue;
+    let a=A.slice(); if(iStart)a.reverse();
+    let b=B.slice(); if(jEnd)b.reverse();
+    routes[ri]=a.concat(b); routes[rj]=[]; routes[ri].forEach(x=>rOf[x]=ri);
+  }
+  return routes.filter(r=>r.length);
+}
+function twoOpt(r,D){let best=r.slice(),improved=true;const dist=rt=>routeDist(rt,D);
+  while(improved){improved=false;
+    for(let i=0;i<best.length-1;i++)for(let k=i+1;k<best.length;k++){
+      const nr=best.slice(0,i).concat(best.slice(i,k+1).reverse(),best.slice(k+1));
+      if(dist(nr)<dist(best)-1e-9){best=nr;improved=true;}
+    }
+  } return best;
+}
+function orOpt(routes,D,dem,Q,maxStops){let improved=true,pass=0;
+  while(improved&&pass++<25){improved=false;
+    for(let ri=0;ri<routes.length;ri++){
+      for(let L=1;L<=3;L++){
+        for(let p=0;p+L<=routes[ri].length;p++){
+          const seg=routes[ri].slice(p,p+L);
+          const without=routes[ri].slice(0,p).concat(routes[ri].slice(p+L));
+          const removeGain=routeDist(routes[ri],D)-routeDist(without,D);
+          let bestDelta=1e-6,bestRj=-1,bestPos=-1,bestRev=false;
+          for(let rj=0;rj<routes.length;rj++){
+            const target=(rj===ri)?without:routes[rj];
+            if(Q>0&&rj!==ri&&loadOf(routes[rj],dem)+loadOf(seg,dem)>Q+1e-9)continue;
+            if(maxStops>0&&rj!==ri&&routes[rj].length+L>maxStops)continue;
+            if(maxStops>0&&rj===ri&&without.length+L>maxStops)continue;
+            const tBefore=routeDist(target,D);
+            for(let q=0;q<=target.length;q++)for(const rev of [false,true]){
+              const s2=rev?seg.slice().reverse():seg;
+              const cand=target.slice(0,q).concat(s2,target.slice(q));
+              const delta=removeGain-(routeDist(cand,D)-tBefore);
+              if(delta>bestDelta){bestDelta=delta;bestRj=rj;bestPos=q;bestRev=rev;}
+            }
+          }
+          if(bestRj>=0){
+            const s2=bestRev?seg.slice().reverse():seg;
+            if(bestRj===ri){routes[ri]=without.slice(0,bestPos).concat(s2,without.slice(bestPos));}
+            else{routes[ri]=without;routes[bestRj]=routes[bestRj].slice(0,bestPos).concat(s2,routes[bestRj].slice(bestPos));}
+            improved=true;
+          }
+        }
+      }
+    }
+    routes=routes.filter(r=>r.length);
+  }
+  return routes;
+}
+function capRoutes(routes,D,dem,Q,maxStops,limit){
+  if(!limit||routes.length<=limit)return routes;
+  routes=routes.map(r=>r.slice());
+  while(routes.length>limit){
+    let best=null;
+    for(let i=0;i<routes.length;i++)for(let j=0;j<routes.length;j++){if(i===j)continue;
+      const A=routes[i],B=routes[j];
+      if(Q>0&&loadOf(A,dem)+loadOf(B,dem)>Q+1e-9)continue;
+      if(maxStops>0&&A.length+B.length>maxStops)continue;
+      const cands=[A.concat(B),A.concat(B.slice().reverse()),A.slice().reverse().concat(B),A.slice().reverse().concat(B.slice().reverse())];
+      let bm=cands[0],bd=routeDist(cands[0],D);
+      for(const c of cands){const d=routeDist(c,D);if(d<bd){bd=d;bm=c;}}
+      const delta=bd-routeDist(A,D)-routeDist(B,D);
+      if(!best||delta<best.delta)best={i,j,merged:bm,delta};
+    }
+    if(!best)break;
+    routes[best.i]=best.merged; routes.splice(best.j,1);
+  }
+  return routes;
+}
+function solve(pts,dem,opts){
+  const Q=opts.capacity||0,maxStops=opts.maxStops||0,road=opts.roadFactor||1.3,limit=opts.vehicles||0;
+  const D=matrix(pts,road);
+  let routes=clarkeWright(D,dem,Q,maxStops);
+  routes=routes.map(r=>twoOpt(r,D));
+  routes=orOpt(routes,D,dem,Q,maxStops);
+  if(limit&&routes.length>limit){routes=capRoutes(routes,D,dem,Q,maxStops,limit);routes=routes.map(r=>twoOpt(r,D));routes=orOpt(routes,D,dem,Q,maxStops);}
+  return {routes,total:totalDist(routes,D),D};
+}
+
+/* ---------- map (lazy, robust) ---------- */
+let map=null,mapInited=false,stopLayer=null,routeLayer=null,depotMarker=null,currentBase="topo",baseTiles={},autoFell=false,_lp=null,_noteT=null,clickMode=null;
+function ensureLeaflet(){
+  if(typeof L!=="undefined")return Promise.resolve();
+  if(_lp)return _lp;
+  _lp=new Promise((res,rej)=>{let done=false;const fin=ok=>{if(done)return;done=true;ok?res():rej();};
+    if(!$("lfcss")){const k=document.createElement("link");k.id="lfcss";k.rel="stylesheet";k.href=LEAFLET_CSS;document.head.appendChild(k);}
+    const s=document.createElement("script");s.async=true;s.src=LEAFLET_JS;s.onload=()=>fin(typeof L!=="undefined");s.onerror=()=>fin(false);setTimeout(()=>fin(typeof L!=="undefined"),12000);document.head.appendChild(s);});
+  return _lp;
+}
+function showMap(){
+  $("mapFallback").style.display="none";$("mapStage").style.display="";
+  if(typeof L!=="undefined"){$("mapLoading").style.display="none";buildMap();return;}
+  $("mapLoading").style.display="flex";
+  ensureLeaflet().then(()=>{$("mapLoading").style.display="none";buildMap();}).catch(()=>{_lp=null;$("mapStage").style.display="none";$("mapFallback").style.display="grid";});
+}
+function flashNote(m){const e=$("mapNote");if(!e)return;e.textContent=m;e.style.display="";clearTimeout(_noteT);_noteT=setTimeout(()=>e.style.display="none",7000);}
+function tileGuard(layer,name){let ok=false,err=0;layer.on("tileload",()=>ok=true);layer.on("tileerror",()=>{err++;if(!ok&&err>=8&&!autoFell&&currentBase===name){autoFell=true;flashNote("Map tiles blocked — switched to Streets.");setBase("osm");}});return layer;}
+function buildMap(){
+  if(!mapInited){
+    map=L.map("map",{preferCanvas:false,minZoom:5,maxZoom:18}).setView([depot.lat,depot.lon],8);
+    baseTiles.topo=tileGuard(L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:18,attribution:"Tiles © Esri"}),"topo");
+    baseTiles.sat=tileGuard(L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:18,attribution:"Imagery © Esri"}),"sat");
+    baseTiles.osm=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
+    baseTiles[currentBase].addTo(map);
+    routeLayer=L.layerGroup().addTo(map); stopLayer=L.layerGroup().addTo(map);
+    map.on("click",e=>{if(clickMode==="stop")addStop(e.latlng.lat,e.latlng.lng);else if(clickMode==="depot"){depot.lat=+e.latlng.lat.toFixed(6);depot.lon=+e.latlng.lng.toFixed(6);$("depotLat").value=depot.lat;$("depotLon").value=depot.lon;setClickMode(null);drawAll();}});
+    mapInited=true;
+  }
+  setTimeout(()=>{if(map){map.invalidateSize();drawAll();}},40);
+}
+function setBase(b){if(!map||!baseTiles[b])return;Object.values(baseTiles).forEach(t=>{if(map.hasLayer(t))map.removeLayer(t);});baseTiles[b].addTo(map);currentBase=b;document.querySelectorAll("#baseSeg button").forEach(x=>x.classList.toggle("on",x.dataset.b===b));}
+function depotIcon(){return L.divIcon({className:"",html:'<div class="mkr-depot"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M3 21V8l9-5 9 5v13h-6v-6H9v6z"/></svg></div>',iconSize:[24,24],iconAnchor:[12,12]});}
+function stopIcon(label,color,size){const d=size||22;return L.divIcon({className:"",html:`<div class="mkr-stop" style="width:${d}px;height:${d}px;background:${color};font-size:${d>20?11:10}px">${label}</div>`,iconSize:[d,d],iconAnchor:[d/2,d/2]});}
+function drawAll(){
+  if(!map)return;
+  routeLayer.clearLayers(); stopLayer.clearLayers();
+  if(depotMarker){map.removeLayer(depotMarker);depotMarker=null;}
+  depotMarker=L.marker([depot.lat,depot.lon],{icon:depotIcon(),zIndexOffset:1000}).addTo(map).bindPopup("<b>"+escapeHtml(depot.label||"Mill")+"</b><br>Start &amp; end");
+  const colorOfStop={};
+  if(routes.length){routes.forEach((r,ti)=>{const col=PALETTE[ti%PALETTE.length];r.forEach(si=>colorOfStop[si]=col);});}
+  // stop markers
+  stops.forEach((s,k)=>{const idx=k+1;
+    let label=String(idx),color="#2C5C44",size=22;
+    if(routes.length){const seq=seqOf(idx);if(seq){label=String(seq.pos);color=seq.color;}else{color="#B0A48C";}}
+    const m=L.marker([s.lat,s.lon],{icon:stopIcon(label,color,size)});
+    m.bindPopup(`<b>${escapeHtml(s.label)}</b><br>Load: ${s.load}<br><span style="color:#888">${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}</span>`);
+    stopLayer.addLayer(m);
+  });
+  // route polylines
+  if(routes.length){
+    routes.forEach((r,ti)=>{const col=PALETTE[ti%PALETTE.length];
+      const pts=[[depot.lat,depot.lon],...r.map(si=>[stops[si-1].lat,stops[si-1].lon]),[depot.lat,depot.lon]];
+      L.polyline(pts,{color:col,weight:3.5,opacity:.85}).addTo(routeLayer);
+    });
+  }
+  fitMap();
+  updateMapMeta();
+}
+function seqOf(stopIdx){ // stopIdx is 1..n; find which route + position
+  for(let ti=0;ti<routes.length;ti++){const pos=routes[ti].indexOf(stopIdx);if(pos>=0)return {truck:ti,pos:pos+1,color:PALETTE[ti%PALETTE.length]};}
+  return null;
+}
+function fitMap(){if(!map)return;const pts=[[depot.lat,depot.lon],...stops.map(s=>[s.lat,s.lon])];if(pts.length>1){try{map.fitBounds(pts,{padding:[45,45],maxZoom:13});}catch(e){}}else if(pts.length===1){map.setView(pts[0],9);}}
+function updateMapMeta(){const e=$("mapMeta");if(!e)return;e.innerHTML=`<b>${stops.length}</b> stop${stops.length===1?"":"s"}${routes.length?` · <b>${routes.length}</b> truck${routes.length===1?"":"s"}`:""}`;}
+function setClickMode(m){clickMode=m;$("clickModeLabel").style.display=m==="stop"?"flex":"none";$("clickAdd").classList.toggle("pine",m==="stop");if(m)showMap();}
+
+/* ---------- stops management ---------- */
+function addStop(lat,lon,label,load){
+  lat=+(+lat).toFixed(6);lon=+(+lon).toFixed(6);
+  if(!isFinite(lat)||!isFinite(lon))return;
+  const s={id:nextId++,label:label&&String(label).trim()?String(label).trim():`Stop ${stops.length+1}`,lat,lon,load:(load!=null&&load!==""&&isFinite(+load))?+load:1};
+  stops.push(s);routes=[];lastSolve=null;renderStops();drawAll();refreshOptimizeState();clearResults();
+}
+function renderStops(){
+  const tb=$("stopsBody");
+  tb.innerHTML=stops.map((s,k)=>{const seq=routes.length?seqOf(k+1):null;const dot=seq?`<span class="seqdot" style="background:${seq.color}">${seq.pos}</span>`:`<span class="seqdot" style="background:#B0A48C">${k+1}</span>`;
+    return `<tr data-id="${s.id}"><td>${dot}</td>
+      <td><input type="text" value="${escapeAttr(s.label)}" data-f="label"><div style="font-size:10.5px;color:#A89C86;margin-top:2px;font-family:var(--mono)">${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}</div></td>
+      <td><input type="number" value="${s.load}" step="any" min="0" data-f="load"></td>
+      <td><button class="delx" data-del="${s.id}">×</button></td></tr>`;}).join("");
+  tb.querySelectorAll("input[data-f]").forEach(inp=>inp.addEventListener("change",e=>{
+    const id=+e.target.closest("tr").dataset.id,f=e.target.dataset.f,s=stops.find(x=>x.id===id);if(!s)return;
+    if(f==="label")s.label=e.target.value;else s.load=isFinite(+e.target.value)?+e.target.value:1;
+    routes=[];lastSolve=null;drawAll();clearResults();
+  }));
+  tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{const id=+b.dataset.del;stops=stops.filter(x=>x.id!==id);routes=[];lastSolve=null;renderStops();drawAll();refreshOptimizeState();clearResults();}));
+  $("stopCount").textContent=`${stops.length} stop${stops.length===1?"":"s"} · ${stops.reduce((a,s)=>a+(+s.load||0),0)} load`;
+}
+function parseLines(text){
+  let added=0;
+  text.split(/\r?\n/).forEach(line=>{
+    const t=line.trim();if(!t)return;
+    if(/lat.*lon|latitude/i.test(t)&&/[a-z]/i.test(t)&&!/-?\d/.test(t.split(/[, \t]/)[0]))return; // header
+    const parts=t.split(/\s*,\s*|\t/).map(x=>x.trim());
+    const nums=parts.map(parseFloat);
+    // find first two parseable numbers as lat,lon
+    let li=-1;
+    for(let i=0;i<parts.length-1;i++){if(isFinite(nums[i])&&isFinite(nums[i+1])&&Math.abs(nums[i])<=90&&Math.abs(nums[i+1])<=180){li=i;break;}}
+    if(li<0)return;
+    const lat=nums[li],lon=nums[li+1];
+    const rest=parts.slice(0,li).concat(parts.slice(li+2));
+    let label="",load=null;
+    rest.forEach(r=>{if(isFinite(parseFloat(r))&&r!==""&&load==null)load=parseFloat(r);else if(r)label=label?label+" "+r:r;});
+    addStopQuiet(lat,lon,label,load);added++;
+  });
+  return added;
+}
+function addStopQuiet(lat,lon,label,load){
+  lat=+(+lat).toFixed(6);lon=+(+lon).toFixed(6);if(!isFinite(lat)||!isFinite(lon))return;
+  stops.push({id:nextId++,label:label&&String(label).trim()?String(label).trim():`Stop ${stops.length+1}`,lat,lon,load:(load!=null&&isFinite(+load))?+load:1});
+}
+function refreshOptimizeState(){$("optimize").disabled=stops.length<1;}
+function clearResults(){routes.length||($("results").innerHTML='<div class="card"><div class="empty" id="emptyMsg">Add the mill and your stops, set the fleet, then <b>Optimize routes</b>.</div></div>');}
+
+/* ---------- optimize + render ---------- */
+function fmtMi(m){return Math.round(m).toLocaleString()+" mi";}
+function fmtTime(min){min=Math.round(min);const h=Math.floor(min/60),m=min%60;return h?`${h}h ${m}m`:`${m}m`;}
+function runOptimize(){
+  if(stops.length<1)return;
+  depot.lat=+$("depotLat").value;depot.lon=+$("depotLon").value;depot.label=$("depotLabel").value||"Mill";
+  if(!isFinite(depot.lat)||!isFinite(depot.lon)){showBanner("err","The mill needs a valid latitude and longitude.");return;}
+  const opts={
+    capacity:+$("capacity").value||0, maxStops:+$("maxStops").value||0,
+    roadFactor:+$("road").value||1.3, vehicles:+$("trucks").value||0
+  };
+  const dem=[0,...stops.map(s=>+s.load||0)];
+  const totalDemand=dem.reduce((a,b)=>a+b,0);
+  // feasibility
+  let minByCap=opts.capacity>0?Math.ceil(totalDemand/opts.capacity):1;
+  let minByStops=opts.maxStops>0?Math.ceil(stops.length/opts.maxStops):1;
+  const minTrucks=Math.max(minByCap,minByStops);
+  let warn="";
+  if(opts.vehicles&&opts.vehicles<minTrucks){
+    showBanner("err",`These stops can’t fit in ${opts.vehicles} truck${opts.vehicles===1?"":"s"}. With this load limit and max stops, you need at least <b>${minTrucks}</b>. Add trucks, raise the load per truck, or raise max stops.`);
+    return;
+  }
+  const pts=[[depot.lat,depot.lon],...stops.map(s=>[s.lat,s.lon])];
+  $("optimize").disabled=true;$("optimize").innerHTML='<span class="spin"></span>&nbsp;Optimizing…';
+  setTimeout(()=>{
+    try{
+      const res=solve(pts,dem,opts);
+      routes=res.routes;lastSolve={...res,dem,opts,totalDemand};
+      if(opts.vehicles&&routes.length>opts.vehicles)warn=`Couldn’t fit everything into ${opts.vehicles} trucks under these limits — showing ${routes.length}. Raise the load per truck or max stops to consolidate further.`;
+      renderResults(warn);renderStops();drawAll();
+    }catch(e){showBanner("err","Something went wrong optimizing: "+e.message);}
+    $("optimize").disabled=false;$("optimize").innerHTML='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg> Optimize routes';
+  },30);
+}
+function showBanner(type,msg){$("results").innerHTML=`<div class="banner ${type}">${msg}</div>`+($("results").dataset.keep||"");}
+function navUrl(route){
+  const seq=route.map(k=>stops[k-1]);
+  const wp=seq.map(s=>`${s.lat},${s.lon}`).join("|");
+  return `https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=${depot.lat},${depot.lon}&destination=${depot.lat},${depot.lon}&waypoints=${encodeURIComponent(wp)}`;
+}
+function renderResults(warn){
+  const D=lastSolve.D,dem=lastSolve.dem,opts=lastSolve.opts,speed=+$("speed").value||45,svc=+$("service").value||0;
+  const fleetMi=lastSolve.total;
+  const naive=stops.reduce((s,_,k)=>s+2*D[0][k+1],0);
+  const savePct=naive>0?Math.max(0,Math.round(100*(1-fleetMi/naive))):0;
+  let totalMin=0;routes.forEach(r=>{totalMin+=routeDist(r,D)/speed*60+r.length*svc;});
+  let h="";
+  if(warn)h+=`<div class="banner warn">${warn}</div>`;
+  h+=`<div class="summary">
+    <div class="s"><div class="big">${routes.length}</div><span>Trucks</span></div>
+    <div class="s"><b>${stops.length}</b><span>Stops</span></div>
+    <div class="s"><b>${fmtMi(fleetMi)}</b><span>Fleet miles</span></div>
+    <div class="s"><b>${fmtTime(totalMin)}</b><span>Fleet time</span></div>
+    <div class="save"><b>${savePct}%</b><span>fewer miles than<br>one trip per stop</span></div>
+  </div>
+  <div class="exportrow btnrow" style="margin-bottom:16px">
+    <button class="btn pine sm" id="printSheets">🖨️ Print route sheets</button>
+    <button class="btn ghost sm" id="csvOut">⬇️ Export routes (CSV)</button>
+  </div>
+  <div class="trucks">`;
+  routes.forEach((r,ti)=>{
+    const col=PALETTE[ti%PALETTE.length],mi=routeDist(r,D),tmin=mi/speed*60+r.length*svc,ld=loadOf(r,dem);
+    h+=`<div class="truck"><div class="thead"><span class="swatch" style="background:${col}"></span><span class="tname">Truck ${ti+1}</span>
+      <span class="tstat"><b>${r.length}</b> stops · <b>${fmtMi(mi)}</b><br>load ${Math.round(ld*100)/100}${opts.capacity?` / ${opts.capacity}`:""} · ${fmtTime(tmin)}</span></div>
+      <div class="tbody"><ul class="stoplist">
+        <li><span class="seq" style="background:#231B11">M</span><span class="nm depot">${escapeHtml(depot.label||"Mill")} — depart</span></li>`;
+    r.forEach((si,pos)=>{const s=stops[si-1];h+=`<li><span class="seq" style="background:${col}">${pos+1}</span><span class="nm">${escapeHtml(s.label)}</span><span class="ld">${s.load}</span></li>`;});
+    h+=`<li><span class="seq" style="background:#231B11">M</span><span class="nm depot">${escapeHtml(depot.label||"Mill")} — drop</span></li>
+      </ul><a class="navbtn" target="_blank" rel="noopener" href="${navUrl(r)}"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Open this route in Google Maps</a></div></div>`;
+  });
+  h+=`</div>`;
+  $("results").innerHTML=h;
+  $("printSheets").addEventListener("click",printSheets);
+  $("csvOut").addEventListener("click",exportRoutesCSV);
+}
+function printSheets(){
+  const D=lastSolve.D,dem=lastSolve.dem,speed=+$("speed").value||45,svc=+$("service").value||0;
+  const today=new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
+  let h="";
+  routes.forEach((r,ti)=>{const mi=routeDist(r,D),tmin=mi/speed*60+r.length*svc,ld=loadOf(r,dem);
+    h+=`<div class="sheet"><h3>Kretz Haul — Truck ${ti+1}</h3>
+      <div style="font-size:12px;color:#444">${today} &nbsp;·&nbsp; ${r.length} stops &nbsp;·&nbsp; ${Math.round(mi)} mi &nbsp;·&nbsp; est. ${fmtTime(tmin)} &nbsp;·&nbsp; load ${Math.round(ld*100)/100}</div>
+      <table><thead><tr><th style="width:38px">#</th><th>Stop</th><th style="width:70px">Load</th><th style="width:150px">Coordinates</th><th style="width:60px">✓</th></tr></thead><tbody>
+      <tr><td>—</td><td><b>${escapeHtml(depot.label||"Mill")}</b> (depart)</td><td></td><td>${depot.lat.toFixed(4)}, ${depot.lon.toFixed(4)}</td><td></td></tr>`;
+    r.forEach((si,pos)=>{const s=stops[si-1];h+=`<tr><td>${pos+1}</td><td>${escapeHtml(s.label)}</td><td>${s.load}</td><td>${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}</td><td></td></tr>`;});
+    h+=`<tr><td>—</td><td><b>${escapeHtml(depot.label||"Mill")}</b> (drop)</td><td></td><td>${depot.lat.toFixed(4)}, ${depot.lon.toFixed(4)}</td><td></td></tr></tbody></table></div>`;
+  });
+  $("print-area").innerHTML=h;setTimeout(()=>window.print(),60);
+}
+function exportRoutesCSV(){
+  const D=lastSolve.D,dem=lastSolve.dem,speed=+$("speed").value||45,svc=+$("service").value||0;
+  const cell=v=>{let s=v==null?"":String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const lines=[["Truck","Sequence","Stop","Load","Lat","Lon","Truck Stops","Truck Miles","Truck Est Min"].join(",")];
+  routes.forEach((r,ti)=>{const mi=Math.round(routeDist(r,D)),tmin=Math.round(routeDist(r,D)/speed*60+r.length*svc);
+    r.forEach((si,pos)=>{const s=stops[si-1];lines.push([ti+1,pos+1,s.label,s.load,s.lat.toFixed(6),s.lon.toFixed(6),r.length,mi,tmin].map(cell).join(","));});});
+  const blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kretz_haul_routes.csv";a.click();URL.revokeObjectURL(a.href);
+}
+
+/* ---------- address geocode (optional, single) ---------- */
+async function geocode(q){
+  const url="https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q);
+  const r=await fetch(url,{headers:{"Accept":"application/json"}});
+  const d=await r.json();
+  if(d&&d[0])return {lat:+d[0].lat,lon:+d[0].lon,label:q};
+  return null;
+}
+
+/* ---------- utils ---------- */
+function escapeHtml(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function escapeAttr(s){return escapeHtml(s);}
+
+/* ---------- wiring ---------- */
+$("setDepotMap").addEventListener("click",()=>{setClickMode("depot");flashNote("Click the map to place the mill.");});
+$("clickAdd").addEventListener("click",()=>setClickMode(clickMode==="stop"?null:"stop"));
+$("clickDone").addEventListener("click",()=>setClickMode(null));
+$("showPaste").addEventListener("click",()=>{const w=$("pasteWrap");w.style.display=w.style.display==="none"?"block":"none";});
+$("addPaste").addEventListener("click",()=>{const n=parseLines($("pasteBox").value);if(n){$("pasteBox").value="";renderStops();drawAll();refreshOptimizeState();clearResults();}else showBannerTemp("Couldn’t read any coordinates — use: lat, lon, name, load");});
+$("csvFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const n=parseLines(rd.result);renderStops();drawAll();refreshOptimizeState();clearResults();if(!n)showBannerTemp("No coordinates found in that file.");};rd.readAsText(f);e.target.value="";});
+$("clearStops").addEventListener("click",()=>{if(stops.length&&confirm("Remove all stops?")){stops=[];routes=[];lastSolve=null;renderStops();drawAll();refreshOptimizeState();clearResults();}});
+$("addrTry").addEventListener("click",()=>{const w=$("addrWrap");w.style.display=w.style.display==="none"?"block":"none";if(w.style.display==="block")$("addrBox").focus();});
+$("addrBox").addEventListener("keydown",async e=>{if(e.key!=="Enter")return;const q=e.target.value.trim();if(!q)return;e.target.disabled=true;
+  try{const g=await geocode(q);if(g){addStop(g.lat,g.lon,q.split(",")[0],1);e.target.value="";}else showBannerTemp("Address not found — try clicking the map.");}
+  catch{showBannerTemp("Address lookup unavailable — click the map or paste coordinates.");}
+  e.target.disabled=false;});
+["depotLat","depotLon","depotLabel"].forEach(id=>$(id).addEventListener("change",()=>{depot.lat=+$("depotLat").value;depot.lon=+$("depotLon").value;depot.label=$("depotLabel").value;routes=[];lastSolve=null;clearResults();drawAll();}));
+$("optimize").addEventListener("click",runOptimize);
+$("baseSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>setBase(b.dataset.b)));
+$("mapRetry").addEventListener("click",()=>{_lp=null;showMap();});
+let _bt=null;function showBannerTemp(m){const e=$("results");const prev=e.innerHTML;e.innerHTML=`<div class="banner warn">${m}</div>`+(routes.length?"":"");clearTimeout(_bt);_bt=setTimeout(()=>{if(!routes.length)clearResults();},3500);}
+
+renderStops();
+showMap();
+refreshOptimizeState();
+</script>
+</body>
+</html>

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kretz Lumber · Woodland Owner Outreach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4EEE1; --paper2:#EBE2D1; --card:#FFFDF8;
+    --ink:#231B11; --ink2:#6A5F4F; --ink3:#948975;
+    --line:#E1D6C1; --line2:#EEE7D8;
+    --pine:#1E4031; --pine2:#2C5C44; --pine-deep:#15301F;
+    --amber:#C2611A; --amber2:#A8520F;
+    --mfl-fg:#235139; --mfl-bg:#E7F0E9; --mfl-bd:#BBD6C6;
+    --oos-fg:#974628; --oos-bg:#F6E9E0; --oos-bd:#E3C7B3;
+    --ent-fg:#5B4636; --ent-bg:#F0E7D7; --ent-bd:#DECDB0;
+    --bad:#8A2D2D;
+    --slab:"Zilla Slab", Rockwell, "Roboto Slab", Georgia, serif;
+    --sans:-apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono:ui-monospace, Menlo, Consolas, monospace;
+    --shadow:0 1px 2px rgba(35,27,17,.05), 0 8px 24px rgba(35,27,17,.05);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;}
+  .num{font-variant-numeric:tabular-nums;}
+
+  .appbar{background:var(--pine);color:#F4EEE1;}
+  .appbar .inner{max-width:1160px;margin:0 auto;padding:15px 20px;display:flex;align-items:center;gap:14px;}
+  .logmark{flex:none;width:38px;height:38px;}
+  .wordmark{display:flex;flex-direction:column;line-height:1.05;}
+  .wordmark .co{font-family:var(--slab);font-weight:700;font-size:19px;letter-spacing:.06em;}
+  .wordmark .tag{font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:#B9C9BE;margin-top:2px;}
+  .appbar .est{margin-left:auto;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#9FB6A7;text-align:right;}
+  .creed{background:var(--pine-deep);color:#CFDBD2;font-size:12.5px;font-family:var(--slab);font-style:italic;text-align:center;padding:7px 16px;}
+
+  .page{max-width:1160px;margin:0 auto;padding:22px 20px 90px;}
+
+  .stepper{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .st{flex:1 1 0;min-width:150px;display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 15px;cursor:default;opacity:.55;transition:.15s;box-shadow:var(--shadow);}
+  .st.avail{cursor:pointer;opacity:1;} .st.avail:hover{border-color:var(--pine2);}
+  .st.on{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine) inset, var(--shadow);}
+  .st .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--paper2);color:var(--ink2);font-family:var(--slab);font-weight:700;font-size:15px;}
+  .st.on .n{background:var(--pine);color:#fff;} .st.done .n{background:var(--mfl-fg);color:#fff;}
+  .st .lbl{display:flex;flex-direction:column;line-height:1.15;} .st .lbl b{font-size:14.5px;font-weight:650;} .st .lbl span{font-size:12px;color:var(--ink2);}
+
+  .step-panel{display:none;} .step-panel.active{display:block;animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);} .card-pad{padding:22px;}
+  h2.section{font-family:var(--slab);font-weight:600;font-size:24px;margin:0 0 4px;letter-spacing:-0.005em;}
+  .lead{color:var(--ink2);font-size:15px;margin:0 0 20px;}
+  .qblock{margin-bottom:24px;} .qblock > .q{font-family:var(--slab);font-weight:600;font-size:17px;margin:0 0 10px;}
+  .helper{font-size:13px;color:var(--ink2);margin-top:7px;}
+
+  .choices{display:flex;gap:12px;flex-wrap:wrap;}
+  .choice{flex:1 1 200px;border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;cursor:pointer;background:var(--paper);display:flex;gap:12px;align-items:flex-start;transition:.12s;}
+  .choice:hover{border-color:var(--pine2);} .choice.on{border-color:var(--pine);background:#fff;box-shadow:0 0 0 1px var(--pine) inset;}
+  .choice .ico{flex:none;width:26px;height:26px;color:var(--pine);margin-top:1px;}
+  .choice .t{font-weight:650;font-size:15.5px;} .choice .d{font-size:12.5px;color:var(--ink2);margin-top:2px;}
+
+  .sub-control{margin-top:14px;}
+  label.lab{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin-bottom:6px;}
+  select, input[type=text], input[type=number]{font-family:var(--sans);font-size:16px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:11px 13px;width:100%;min-height:48px;}
+  select:focus,input:focus{outline:none;border-color:var(--pine);box-shadow:0 0 0 3px rgba(30,64,49,.12);}
+  .two{display:flex;gap:12px;} .two > div{flex:1;}
+  .three{display:flex;gap:12px;flex-wrap:wrap;} .three > div{flex:1 1 180px;}
+
+  .toggle{display:flex;gap:13px;align-items:flex-start;padding:13px 15px;border:1.5px solid var(--line);border-radius:11px;cursor:pointer;background:var(--paper);margin-bottom:10px;transition:.12s;}
+  .toggle:hover{border-color:var(--pine2);} .toggle.on{border-color:var(--pine);background:#fff;}
+  .toggle input{margin-top:2px;width:20px;height:20px;accent-color:var(--pine);flex:none;}
+  .toggle .tt{font-weight:600;font-size:15px;} .toggle .td{font-size:12.5px;color:var(--ink2);margin-top:2px;}
+
+  .more{margin-top:6px;}
+  .more summary{font-size:13.5px;font-weight:600;color:var(--pine);cursor:pointer;list-style:none;padding:8px 0;display:inline-block;}
+  .more summary::-webkit-details-marker{display:none;} .more summary::before{content:"+ ";font-weight:700;} .more[open] summary::before{content:"– ";}
+  .more-body{padding:6px 2px 2px;border-top:1px solid var(--line2);margin-top:4px;}
+
+  .btn{font-family:var(--sans);font-weight:650;font-size:16px;cursor:pointer;border-radius:10px;padding:13px 26px;min-height:50px;border:1.5px solid transparent;display:inline-flex;align-items:center;gap:9px;justify-content:center;transition:.12s;}
+  .btn.primary{background:var(--amber);color:#fff;border-color:var(--amber);box-shadow:0 2px 0 var(--amber2);}
+  .btn.primary:hover:not(:disabled){background:var(--amber2);} .btn.primary:active{transform:translateY(1px);box-shadow:none;}
+  .btn.pine{background:var(--pine);color:#fff;border-color:var(--pine);} .btn.pine:hover:not(:disabled){background:var(--pine2);}
+  .btn.ghost{background:#fff;color:var(--pine);border-color:var(--line);} .btn.ghost:hover:not(:disabled){border-color:var(--pine2);background:var(--paper);}
+  .btn:disabled{opacity:.5;cursor:default;box-shadow:none;} .btn .ico{width:18px;height:18px;}
+  .barrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;} .spacer{flex:1;}
+
+  .status{font-size:14px;padding:14px 2px;color:var(--ink2);display:flex;align-items:center;gap:10px;} .status.err{color:var(--bad);}
+  .spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--pine);border-radius:50%;animation:sp .7s linear infinite;flex:none;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+
+  .resultbar{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:baseline;margin-bottom:18px;}
+  .resultbar .big{font-family:var(--slab);font-weight:700;font-size:30px;color:var(--pine);line-height:1;}
+  .stat{display:flex;flex-direction:column;gap:2px;} .stat b{font-family:var(--slab);font-weight:600;font-size:20px;color:var(--ink);line-height:1;}
+  .stat span{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);}
+
+  .controls-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .controls-row input[type=text]{flex:1 1 200px;min-height:44px;} .controls-row select{flex:0 0 auto;width:auto;min-height:44px;}
+  .selinfo{font-size:13.5px;color:var(--ink2);} .selinfo b{color:var(--pine);}
+  .linkbtn{background:none;border:none;color:var(--pine);font-weight:600;font-size:13.5px;cursor:pointer;padding:4px 6px;border-radius:6px;} .linkbtn:hover{background:var(--paper2);}
+  .viewtoggle{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;}
+  .viewtoggle button{background:#fff;border:none;border-right:1.5px solid var(--line);font-family:var(--sans);font-weight:600;font-size:13.5px;padding:10px 16px;cursor:pointer;color:var(--ink2);display:flex;align-items:center;gap:6px;}
+  .viewtoggle button:last-child{border-right:none;} .viewtoggle button.on{background:var(--pine);color:#fff;} .viewtoggle svg{width:15px;height:15px;}
+
+  .banner{background:var(--oos-bg);border:1px solid var(--oos-bd);color:#6b3417;font-size:13.5px;padding:11px 14px;border-radius:10px;margin-bottom:14px;}
+
+  .list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+  .lhead, .row{display:grid;grid-template-columns:46px minmax(0,2.3fr) .9fr .7fr 1.25fr 1.9fr;align-items:center;gap:10px;}
+  .lhead{padding:12px 16px;background:var(--paper2);border-bottom:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--ink2);}
+  .lhead .num, .row .num{text-align:right;}
+  .row{padding:14px 16px;border-bottom:1px solid var(--line2);} .row:last-child{border-bottom:none;} .row:hover{background:#FFFCF4;}
+  .row .chk input{width:20px;height:20px;accent-color:var(--pine);}
+  .oname{font-weight:650;font-size:15.5px;cursor:pointer;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .oname .chev{color:var(--ink3);font-size:12px;transition:.12s;} .oname.open .chev{transform:rotate(90deg);}
+  .o2{font-size:12.5px;color:var(--ink2);font-weight:400;margin-top:2px;}
+  .acres-big{font-weight:650;} .loc{font-size:13.5px;color:var(--ink2);} .mail{font-size:13px;color:var(--ink2);}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:20px;border:1px solid;}
+  .pill.mfl{color:var(--mfl-fg);background:var(--mfl-bg);border-color:var(--mfl-bd);}
+  .pill.oos{color:var(--oos-fg);background:var(--oos-bg);border-color:var(--oos-bd);}
+  .pill.ent{color:var(--ent-fg);background:var(--ent-bg);border-color:var(--ent-bd);}
+  .prio{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;border:1px solid;letter-spacing:.02em;white-space:nowrap;}
+  .prio-A{color:#15301f;background:#E8F0E9;border-color:#9FC4AC;box-shadow:inset 3px 0 0 var(--amber);}
+  .prio-B{color:#6b4012;background:#F6ECDD;border-color:#E2C99F;}
+  .prio-C{color:var(--ink3);background:var(--paper2);border-color:var(--line);}
+  .subpanel{padding:4px 16px 16px 62px;background:#FBF7EE;border-bottom:1px solid var(--line2);}
+  .ptab{width:100%;border-collapse:collapse;font-size:13px;} .ptab td{padding:7px 10px;border-bottom:1px solid var(--line2);color:var(--ink2);} .ptab .pid{font-family:var(--mono);font-size:12px;}
+  .maplink{color:var(--pine);text-decoration:none;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .emptybox{padding:40px 24px;text-align:center;color:var(--ink2);font-size:15px;line-height:1.6;} .emptybox a{color:var(--pine);}
+
+  #mapView{position:relative;}
+  #mapBar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;}
+  .baseseg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;}
+  .baseseg button{background:#fff;border:none;border-right:1.5px solid var(--line);font-size:13px;font-weight:600;padding:9px 13px;cursor:pointer;color:var(--ink2);}
+  .baseseg button:last-child{border-right:none;} .baseseg button.on{background:var(--pine);color:#fff;}
+  #mapMeta{font-size:13px;color:var(--ink2);} #mapMeta b{color:var(--pine);}
+  .map-note{font-size:12.5px;color:var(--amber2);background:var(--oos-bg);border:1px solid var(--oos-bd);padding:4px 9px;border-radius:7px;}
+  #mapStage{position:relative;}
+  #leafmap{height:540px;width:100%;border:1px solid var(--line);border-radius:14px;background:#e9e4d8;z-index:0;}
+  .map-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(244,238,225,.85);border-radius:14px;z-index:500;font-size:14px;color:var(--ink2);}
+  .map-fallback{min-height:540px;border:1px dashed var(--oos-bd);border-radius:14px;display:grid;place-items:center;text-align:center;color:var(--ink2);background:var(--oos-bg);padding:24px;font-size:15px;line-height:1.6;}
+  .map-fallback .btn{margin-top:14px;}
+  .map-legend{position:absolute;left:14px;bottom:14px;z-index:1000;background:rgba(255,253,248,.95);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;box-shadow:var(--shadow);line-height:1.7;}
+  .map-legend .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;border:1px solid #fff;}
+  .map-legend .dot.mfl{background:var(--amber);} .map-legend .dot.oth{background:var(--pine2);} .map-legend .dot.faint{background:var(--pine2);opacity:.28;}
+  .map-legend .mill-sq{display:inline-block;width:11px;height:11px;background:#231B11;margin-right:7px;vertical-align:-1px;transform:rotate(45deg);}
+  .mill-ico{width:18px;height:18px;background:#231B11;border:2px solid #fff;transform:rotate(45deg);box-shadow:0 1px 3px rgba(0,0,0,.4);}
+  .leaflet-popup-content{margin:12px 14px;}
+  .mpop .mp-name{font-family:var(--slab);font-weight:700;font-size:16px;margin-bottom:5px;}
+  .mpop .mp-tags{margin-bottom:7px;} .mpop .mp-line{font-size:13px;color:var(--ink2);margin-bottom:2px;}
+  .mpop .mp-addr{font-size:13px;color:var(--ink2);margin:5px 0 9px;}
+  .mpop .mp-btn{font-family:var(--sans);font-weight:650;font-size:13.5px;cursor:pointer;border:1.5px solid var(--pine);background:var(--pine);color:#fff;border-radius:8px;padding:8px 14px;width:100%;}
+  .mpop .mp-btn.out{background:#fff;color:var(--pine);}
+
+  .lettergrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+  textarea{width:100%;min-height:430px;font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px;resize:vertical;}
+  .tokens{font-size:12px;color:var(--ink2);margin-top:10px;line-height:1.9;} .tokens code{background:var(--paper2);padding:2px 6px;border-radius:5px;font-family:var(--mono);font-size:11.5px;}
+  .preview-wrap{position:sticky;top:16px;} .preview-label{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;font-weight:700;}
+  .paper{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:42px 40px;font-family:var(--slab);font-weight:500;font-size:13.5px;line-height:1.6;white-space:pre-wrap;color:#1a1a1a;min-height:430px;}
+  .paper-empty{color:var(--ink3);font-family:var(--sans);font-style:italic;}
+
+  .foot{margin-top:26px;font-size:12px;color:var(--ink3);line-height:1.6;max-width:84ch;} .foot a{color:var(--pine2);}
+  .foot code{font-family:var(--mono);font-size:11px;background:var(--card);border:1px solid var(--line2);padding:1px 5px;border-radius:4px;}
+
+  #print-area{display:none;}
+
+  @media (max-width:880px){ .lettergrid{grid-template-columns:1fr;} .preview-wrap{position:static;} }
+  @media (max-width:720px){
+    .lhead{display:none;}
+    .list{background:transparent;border:none;box-shadow:none;overflow:visible;display:flex;flex-direction:column;gap:10px;padding:0;}
+    .row{grid-template-columns:1fr;gap:6px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);}
+    .row > div{display:flex;justify-content:space-between;align-items:baseline;gap:14px;}
+    .row > div[data-k]::before{content:attr(data-k);font-size:11.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.03em;flex:none;}
+    .row .chk::before{content:"Include";font-size:12px;font-weight:700;color:var(--ink2);}
+    .oname{font-size:17px;} .subpanel{padding:4px 4px 12px;} #leafmap{height:62vh;} .map-fallback{min-height:62vh;}
+  }
+  @media (max-width:560px){ .appbar .est{display:none;} h2.section{font-size:21px;} }
+
+  @media print{
+    body{background:#fff;} .app{display:none !important;} #print-area{display:block !important;}
+    .letter{font-family:var(--slab);font-weight:500;font-size:12pt;line-height:1.5;color:#000;padding:0.9in 0.85in;page-break-after:always;white-space:pre-wrap;}
+    .letter:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="appbar"><div class="inner">
+    <svg class="logmark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="18.5" fill="#2C5C44" stroke="#B9C9BE" stroke-width="1.4"/>
+      <circle cx="21" cy="19" r="12.5" fill="none" stroke="#A6BCAC" stroke-width="1.2"/>
+      <circle cx="22" cy="18.5" r="7.5" fill="none" stroke="#90A998" stroke-width="1.1"/>
+      <circle cx="22.5" cy="18" r="3" fill="#F4EEE1"/>
+    </svg>
+    <div class="wordmark"><span class="co">KRETZ LUMBER CO.</span><span class="tag">Woodland Owner Outreach</span></div>
+    <div class="est">Employee-owned · Antigo, WI<br>Forest stewards since 1929</div>
+  </div></div>
+  <div class="creed">“From the moment we step into a forest, our goal is to leave it better than we found it.”</div>
+
+  <div class="page">
+    <div class="stepper" id="stepper">
+      <div class="st on avail" data-step="1"><div class="n">1</div><div class="lbl"><b>Find owners</b><span>Pick area &amp; land</span></div></div>
+      <div class="st" data-step="2"><div class="n">2</div><div class="lbl"><b>Review list</b><span>List or map</span></div></div>
+      <div class="st" data-step="3"><div class="n">3</div><div class="lbl"><b>Print letters</b><span>Generate &amp; send</span></div></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <section class="step-panel active" data-step="1">
+      <div class="card card-pad">
+        <h2 class="section">Find woodland owners</h2>
+        <p class="lead">Most of Wisconsin's forest is owned by families. This finds those private woodland owners from public parcel records so a forester can offer to help.</p>
+
+        <div class="qblock">
+          <p class="q">Where do you want to look?</p>
+          <div class="choices" id="areaChoices">
+            <div class="choice on" data-mode="county">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>
+              <div><div class="t">A county</div><div class="d">Work one county at a time</div></div>
+            </div>
+            <div class="choice" data-mode="radius">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="11" r="8"/><circle cx="12" cy="11" r="2.2" fill="currentColor" stroke="none"/><path d="M12 3v3M12 16v3M4 11h3M17 11h3"/></svg>
+              <div><div class="t">Near our mill</div><div class="d">Within hauling distance of Antigo</div></div>
+            </div>
+          </div>
+          <div class="sub-control" id="countyWrap">
+            <label class="lab" for="county">County</label>
+            <select id="county"><option value="">Loading counties…</option></select>
+          </div>
+          <div class="sub-control" id="radiusWrap" style="display:none">
+            <label class="lab" for="radius">Miles from the Antigo mill</label>
+            <input id="radius" type="number" inputmode="numeric" min="5" max="250" step="5" value="100">
+            <p class="helper">Kretz keeps log hauls within roughly 100 miles. Wisconsin parcels only — the UP Michigan side of the territory needs separate Michigan data.</p>
+          </div>
+        </div>
+
+        <div class="qblock">
+          <p class="q">How big should the woodlots be?</p>
+          <div class="two">
+            <div><label class="lab" for="minac">Smallest (acres)</label><input id="minac" type="number" inputmode="decimal" min="0" step="1" value="10"></div>
+            <div><label class="lab" for="maxac">Largest (optional)</label><input id="maxac" type="number" inputmode="decimal" min="0" step="1" placeholder="no limit"></div>
+          </div>
+          <p class="helper">Kretz typically works woodlots from 10 to 240 acres. Uses whichever acreage figure a county reported.</p>
+        </div>
+
+        <div class="qblock">
+          <p class="q">What kind of land &amp; owners?</p>
+          <label class="toggle on"><input type="checkbox" id="forestOnly" checked>
+            <span><span class="tt">Forestland only</span><span class="td">Land in Managed Forest Law / Forest Crop Law, or carrying a forest property class</span></span></label>
+          <label class="toggle"><input type="checkbox" id="mflOnly">
+            <span><span class="tt">Only land already in Managed Forest Law</span><span class="td">Tightest target — woodlots already under a state plan, where we can handle notices, marking, and the harvest</span></span></label>
+          <label class="toggle on"><input type="checkbox" id="exclGov" checked>
+            <span><span class="tt">Skip government &amp; tax-exempt land</span><span class="td">Removes county forest, DNR, towns, schools, utilities, and the like</span></span></label>
+          <label class="toggle on"><input type="checkbox" id="exclKretz" checked>
+            <span><span class="tt">Skip land Kretz already owns</span></span></label>
+          <details class="more"><summary>More filters</summary>
+            <div class="more-body">
+              <label class="lab" for="classText">Forest property-class keywords</label>
+              <input id="classText" type="text" value="FOREST, UNDEVELOP, WOODLAND">
+              <p class="helper">Matched against each county's property-class field. Defaults cover most. Comma-separated.</p>
+              <div style="margin-top:14px"></div>
+              <label class="lab" for="exclText">Extra owner names to skip</label>
+              <input id="exclText" type="text" placeholder="e.g. CONSERVANCY, LAND TRUST, LLC">
+              <p class="helper">Any owner whose name contains these words is left out — handy for an “already contacted” word or a competitor.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="barrow">
+          <button class="btn primary" id="go" disabled>
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            Find woodland owners
+          </button>
+          <span class="helper" id="goHint">Tighter filters give a faster, complete list.</span>
+        </div>
+      </div>
+      <div class="status" id="status"></div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step-panel" data-step="2"><div id="reviewBody"></div></section>
+
+    <!-- STEP 3 -->
+    <section class="step-panel" data-step="3">
+      <div class="card card-pad">
+        <h2 class="section">Print letters</h2>
+        <p class="lead" id="lettersLead">Pick a letter, adjust the wording, then print or save it as a PDF — one letter per landowner.</p>
+        <div class="lettergrid">
+          <div>
+            <div class="three" style="margin-bottom:14px">
+              <div><label class="lab" for="preset">Letter</label>
+                <select id="preset"><option value="general" selected>General woodland owner</option><option value="mfl">MFL landowner</option><option value="absentee">Out-of-area owner</option></select></div>
+              <div><label class="lab" for="sender">Signed by</label><input id="sender" type="text" value="the Kretz Lumber Forestry Team"></div>
+              <div><label class="lab" for="greetStyle">Greeting</label>
+                <select id="greetStyle"><option value="formal" selected>Dear John Smith,</option><option value="first">Dear John,</option><option value="generic">Dear Landowner,</option></select></div>
+            </div>
+            <label class="lab" for="template">Letter wording</label>
+            <textarea id="template"></textarea>
+            <p class="tokens">Filled in per owner: <code>{{Date}}</code> <code>{{Greeting}}</code> <code>{{OwnerName}}</code> <code>{{MailingAddress}}</code> <code>{{TotalAcres}}</code> <code>{{ParcelCount}}</code> <code>{{County}}</code> <code>{{Sender}}</code></p>
+          </div>
+          <div class="preview-wrap">
+            <div class="preview-label">Preview — first selected owner</div>
+            <div class="paper" id="preview"></div>
+          </div>
+        </div>
+        <div class="barrow" style="margin-top:20px">
+          <button class="btn ghost" id="backToList">← Back to list</button>
+          <div class="spacer"></div>
+          <button class="btn ghost" id="csv2">Export mailing list (CSV)</button>
+          <button class="btn primary" id="letters">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
+            Print / Save as PDF (<span id="lcount">0</span>)
+          </button>
+        </div>
+        <p class="helper" style="margin-top:10px">“Print / Save as PDF” opens your browser’s print window — pick <b>Save as PDF</b> to email a printer or mail house, or print directly. Letters print best from a desktop browser.</p>
+      </div>
+    </section>
+
+    <p class="foot">
+      Owner names, mailing addresses, and acreage come from the <a href="https://www.sco.wisc.edu/parcels/data/" target="_blank" rel="noopener">Wisconsin Statewide Parcel Map</a> (State Cartographer's Office / DOA) — the most recent tax roll each county submitted. Some counties don't report every field and names can lag recent sales, so expect a little return-to-sender and skim before mailing. Map locations are parcel centroids; forest &amp; MFL flags come from each parcel's reported property class and MFL/FCL value. This is public tax-parcel data for landowner outreach — not a legal survey or a guarantee of timber. Always honor opt-out requests; for any email use, follow CAN-SPAM. Map tiles © Esri / © OpenStreetMap contributors. Parcel data provided free by the State of Wisconsin.
+    </p>
+  </div>
+</div>
+<div id="print-area"></div>
+
+<script>
+const QUERY_URL="https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels/FeatureServer/0/query";
+const LEAFLET_JS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+const LEAFLET_CSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+const PAGE=2000, MAX_RECORDS=6000;
+const FIELDS="OWNERNME1,OWNERNME2,PSTLADRESS,SITEADRESS,GISACRES,DEEDACRES,ASSDACRES,CNTASSDVALUE,MFLVALUE,PROPCLASS,PLACENAME,PARCELID,LATITUDE,LONGITUDE,CONAME";
+const MILL={lat:45.1166, lon:-89.1731};
+const EXCLUDE_GOV=["STATE OF WIS","DEPT OF NATURAL","DEPARTMENT OF NATURAL","NATURAL RESOURCE"," DNR ","UNITED STATES","US FOREST","NATIONAL FOREST","FOREST SERVICE","COUNTY OF","COUNTY FOREST","CITY OF","VILLAGE OF","TOWN OF","SCHOOL DIST","UNIVERSITY","BOARD OF","DEPT OF","DEPARTMENT OF","DIVISION OF","RAILROAD","RAILWAY","PIPELINE","TRANSMISSION","SANITARY DIST","LAKE DISTRICT","HOUSING AUTH","REDEVELOP","WISCONSIN DOT","WIS DOT"," WDNR"];
+const COUNTIES_FALLBACK=["ADAMS","ASHLAND","BARRON","BAYFIELD","BROWN","BUFFALO","BURNETT","CALUMET","CHIPPEWA","CLARK","COLUMBIA","CRAWFORD","DANE","DODGE","DOOR","DOUGLAS","DUNN","EAU CLAIRE","FLORENCE","FOND DU LAC","FOREST","GRANT","GREEN","GREEN LAKE","IOWA","IRON","JACKSON","JEFFERSON","JUNEAU","KENOSHA","KEWAUNEE","LA CROSSE","LAFAYETTE","LANGLADE","LINCOLN","MANITOWOC","MARATHON","MARINETTE","MARQUETTE","MENOMINEE","MILWAUKEE","MONROE","OCONTO","ONEIDA","OUTAGAMIE","OZAUKEE","PEPIN","PIERCE","POLK","PORTAGE","PRICE","RACINE","RICHLAND","ROCK","RUSK","SAUK","SAWYER","SHAWANO","SHEBOYGAN","ST. CROIX","TAYLOR","TREMPEALEAU","VERNON","VILAS","WALWORTH","WASHBURN","WASHINGTON","WAUKESHA","WAUPACA","WAUSHARA","WINNEBAGO","WOOD"];
+
+const SIG=`With respect,
+
+
+{{Sender}}
+Kretz Lumber Company — Forestry Services (employee-owned)
+W11143 County Highway G, Antigo, WI 54409
+715-623-5410 · kretz@kretzlumber.com · kretzlumber.com
+
+Prefer not to hear from us again? Just call or email and we'll take you off our list for good.`;
+const LETTER_PRESETS={
+general:`{{Date}}
+
+{{OwnerName}}
+{{MailingAddress}}
+
+{{Greeting}},
+
+I'm writing on behalf of Kretz Lumber Company, an employee-owned hardwood company in Antigo. For more than 100 years our foresters — people who live in and call these same communities home — have helped Wisconsin families care for their woodlands.
+
+Records show you own about {{TotalAcres}} acres of woods in {{County}} County. I'd like to offer a free, no-obligation visit from one of our professional foresters to walk your land with you and talk through its health and your options. Our advice is neutral and fact-based, and there is never any pressure.
+
+Whether your goal is income from a well-planned, selective harvest, better wildlife and recreation, or simply a healthier forest to pass on, a forester's eye before, during, and after any work protects the long-term health and value of your woods. Our aim, every time, is to leave a forest better than we found it.
+
+If you'd like to learn more — or just have a question — please call 715-623-5410 or email kretz@kretzlumber.com. You're also always welcome at our annual Landowners' Forestry Field Day.
+
+Thank you for being a steward of Wisconsin's Northwoods.
+
+`+SIG,
+mfl:`{{Date}}
+
+{{OwnerName}}
+{{MailingAddress}}
+
+{{Greeting}},
+
+I'm writing on behalf of Kretz Lumber Company, an employee-owned hardwood company in Antigo, because your woodland in {{County}} County is enrolled in the Managed Forest Law program — and keeping an MFL plan on track takes time and paperwork our foresters handle every day.
+
+Our team can manage your MFL harvest from start to finish: filing the cutting notices, marking timber, setting boundaries, overseeing the harvest, and seeing that you are paid promptly and fairly. The goal is to get the most long-term value from your roughly {{TotalAcres}} acres while improving wildlife and recreation and keeping you in good standing with your plan.
+
+There's no obligation and no pressure — just neutral, fact-based guidance from foresters who live right here. We'd be glad to start with a free visit to walk your land and answer your questions.
+
+Please call 715-623-5410 or email kretz@kretzlumber.com whenever it suits you.
+
+Thank you for being a steward of Wisconsin's Northwoods.
+
+`+SIG,
+absentee:`{{Date}}
+
+{{OwnerName}}
+{{MailingAddress}}
+
+{{Greeting}},
+
+I'm writing on behalf of Kretz Lumber Company, an employee-owned hardwood company in Antigo. For more than 100 years our foresters have helped families care for woodlands across the Northwoods — including many owners who live away from their land and can't get up to it as often as they'd like.
+
+Records show you own about {{TotalAcres}} acres of woods in {{County}} County. Our foresters live right here and can be your eyes on the ground: checking on the property, advising on its health, and — if and when you're ready — planning a careful, selective harvest that protects the land's value for the future. Our advice is neutral and fact-based, with no pressure of any kind.
+
+If you'd like a free, no-obligation look at your woods, or simply have a question, please call 715-623-5410 or email kretz@kretzlumber.com.
+
+Thank you for being a steward of Wisconsin's Northwoods.
+
+`+SIG};
+const DEFAULT_TEMPLATE=LETTER_PRESETS.general;
+
+const $=id=>document.getElementById(id);
+const countySel=$("county"), minInput=$("minac"), maxInput=$("maxac"), radiusInput=$("radius"), goBtn=$("go"), statusEl=$("status");
+
+let geoMode="county", step=1, owners=[], filterText="";
+let sort={field:"score",dir:-1};
+let lastTotal=0, lastFetched=0, lastSecs="0", lastSearchGeo={mode:"county",miles:100};
+let reviewBuilt=false, currentView="list";
+let map=null, mapInited=false, markerLayer=null, currentBase="topo", baseTiles={}, radiusCircle=null, mapPlotted=false, autoFellBack=false, _leafletPromise=null, _noteT=null;
+
+/* ---------- helpers ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const qs=p=>Object.entries(p).map(([k,v])=>encodeURIComponent(k)+"="+encodeURIComponent(v)).join("&");
+const escSql=s=>String(s).replace(/'/g,"''");
+const norm=s=>(s||"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim();
+const esc=s=>(s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt0=n=>(n==null||isNaN(n))?"—":Math.round(n).toLocaleString();
+const fmtUSD=n=>(!n||isNaN(n))?"—":"$"+Math.round(n).toLocaleString();
+const bestAcres=r=>{for(const f of["GISACRES","DEEDACRES","ASSDACRES"]){const v=r[f];if(v!=null&&v>0)return v;}return 0;};
+const parseState=s=>{const m=(s||"").toUpperCase().match(/\b([A-Z]{2})\s+\d{5}(?:-\d{4})?\s*$/);return m?m[1]:"";};
+const haversineMi=(la1,lo1,la2,lo2)=>{const R=3958.8,t=Math.PI/180,dLa=(la2-la1)*t,dLo=(lo2-lo1)*t,a=Math.sin(dLa/2)**2+Math.cos(la1*t)*Math.cos(la2*t)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(a));};
+function scoreOwner(g){let s=Math.min(35,Math.sqrt(Math.max(g.acres,1))/Math.sqrt(240)*35);if(g.mfl)s+=25;if(g.outOfState)s+=12;s+=Math.min(10,(g.parcels.length-1)*4);if(g._lat!=null&&g._lon!=null){const d=haversineMi(g._lat,g._lon,MILL.lat,MILL.lon);s+=Math.max(0,18*(1-Math.min(d,120)/120));}return Math.round(Math.min(100,s));}
+function prioChip(g){return `<span class="prio prio-${g.tier}" title="Priority ${g.tier} — score ${g.score}/100">${g.tier} · ${g.score}</span>`;}
+function titleCase(s){return String(s||"").toLowerCase().replace(/\b([a-z])/g,(m,c)=>c.toUpperCase())
+  .replace(/\b(Llc|Inc|Llp|Lp|Ltd|Pllc|Ii|Iii|Iv|Mfl|Fcl|Po|Dnr|Usa|Ne|Nw|Se|Sw|Wi|Mi|Mn|Il)\b/g,m=>m.toUpperCase())
+  .replace(/\bMc([a-z])/g,(m,c)=>"Mc"+c.toUpperCase());}
+function entityType(name){const n=" "+name.toUpperCase().replace(/[.,]/g," ")+" ";
+  if(/\b(LLC|L L C|INC|INCORPORATED|CORP|CORPORATION|LTD|LLP|L L P|LP|COMPANY|PROPERTIES|PARTNERS|PARTNERSHIP|ENTERPRISES|HOLDINGS|GROUP|VENTURES)\b/.test(n))return"Company";
+  if(/\b(TRUST|REVOCABLE|IRREVOCABLE|LIVING TRUST|FAMILY TRUST|TRUSTEE)\b/.test(n))return"Trust";
+  if(/\b(ESTATE|EST OF)\b/.test(n))return"Estate";
+  if(/\b(CHURCH|MINISTRIES|MINISTRY|PARISH|DIOCESE|CONGREGATION|LUTHERAN|CATHOLIC|BAPTIST)\b/.test(n))return"Org";
+  if(/\b(FARMS|FARM)\b/.test(n))return"Farm"; return"Individual";}
+const entLabel={Company:"LLC / Co.",Trust:"Trust",Estate:"Estate",Org:"Org",Farm:"Farm"};
+function greetingFor(owner,type,style){
+  if(style==="generic"||!owner)return"Dear Landowner";
+  if(type!=="Individual")return"Dear "+titleCase(owner);
+  const core=owner.replace(/&.*/,"").replace(/,.*/,"").trim(),t=core.split(/\s+/).filter(Boolean);
+  if(t.length===2||(t.length===3&&t[2].length<=2)){const last=titleCase(t[0]),first=titleCase(t[1]);return style==="first"?"Dear "+first:"Dear "+first+" "+last;}
+  return style==="first"?"Dear Landowner":"Dear "+titleCase(core);}
+function mailingLines(p){const s=(p||"").trim();if(!s)return[];
+  const m=s.match(/^(.*?),?\s*([A-Za-z .'-]+),\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/);
+  return m?[titleCase(m[1]),`${titleCase(m[2])}, ${m[3]} ${m[4]}`]:[titleCase(s)];}
+
+/* ---------- data ---------- */
+async function arcgis(params,attempt=0){
+  const body=qs({f:"json",...params});
+  try{
+    const res=await fetch(QUERY_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+    if(!res.ok){if((res.status>=500||res.status===429)&&attempt<2){await sleep(700*(attempt+1));return arcgis(params,attempt+1);}throw new Error("HTTP "+res.status);}
+    const data=await res.json(); if(data.error)throw new Error(data.error.message||"Service error"); return data;
+  }catch(e){if(attempt<2&&(e.name==="TypeError"||/fetch|network/i.test(e.message))){await sleep(700*(attempt+1));return arcgis(params,attempt+1);}throw e;}
+}
+function geomParams(){
+  if(geoMode!=="radius")return{};
+  const miles=Math.max(1,parseFloat(radiusInput.value)||100);
+  return{geometry:JSON.stringify({x:MILL.lon,y:MILL.lat,spatialReference:{wkid:4326}}),geometryType:"esriGeometryPoint",inSR:4326,distance:Math.round(miles*1609.344),units:"esriSRUnit_Meter",spatialRel:"esriSpatialRelIntersects"};
+}
+async function loadCounties(){
+  let names=null;
+  try{const d=await arcgis({where:"1=1",outFields:"CONAME",returnDistinctValues:"true",returnGeometry:"false",orderByFields:"CONAME"});
+    names=[...new Set((d.features||[]).map(f=>f.attributes.CONAME).filter(Boolean))].sort();if(!names.length)names=null;}catch(e){names=null;}
+  names=names||COUNTIES_FALLBACK;
+  countySel.innerHTML='<option value="">Select a county…</option>'+names.map(n=>`<option value="${esc(n)}">${esc(titleCase(n))}</option>`).join("");
+  goBtn.disabled=false;
+}
+function buildWhere(){
+  const c=[];const minAc=parseFloat(minInput.value),maxAc=parseFloat(maxInput.value);
+  if(!isNaN(minAc))c.push(`(GISACRES >= ${minAc} OR DEEDACRES >= ${minAc} OR ASSDACRES >= ${minAc})`);
+  if(!isNaN(maxAc))c.push(`(GISACRES <= ${maxAc} OR DEEDACRES <= ${maxAc} OR ASSDACRES <= ${maxAc})`);
+  if(geoMode==="county"&&countySel.value)c.push(`UPPER(CONAME) = '${escSql(countySel.value).toUpperCase()}'`);
+  if($("mflOnly").checked){c.push("MFLVALUE > 0");}
+  else if($("forestOnly").checked){const parts=["MFLVALUE > 0"];($("classText").value||"FOREST").split(",").map(s=>s.trim().toUpperCase()).filter(Boolean).forEach(k=>parts.push(`UPPER(PROPCLASS) LIKE '%${escSql(k)}%'`));c.push("("+parts.join(" OR ")+")");}
+  if($("exclKretz").checked)c.push("OWNERNME1 NOT LIKE '%KRETZ%'");
+  if($("exclGov").checked)EXCLUDE_GOV.forEach(p=>c.push(`UPPER(OWNERNME1) NOT LIKE '%${escSql(p.trim().toUpperCase())}%'`));
+  ($("exclText").value||"").split(",").map(s=>s.trim().toUpperCase()).filter(Boolean).forEach(p=>c.push(`UPPER(OWNERNME1) NOT LIKE '%${escSql(p)}%'`));
+  return c.length?c.join(" AND "):"1=1";
+}
+async function search(){
+  if(geoMode==="county"&&!countySel.value){statusErr("Pick a county first.");return;}
+  goBtn.disabled=true;owners=[];
+  setStatus("Searching the parcel records…",true);
+  const where=buildWhere(),geom=geomParams();
+  lastSearchGeo={mode:geoMode,miles:parseFloat(radiusInput.value)||100};
+  try{
+    const t0=performance.now();
+    const cd=await arcgis({where,returnCountOnly:"true",...geom});
+    const total=cd.count||0;
+    if(total===0){owners=[];lastTotal=0;lastFetched=0;setStatus("");reviewBuilt=false;goStep(2);goBtn.disabled=false;return;}
+    const want=Math.min(total,MAX_RECORDS),rows=[];
+    for(let off=0;off<want;off+=PAGE){
+      setStatus(`Pulling parcels… ${rows.length.toLocaleString()} of ${want.toLocaleString()}`,true);
+      const d=await arcgis({where,outFields:FIELDS,returnGeometry:"false",returnCentroid:"true",outSR:4326,orderByFields:"MFLVALUE DESC, GISACRES DESC",resultRecordCount:PAGE,resultOffset:off,...geom});
+      (d.features||[]).forEach(f=>{const a=f.attributes,ct=f.centroid;
+        a._lon=(ct&&isFinite(ct.x))?ct.x:a.LONGITUDE; a._lat=(ct&&isFinite(ct.y))?ct.y:a.LATITUDE; rows.push(a);});
+      if((d.features||[]).length<PAGE)break;
+    }
+    setStatus("Grouping by owner…",true);
+    owners=groupOwners(rows);lastTotal=total;lastFetched=rows.length;lastSecs=((performance.now()-t0)/1000).toFixed(1);
+    sort={field:"score",dir:-1};filterText="";reviewBuilt=false;
+    setStatus("");goStep(2);
+  }catch(e){
+    statusErr("Couldn't reach the parcel service. If you're viewing this in an in-app preview, open the downloaded file in a normal browser tab — previews block outside data. Otherwise the state service may be busy; press the button again. ("+e.message+")");
+  }finally{goBtn.disabled=false;}
+}
+function groupOwners(rows){
+  const map=new Map();
+  for(const r of rows){
+    const owner=(r.OWNERNME1||"").trim();
+    if(!owner||/NOT AVAILABLE|UNKNOWN|^N\/?A$/i.test(owner))continue;
+    const key=norm(owner)+"|"+norm(r.PSTLADRESS);let g=map.get(key);
+    if(!g){const type=entityType(owner);
+      g={owner,owner2:(r.OWNERNME2||"").trim(),mailing:(r.PSTLADRESS||"").trim(),type,state:parseState(r.PSTLADRESS),
+         parcels:[],acres:0,value:0,counties:new Set(),towns:new Set(),mfl:false,_sel:true,_lat:null,_lon:null,_ll:[],_marker:null};
+      g.outOfState=g.state&&g.state!=="WI";map.set(key,g);}
+    g.parcels.push(r);g.acres+=bestAcres(r);g.value+=(r.CNTASSDVALUE||0);
+    if(r.CONAME)g.counties.add(titleCase(r.CONAME));if(r.PLACENAME)g.towns.add(titleCase(r.PLACENAME));
+    if((r.MFLVALUE||0)>0)g.mfl=true;
+    const la=r._lat,lo=r._lon;
+    if(la!=null&&lo!=null&&isFinite(la)&&isFinite(lo)&&!(la===0&&lo===0)&&Math.abs(la)<=90&&Math.abs(lo)<=180)g._ll.push([la,lo]);
+  }
+  const out=[...map.values()];
+  out.forEach(g=>{if(g._ll.length){g._lat=g._ll.reduce((s,p)=>s+p[0],0)/g._ll.length;g._lon=g._ll.reduce((s,p)=>s+p[1],0)/g._ll.length;}g.mapped=g._ll.length>0;g.score=scoreOwner(g);g.tier=g.score>=65?"A":g.score>=42?"B":"C";});
+  return out;
+}
+
+/* ---------- step navigation ---------- */
+function setStatus(m,busy){statusEl.className="status";statusEl.innerHTML=m?((busy?'<span class="spin"></span>':"")+esc(m)):"";}
+function statusErr(m){statusEl.className="status err";statusEl.textContent=m;}
+function goStep(n){
+  step=n;
+  document.querySelectorAll(".step-panel").forEach(p=>p.classList.toggle("active",+p.dataset.step===n));
+  const have=owners.length>0||lastTotal===0;
+  document.querySelectorAll("#stepper .st").forEach(s=>{const i=+s.dataset.step;
+    s.classList.toggle("on",i===n);s.classList.toggle("done",i<n&&have);s.classList.toggle("avail",i===1||have);});
+  if(n===2){ if(!reviewBuilt){buildReviewShell();reviewBuilt=true;} setView(currentView); }
+  if(n===3)renderLetters();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- review shell (step 2) ---------- */
+function selected(){return owners.filter(g=>g._sel);}
+function viewRows(){
+  const f=filterText.trim().toLowerCase();
+  let rows=!f?owners.slice():owners.filter(g=>g.owner.toLowerCase().includes(f)||(g.mailing||"").toLowerCase().includes(f)||(g.owner2||"").toLowerCase().includes(f));
+  const key=g=>({score:g.score,acres:g.acres,parcels:g.parcels.length,owner:g.owner.toLowerCase(),county:[...g.counties][0]||""}[sort.field]);
+  rows.sort((a,b)=>{let x=key(a),y=key(b);if(typeof x==="string")return x<y?-sort.dir:x>y?sort.dir:0;return((x||0)-(y||0))*sort.dir;});
+  return rows;
+}
+function pills(g){let h="";if(g.type!=="Individual")h+=`<span class="pill ent">${entLabel[g.type]||g.type}</span>`;
+  if(g.mfl)h+=`<span class="pill mfl">MFL</span>`;if(g.outOfState)h+=`<span class="pill oos">${esc(g.state)}</span>`;return h;}
+
+function buildReviewShell(){
+  if(map){try{map.remove();}catch(e){}map=null;mapInited=false;markerLayer=null;radiusCircle=null;}
+  mapPlotted=false;autoFellBack=false;
+  const body=$("reviewBody");
+  if(!owners.length){
+    const area=geoMode==="county"?`${esc(titleCase(countySel.value||""))} County`:`${esc(radiusInput.value)} miles of Antigo`;
+    body.innerHTML=`<div class="card"><div class="emptybox">No matching woodland owners in <b>${area}</b> with these filters.<br>
+      Try a smaller minimum acreage, turn off “only Managed Forest Law,” or widen the area, then search again.<br><br>
+      <button class="btn ghost" onclick="goStep(1)">← Adjust search</button></div></div>`;
+    return;
+  }
+  const totalAcres=owners.reduce((s,g)=>s+g.acres,0),mfl=owners.filter(g=>g.mfl).length,oos=owners.filter(g=>g.outOfState).length;
+  const capped=lastTotal>lastFetched;
+  let h=`<div class="resultbar">
+    <div class="stat"><div class="big">${owners.length.toLocaleString()}</div><span>Woodland owners</span></div>
+    <div class="stat"><b>${lastFetched.toLocaleString()}</b><span>Parcels</span></div>
+    <div class="stat"><b>${fmt0(totalAcres)}</b><span>Total acres</span></div>
+    <div class="stat"><b>${mfl.toLocaleString()}</b><span>In MFL</span></div>
+    <div class="stat"><b>${oos.toLocaleString()}</b><span>Out of state</span></div>
+  </div>`;
+  if(capped)h+=`<div class="banner">Hit the ${MAX_RECORDS.toLocaleString()}-parcel limit (${lastTotal.toLocaleString()} match). Narrow by acreage, MFL, or a smaller area for a complete list.</div>`;
+  h+=`<div class="controls-row">
+    <input type="text" id="filter" placeholder="Find a name or address…" value="${esc(filterText)}">
+    <select id="sortBy"><option value="score">Sort: Priority (best first)</option><option value="acres">Largest acreage</option><option value="parcels">Most parcels</option><option value="owner">Owner name (A–Z)</option><option value="county">County (A–Z)</option></select>
+    <div class="viewtoggle" id="viewToggle">
+      <button data-v="list" class="${currentView==="list"?"on":""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>List</button>
+      <button data-v="map" class="${currentView==="map"?"on":""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Map</button>
+    </div>
+    <span class="selinfo"></span>
+    <button class="linkbtn" id="selAll">Select all</button>
+    <button class="linkbtn" id="selNone">Clear</button>
+  </div>
+  <div id="listView"></div>
+  <div id="mapView" style="display:none">
+    <div id="mapBar">
+      <div class="baseseg" id="baseSeg"><button data-b="topo" class="on">Topo</button><button data-b="sat">Satellite</button><button data-b="osm">Streets</button></div>
+      <button class="btn ghost" id="fitBtn" style="min-height:40px;padding:8px 14px;font-size:13.5px">Fit to results</button>
+      <span id="mapMeta"></span><span id="mapNote" class="map-note" style="display:none"></span>
+    </div>
+    <div id="mapStage"><div id="leafmap"></div><div id="mapLoading" class="map-overlay" style="display:none"><span class="spin"></span>&nbsp;Loading map…</div></div>
+    <div class="map-legend"><span class="dot mfl"></span>In MFL &nbsp; <span class="dot oth"></span>Other &nbsp; <span class="dot faint"></span>Not selected<br><span class="mill-sq"></span>Kretz mill (Antigo)</div>
+    <div id="mapFallback" class="map-fallback" style="display:none">The map couldn’t load on this network, so it’s unavailable right now — but the <b>List</b> view, search, CSV export, and letters all still work.<br><button class="btn ghost" id="mapRetry">Try the map again</button></div>
+  </div>
+  <div class="barrow" style="margin-top:18px">
+    <button class="btn ghost" onclick="goStep(1)">← Adjust search</button>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="reportBtn">Prospect report (PDF)</button>
+    <button class="btn ghost" id="csv1">Export list (CSV)</button>
+    <button class="btn pine" id="toLetters">Next: prepare letters →</button>
+  </div>`;
+  body.innerHTML=h;
+
+  $("sortBy").value=sort.field;
+  $("sortBy").addEventListener("change",e=>{sort.field=e.target.value;sort.dir=(e.target.value==="owner"||e.target.value==="county")?1:-1;refreshList();if(currentView==="map")refreshMap(false);});
+  $("filter").addEventListener("input",e=>{filterText=e.target.value;refreshList();if(currentView==="map")refreshMap(false);updateSelInfo();const a=$("filter");if(a){a.focus();a.setSelectionRange(a.value.length,a.value.length);}});
+  $("viewToggle").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.v)));
+  $("selAll").addEventListener("click",()=>{owners.forEach(g=>g._sel=true);refreshList();restyleAll();updateSelInfo();});
+  $("selNone").addEventListener("click",()=>{owners.forEach(g=>g._sel=false);refreshList();restyleAll();updateSelInfo();});
+  $("csv1").addEventListener("click",exportCSV);
+  $("reportBtn").addEventListener("click",printReport);
+  $("toLetters").addEventListener("click",()=>goStep(3));
+  $("baseSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>setBase(b.dataset.b)));
+  $("fitBtn").addEventListener("click",()=>fitToResults());
+  $("mapRetry").addEventListener("click",()=>{_leafletPromise=null;showMap();});
+  refreshList();
+  updateSelInfo();
+}
+function setView(v){
+  currentView=v;
+  const lv=$("listView"),mv=$("mapView");if(!lv||!mv)return;
+  document.querySelectorAll("#viewToggle button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="map"){lv.style.display="none";mv.style.display="";showMap();}
+  else{mv.style.display="none";lv.style.display="";}
+}
+
+/* ---------- list ---------- */
+function refreshList(){
+  const lv=$("listView");if(!lv)return;
+  const rows=viewRows();
+  let h=`<div class="list"><div class="lhead">
+    <div class="chk"><input type="checkbox" id="hdrChk"></div>
+    <div>Owner</div><div class="num">Total acres</div><div class="num">Parcels</div><div>Location</div><div>Mailing address</div></div>`;
+  if(!rows.length)h+=`<div class="emptybox">No owners match the filter.</div>`;
+  rows.forEach(g=>{const idx=owners.indexOf(g);const loc=[...g.counties].join(", ")+([...g.towns][0]?` · ${[...g.towns][0]}`:"");
+    h+=`<div class="row" data-i="${idx}">
+      <div class="chk"><input type="checkbox" class="rsel" data-i="${idx}" ${g._sel?"checked":""}></div>
+      <div class="c-owner"><div class="oname" data-exp="${idx}">${g.parcels.length>1?'<span class="chev">▶</span>':""}${prioChip(g)} ${esc(titleCase(g.owner))} ${pills(g)}</div>${g.owner2?`<div class="o2">${esc(titleCase(g.owner2))}</div>`:""}</div>
+      <div class="num acres-big" data-k="Acres">${fmt0(g.acres)}</div>
+      <div class="num" data-k="Parcels">${g.parcels.length}</div>
+      <div class="loc" data-k="Location">${esc(loc)}</div>
+      <div class="mail" data-k="Mailing">${esc(titleCase(g.mailing))||"—"}</div></div>`;});
+  h+=`</div>`;lv.innerHTML=h;
+  document.querySelectorAll(".rsel").forEach(cb=>cb.addEventListener("change",e=>toggleSel(+e.target.dataset.i,e.target.checked)));
+  const hc=$("hdrChk");if(hc){hc.checked=rows.length>0&&rows.every(g=>g._sel);hc.addEventListener("change",e=>{viewRows().forEach(g=>g._sel=e.target.checked);refreshList();restyleAll();updateSelInfo();});}
+  document.querySelectorAll(".oname[data-exp]").forEach(el=>el.addEventListener("click",()=>toggleExpand(+el.dataset.exp,el)));
+}
+function toggleExpand(idx,el){
+  const row=el.closest(".row"),nx=row.nextElementSibling;
+  if(nx&&nx.classList.contains("subpanel")){nx.remove();el.classList.remove("open");return;}
+  const g=owners[idx];let inner=`<table class="ptab"><tbody>`;
+  g.parcels.forEach(p=>{const mp=(p._lat&&p._lon)?`<a class="maplink" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${p._lat},${p._lon}">map</a>`:"";
+    inner+=`<tr><td class="pid">${esc(p.PARCELID)||"—"}</td><td>${esc(p.SITEADRESS)||"<i>vacant / no address</i>"}</td><td>${esc(titleCase(p.CONAME))}</td><td class="num">${fmt0(bestAcres(p))} ac</td><td>${(p.MFLVALUE||0)>0?'<span class="pill mfl">MFL</span>':""}</td><td>${mp}</td></tr>`;});
+  inner+=`</tbody></table>`;const sp=document.createElement("div");sp.className="subpanel";sp.innerHTML=inner;row.after(sp);el.classList.add("open");
+}
+function updateSelInfo(){
+  const sel=selected().length;
+  document.querySelectorAll(".selinfo").forEach(s=>s.innerHTML=`<b>${sel.toLocaleString()}</b> of ${owners.length.toLocaleString()} selected`);
+  const hc=$("hdrChk");if(hc){const vr=viewRows();hc.checked=vr.length>0&&vr.every(g=>g._sel);}
+  updateMapMeta();
+}
+function toggleSel(idx,val){
+  owners[idx]._sel=val;
+  const cb=document.querySelector(`.rsel[data-i="${idx}"]`);if(cb)cb.checked=val;
+  const g=owners[idx];if(g._marker)g._marker.setStyle(markerStyle(g));
+  updateSelInfo();
+}
+
+/* ---------- map (lazy-loaded, isolated) ---------- */
+function ensureLeaflet(){
+  if(typeof L!=="undefined")return Promise.resolve();
+  if(_leafletPromise)return _leafletPromise;
+  _leafletPromise=new Promise((resolve,reject)=>{
+    let done=false;const finish=ok=>{if(done)return;done=true;ok?resolve():reject(new Error("map load failed"));};
+    if(!document.getElementById("leaflet-css")){const lk=document.createElement("link");lk.id="leaflet-css";lk.rel="stylesheet";lk.href=LEAFLET_CSS;document.head.appendChild(lk);}
+    const s=document.createElement("script");s.async=true;s.src=LEAFLET_JS;
+    s.onload=()=>finish(typeof L!=="undefined");s.onerror=()=>finish(false);
+    setTimeout(()=>finish(typeof L!=="undefined"),12000);
+    document.head.appendChild(s);
+  });
+  return _leafletPromise;
+}
+function showMap(){
+  const mv=$("mapView");if(!mv)return;
+  $("mapFallback").style.display="none";$("mapStage").style.display="";$("mapBar").style.display="";
+  const lg=mv.querySelector(".map-legend");if(lg)lg.style.display="";
+  if(typeof L!=="undefined"){$("mapLoading").style.display="none";buildOrRefreshMap();return;}
+  $("mapLoading").style.display="flex";
+  ensureLeaflet().then(()=>{$("mapLoading").style.display="none";buildOrRefreshMap();})
+    .catch(()=>{_leafletPromise=null;showMapFallback();});
+}
+function showMapFallback(){
+  $("mapStage").style.display="none";$("mapBar").style.display="none";
+  const lg=$("mapView").querySelector(".map-legend");if(lg)lg.style.display="none";
+  $("mapFallback").style.display="grid";
+}
+function buildOrRefreshMap(){
+  if(!mapInited)initMap();
+  setTimeout(()=>{if(map){map.invalidateSize();refreshMap(!mapPlotted);mapPlotted=true;}},40);
+}
+function markerStyle(g){
+  return {radius:Math.max(5,Math.min(22,5+Math.sqrt(g.acres||1)*0.75)),
+    color:g.outOfState?"#9A4A2B":"#ffffff",weight:g.outOfState?2:1.2,
+    fillColor:g.mfl?"#C2611A":"#2C5C44",fillOpacity:g._sel?0.85:0.22};
+}
+function millIcon(){return L.divIcon({className:"",html:'<div class="mill-ico"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
+function flashMapNote(msg){const el=$("mapNote");if(!el)return;el.textContent=msg;el.style.display="";clearTimeout(_noteT);_noteT=setTimeout(()=>{el.style.display="none";},7000);}
+function tileGuard(layer,name){
+  let ok=false,errs=0;
+  layer.on("tileload",()=>{ok=true;});
+  layer.on("tileerror",()=>{errs++;if(!ok&&errs>=8&&!autoFellBack&&currentBase===name){autoFellBack=true;flashMapNote("Those map tiles were blocked — switched to Streets.");setBase("osm");}});
+  return layer;
+}
+function initMap(){
+  map=L.map("leafmap",{preferCanvas:true,minZoom:5,maxZoom:18,scrollWheelZoom:true}).setView([45.0,-89.6],7);
+  baseTiles.topo=tileGuard(L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:18,attribution:"Tiles &copy; Esri"}),"topo");
+  baseTiles.sat=tileGuard(L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:18,attribution:"Imagery &copy; Esri"}),"sat");
+  baseTiles.osm=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap contributors"});
+  baseTiles[currentBase].addTo(map);
+  markerLayer=L.layerGroup().addTo(map);
+  L.marker([MILL.lat,MILL.lon],{icon:millIcon(),zIndexOffset:1000}).addTo(map).bindTooltip("Kretz Mill — Antigo",{direction:"top"});
+  map.on("popupopen",e=>{const btn=e.popup.getElement().querySelector(".mp-btn");if(!btn)return;
+    btn.onclick=()=>{const i=+btn.dataset.idx;toggleSel(i,!owners[i]._sel);const on=owners[i]._sel;btn.textContent=on?"✓ In mailing — remove":"Add to mailing";btn.classList.toggle("out",!on);};});
+  mapInited=true;
+}
+function setBase(b){
+  if(!map||!baseTiles[b])return;
+  Object.values(baseTiles).forEach(t=>{if(map.hasLayer(t))map.removeLayer(t);});
+  baseTiles[b].addTo(map);currentBase=b;
+  document.querySelectorAll("#baseSeg button").forEach(x=>x.classList.toggle("on",x.dataset.b===b));
+}
+function refreshMap(fit){
+  if(!map||!markerLayer)return;
+  markerLayer.clearLayers();
+  const f=filterText.trim().toLowerCase();const pts=[];let unmapped=0,shown=0;
+  owners.forEach((g,idx)=>{
+    if(f&&!(g.owner.toLowerCase().includes(f)||(g.mailing||"").toLowerCase().includes(f)||(g.owner2||"").toLowerCase().includes(f))){g._marker=null;return;}
+    if(!g.mapped){if(!f)unmapped++;g._marker=null;return;}
+    const m=L.circleMarker([g._lat,g._lon],markerStyle(g));m._idx=idx;g._marker=m;
+    m.on("click",()=>openOwnerPopup(g,m));markerLayer.addLayer(m);pts.push([g._lat,g._lon]);shown++;
+  });
+  if(radiusCircle){map.removeLayer(radiusCircle);radiusCircle=null;}
+  if(lastSearchGeo.mode==="radius"){radiusCircle=L.circle([MILL.lat,MILL.lon],{radius:lastSearchGeo.miles*1609.344,color:"#1E4031",weight:1.5,fillColor:"#1E4031",fillOpacity:.04,dashArray:"6 5"}).addTo(map);pts.push([MILL.lat,MILL.lon]);}
+  if(fit&&pts.length){try{map.fitBounds(pts,{padding:[40,40],maxZoom:13});}catch(e){}}
+  updateMapMeta(unmapped,shown);
+}
+function fitToResults(){
+  if(!map)return;const pts=[];owners.forEach(g=>{if(g._marker)pts.push([g._lat,g._lon]);});
+  if(lastSearchGeo.mode==="radius")pts.push([MILL.lat,MILL.lon]);
+  if(pts.length)try{map.fitBounds(pts,{padding:[40,40],maxZoom:13});}catch(e){}
+}
+function updateMapMeta(unmapped,shown){
+  const el=$("mapMeta");if(!el)return;const sel=selected().length;
+  if(shown===undefined)shown=owners.filter(g=>g._marker).length;
+  let t=`<b>${shown.toLocaleString()}</b> shown · <b>${sel.toLocaleString()}</b> selected`;
+  if(unmapped)t+=` · ${unmapped} without a location`;
+  el.innerHTML=t;
+}
+function restyleAll(){if(!markerLayer)return;owners.forEach(g=>{if(g._marker)g._marker.setStyle(markerStyle(g));});}
+function openOwnerPopup(g,m){
+  const idx=owners.indexOf(g),on=g._sel;
+  const html=`<div class="mpop"><div class="mp-name">${esc(titleCase(g.owner))}</div>
+    <div class="mp-tags">${pills(g)||'<span class="pill ent">Indiv.</span>'}</div>
+    <div class="mp-line"><b style="color:#1E4031">Priority ${g.tier}</b> · score ${g.score}/100</div>
+    <div class="mp-line">${fmt0(g.acres)} acres · ${g.parcels.length} parcel${g.parcels.length>1?"s":""}</div>
+    <div class="mp-line">${esc([...g.counties].join(", "))}${[...g.towns][0]?` · ${esc([...g.towns][0])}`:""}</div>
+    <div class="mp-addr">${esc(titleCase(g.mailing))||"—"}</div>
+    <button class="mp-btn ${on?"":"out"}" data-idx="${idx}">${on?"✓ In mailing — remove":"Add to mailing"}</button></div>`;
+  m.bindPopup(html,{minWidth:230,closeButton:true}).openPopup();
+}
+
+/* ---------- letters (step 3) ---------- */
+function renderLetters(){
+  const n=selected().length;
+  $("lettersLead").innerHTML=n?`You're set to mail <b>${n.toLocaleString()}</b> landowner${n===1?"":"s"}. Pick a letter, adjust the wording, then print or save as PDF — one letter each.`:`No owners are selected yet. Go back to the list and check the owners you want to mail.`;
+  updatePreview();
+}
+function fillTemplate(g){
+  const today=new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
+  return ($("template").value||DEFAULT_TEMPLATE)
+    .replaceAll("{{Date}}",today).replaceAll("{{Greeting}}",greetingFor(g.owner,g.type,$("greetStyle").value))
+    .replaceAll("{{OwnerName}}",titleCase(g.owner)).replaceAll("{{MailingAddress}}",mailingLines(g.mailing).join("\n"))
+    .replaceAll("{{TotalAcres}}",Math.round(g.acres).toLocaleString()).replaceAll("{{ParcelCount}}",g.parcels.length)
+    .replaceAll("{{County}}",[...g.counties][0]||"your area").replaceAll("{{Sender}}",$("sender").value||"the Kretz Lumber Forestry Team");
+}
+function updatePreview(){
+  const el=$("preview");if(!el)return;const sel=selected();$("lcount").textContent=sel.length.toLocaleString();
+  if(!sel.length){el.innerHTML='<span class="paper-empty">Select at least one owner in step 2 to preview a letter.</span>';return;}
+  el.textContent=fillTemplate(sel[0]);
+}
+function printLetters(){
+  const sel=selected();if(!sel.length){alert("No owners are selected. Go back to the list and check who to mail.");return;}
+  if(sel.length>400&&!confirm(`This will lay out ${sel.length} letters. Continue?`))return;
+  $("print-area").innerHTML=sel.map(g=>`<div class="letter">${esc(fillTemplate(g))}</div>`).join("");
+  setTimeout(()=>window.print(),60);
+}
+
+/* ---------- CSV (formula-injection safe) ---------- */
+function exportCSV(){
+  const sel=selected();if(!sel.length){alert("No owners selected.");return;}
+  const H=["Priority Tier","Priority Score","Owner","Greeting","Type","Mailing Address","Out of State","State","Parcels","Total Acres","MFL","Counties","Towns","Assessed Value","Parcel IDs","Lat","Lon"];
+  const cell=v=>{let s=v==null?"":String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const lines=[H.join(",")];
+  sel.forEach(g=>{lines.push([g.tier,g.score,g.owner,greetingFor(g.owner,g.type,$("greetStyle").value),g.type,g.mailing,g.outOfState?"Y":"",g.state,g.parcels.length,Math.round(g.acres),g.mfl?"Y":"",[...g.counties].join("; "),[...g.towns].join("; "),Math.round(g.value),g.parcels.map(p=>p.PARCELID).join("; "),g._lat?g._lat.toFixed(6):"",g._lon?g._lon.toFixed(6):""].map(cell).join(","));});
+  const blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kretz_woodland_owners.csv";a.click();URL.revokeObjectURL(a.href);
+}
+
+/* ---------- prospect report (printable PDF) ---------- */
+function describeCriteria(){
+  const area=lastSearchGeo.mode==="radius"?`Within ${lastSearchGeo.miles} miles of the Antigo mill`:`${titleCase(countySel.value||"")} County`;
+  const mn=parseFloat(minInput.value),mx=parseFloat(maxInput.value);
+  const size=!isNaN(mn)&&!isNaN(mx)?`${mn}–${mx} acres`:!isNaN(mn)?`${mn}+ acres`:!isNaN(mx)?`up to ${mx} acres`:"any size";
+  const land=$("mflOnly").checked?"Managed Forest Law only":$("forestOnly").checked?"Forestland":"All parcels";
+  return {area,size,land};
+}
+function reportLogo(){return '<svg viewBox="0 0 40 40" width="34" height="34" fill="none"><circle cx="20" cy="20" r="18.5" fill="#2C5C44" stroke="#B9C9BE" stroke-width="1.4"/><circle cx="21" cy="19" r="12.5" fill="none" stroke="#A6BCAC" stroke-width="1.2"/><circle cx="22" cy="18.5" r="7.5" fill="none" stroke="#90A998" stroke-width="1.1"/><circle cx="22.5" cy="18" r="3" fill="#F4EEE1"/></svg>';}
+function printReport(){
+  if(!owners.length){alert("Run a search first.");return;}
+  const c=describeCriteria();
+  const ranked=[...owners].sort((a,b)=>b.score-a.score);
+  const CAP=200, show=ranked.slice(0,CAP);
+  const totalAcres=owners.reduce((s,g)=>s+g.acres,0);
+  const mflCount=owners.filter(g=>g.mfl).length, oosCount=owners.filter(g=>g.outOfState).length, aCount=owners.filter(g=>g.tier==="A").length;
+  const today=new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
+  const byCounty={}; owners.forEach(g=>[...g.counties].forEach(x=>byCounty[x]=(byCounty[x]||0)+1));
+  const topCounties=Object.entries(byCounty).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const exact="-webkit-print-color-adjust:exact;print-color-adjust:exact;";
+  const card=(b,l)=>`<div style="flex:1;min-width:88px;border:1px solid #E1D6C1;border-radius:10px;padding:11px 13px;background:#FFFDF8;">
+    <div style="font-family:'Zilla Slab',Georgia,serif;font-weight:700;font-size:21px;color:#1E4031;line-height:1;">${b}</div>
+    <div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#948975;margin-top:4px;">${l}</div></div>`;
+  const tierCell=g=>{const col=g.tier==="A"?"#15301f":g.tier==="B"?"#6b4012":"#7c715f",bg=g.tier==="A"?"#E8F0E9":g.tier==="B"?"#F6ECDD":"#EFE7D8";
+    return `<span style="font-family:monospace;font-size:11px;font-weight:700;color:${col};background:${bg};border:1px solid #ccbfa6;border-radius:5px;padding:1px 6px;${exact}">${g.tier} · ${g.score}</span>`;};
+  const th=t=>`<th style="padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#948975;">${t}</th>`;
+  let rows="";
+  show.forEach((g,i)=>{const loc=[...g.counties].join(", ")+([...g.towns][0]?" · "+[...g.towns][0]:"");
+    rows+=`<tr style="border-bottom:1px solid #EEE7D8;">
+      <td style="padding:6px 8px;color:#948975;font-family:monospace;font-size:11px;">${i+1}</td>
+      <td style="padding:6px 8px;">${tierCell(g)}</td>
+      <td style="padding:6px 8px;font-weight:600;">${esc(titleCase(g.owner))}${g.mfl?' <span style="font-size:9px;font-weight:700;color:#235139;border:1px solid #BBD6C6;background:#E7F0E9;border-radius:10px;padding:0 5px;'+exact+'">MFL</span>':""}${g.outOfState?` <span style="font-size:9px;font-weight:700;color:#974628;border:1px solid #E3C7B3;background:#F6E9E0;border-radius:10px;padding:0 5px;${exact}">${esc(g.state)}</span>`:""}</td>
+      <td style="padding:6px 8px;color:#6A5F4F;font-size:12px;">${esc(loc)}</td>
+      <td style="padding:6px 8px;text-align:right;font-family:monospace;">${fmt0(g.acres)}</td>
+      <td style="padding:6px 8px;text-align:right;font-family:monospace;">${g.parcels.length}</td>
+      <td style="padding:6px 8px;color:#6A5F4F;font-size:11.5px;">${esc(titleCase(g.mailing))}</td></tr>`;});
+  const html=`<div style="font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;color:#231B11;${exact}">
+    <div style="background:#1E4031;color:#F4EEE1;padding:22px 30px;display:flex;align-items:center;gap:14px;${exact}">
+      ${reportLogo()}
+      <div><div style="font-family:'Zilla Slab',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:.06em;">KRETZ LUMBER CO.</div>
+      <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#B9C9BE;margin-top:2px;">Woodland Owner Prospect Report</div></div>
+      <div style="margin-left:auto;text-align:right;font-size:11px;color:#9FB6A7;">${today}</div></div>
+    <div style="padding:22px 30px 30px;">
+      <div style="font-size:13px;color:#6A5F4F;margin-bottom:16px;">Search area: <b style="color:#231B11;">${esc(c.area)}</b> &nbsp;·&nbsp; ${esc(c.size)} &nbsp;·&nbsp; ${esc(c.land)}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        ${card(owners.length.toLocaleString(),"Woodland owners")}${card(lastFetched.toLocaleString(),"Parcels")}${card(fmt0(totalAcres),"Total acres")}${card(aCount.toLocaleString(),"Top (A) leads")}${card(mflCount.toLocaleString(),"In MFL")}${card(oosCount.toLocaleString(),"Out of state")}
+      </div>
+      <div style="font-size:12px;color:#6A5F4F;margin:0 0 22px;">Top counties: ${topCounties.map(([n,k])=>`${esc(n)} (${k})`).join(" · ")||"—"}</div>
+      <div style="font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:16px;margin-bottom:8px;">Priority prospects${ranked.length>CAP?` — top ${CAP} of ${ranked.length.toLocaleString()}`:""}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead><tr style="border-bottom:2px solid #231B11;text-align:left;">${th("#")}${th("Priority")}${th("Owner")}${th("Location")}<th style="padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#948975;text-align:right;">Acres</th><th style="padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#948975;text-align:right;">Parcels</th>${th("Mailing address")}</tr></thead>
+        <tbody>${rows}</tbody></table>
+      <div style="margin-top:22px;font-size:10.5px;color:#948975;line-height:1.5;border-top:1px solid #E1D6C1;padding-top:12px;">
+        Priority score weighs acreage, Managed Forest Law enrollment, owner distance from the Antigo mill, absentee ownership, and multiple holdings. Source: Wisconsin Statewide Parcel Map (most recent county tax roll). Public tax-parcel data for landowner outreach — not a legal survey or a guarantee of timber. Generated by the Kretz Lumber Woodland Owner Outreach tool.
+      </div></div></div>`;
+  $("print-area").innerHTML=html;
+  setTimeout(()=>window.print(),60);
+}
+
+/* ---------- wiring ---------- */
+$("areaChoices").querySelectorAll(".choice").forEach(c=>c.addEventListener("click",()=>{
+  geoMode=c.dataset.mode;
+  $("areaChoices").querySelectorAll(".choice").forEach(x=>x.classList.toggle("on",x===c));
+  $("countyWrap").style.display=geoMode==="county"?"":"none";
+  $("radiusWrap").style.display=geoMode==="radius"?"":"none";}));
+document.querySelectorAll(".toggle input").forEach(cb=>cb.addEventListener("change",()=>cb.closest(".toggle").classList.toggle("on",cb.checked)));
+$("mflOnly").addEventListener("change",e=>{if(e.target.checked){$("forestOnly").checked=true;$("forestOnly").closest(".toggle").classList.add("on");}});
+document.querySelectorAll("#stepper .st").forEach(s=>s.addEventListener("click",()=>{const i=+s.dataset.step;if(s.classList.contains("avail"))goStep(i);}));
+goBtn.addEventListener("click",search);
+[minInput,maxInput,radiusInput].forEach(el=>el.addEventListener("keydown",e=>{if(e.key==="Enter")search();}));
+$("backToList").addEventListener("click",()=>goStep(2));
+$("csv2").addEventListener("click",exportCSV);
+$("letters").addEventListener("click",printLetters);
+$("preset").addEventListener("change",e=>{$("template").value=LETTER_PRESETS[e.target.value]||LETTER_PRESETS.general;updatePreview();});
+["template","sender","greetStyle"].forEach(id=>$(id).addEventListener("input",updatePreview));
+$("greetStyle").addEventListener("change",updatePreview);
+$("template").value=DEFAULT_TEMPLATE;
+loadCounties();
+</script>
+</body>
+</html>
