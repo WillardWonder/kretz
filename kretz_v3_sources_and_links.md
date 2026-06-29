@@ -17,3 +17,8 @@ Custom GPT links:
 
 - Kretz DNA Assistant: https://chatgpt.com/g/g-6a427b6a557c8191ab8ef594a604fa58-kretz-dna-assistant
 - Kretz AI Decision Guide: https://chatgpt.com/g/g-6a427f689a888191b03c01b5608f45ec-kretz-ai-guide
+
+
+## Prototype file added
+
+- `claude-calculator.html` - Claude-built dashboard/calculator prototype provided by Josh for demo use. Treat embedded data and claims as illustrative unless verified from current primary sources.

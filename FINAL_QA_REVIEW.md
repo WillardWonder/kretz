@@ -43,3 +43,7 @@ If any are missing, those prototype cards will break until the files are added w
 8. Kretz AI Decision Guide activity.
 9. Governance model and first 90 days.
 10. Closing and next steps.
+
+## Final Claude Calculator Addition
+
+Added `claude-calculator.html` as an additional Claude-built calculator/dashboard example. This is intended as a demo of rapid AI-coded prototype creation and a discussion point for cached data, source verification, assumptions, and governance limits. It should not be presented as an official Kretz system or a verified live intelligence source.

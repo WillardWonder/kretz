@@ -41,3 +41,13 @@ Update Kretz AI training materials and practice activities
 
 Important:
 Do not put these files inside a subfolder. They should sit at the top/root of the repo beside the existing prototype files.
+
+
+Added in this final calculator update:
+- kretz-timber-market-calculator.html
+  Single-file Timber Market Intelligence Calculator prototype. The landing page already links to this filename.
+
+
+Added final Claude calculator example:
+- claude-calculator.html
+  Claude-built command dashboard and embedded timber calculator example. The landing page now links to this file.
