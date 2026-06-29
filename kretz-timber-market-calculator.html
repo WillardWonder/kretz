@@ -1,170 +1,525 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> a10d56baea674fff468e3ae7c1c1ae2f176501ee
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timber Intel | Professional Stewardship Platform</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kretz Timber Market Intelligence Calculator</title>
+<meta name="description" content="Single-file Kretz Lumber AI training demo that turns timber market and stewardship concepts into an interactive calculator prototype.">
+<style>
+:root{
+  --green:#163d27; --green2:#245b3a; --green3:#6d8f54; --gold:#d6a848; --gold2:#f1d487;
+  --cream:#fff8e8; --paper:#ffffff; --ink:#172016; --muted:#66705f; --line:#d9dfd1;
+  --soft:#f6f4ec; --warn:#b15d24; --danger:#a53f39; --ok:#2b7c43; --shadow:0 16px 48px rgba(18,31,18,.16);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f7f5ed,#e8ece0);line-height:1.55}
+a{color:inherit}
+.header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--green),#0b1f12);color:var(--cream);box-shadow:var(--shadow)}
+.header-inner{max-width:1220px;margin:0 auto;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--gold2),var(--gold));display:grid;place-items:center;color:#132014;font-weight:950;letter-spacing:-.08em}
+.brand h1{font-size:1.35rem;line-height:1.1;margin:0;font-weight:900}
+.brand p{margin:3px 0 0;color:#dcd2ba;font-size:.88rem}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.nav a,.nav button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:var(--cream);border-radius:999px;padding:10px 13px;text-decoration:none;font-weight:800;cursor:pointer}
+.nav a:hover,.nav button:hover{background:rgba(255,255,255,.16)}
+.container{max-width:1220px;margin:0 auto;padding:24px 22px 70px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch;margin:18px 0}
+.card{background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 10px 34px rgba(0,0,0,.06)}
+.hero-card{background:linear-gradient(135deg,rgba(22,61,39,.96),rgba(36,91,58,.88)),radial-gradient(circle at 80% 20%,rgba(214,168,72,.35),transparent 35%);color:var(--cream);border:0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(214,168,72,.45);background:rgba(214,168,72,.14);color:#ffe6ab;border-radius:999px;padding:7px 11px;font-size:.82rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+h2{font-size:clamp(1.7rem,3.5vw,3rem);line-height:1;letter-spacing:-.055em;margin:14px 0 12px}
+h3{margin:0 0 10px;font-size:1.18rem}
+p{color:var(--muted);margin:0 0 12px}
+.hero-card p{color:#ddd6c2}
+.notice{border-left:5px solid var(--gold);background:#fff6dc;padding:14px 16px;border-radius:14px;color:#46391d;margin-top:14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.tab{border:1px solid var(--line);background:white;color:var(--green);border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer}
+.tab.active{background:var(--green);color:var(--cream);border-color:var(--green)}
+.panel{display:none}
+.panel.active{display:block}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.input-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+label{display:block;font-weight:850;font-size:.9rem;margin-bottom:6px;color:#293524}
+input,select,textarea{width:100%;border:1px solid #cfd6c6;border-radius:12px;padding:11px 12px;font-size:1rem;background:white;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(214,168,72,.28);border-color:var(--gold)}
+.species-row{display:grid;grid-template-columns:1.15fr .7fr .75fr;gap:10px;align-items:end;margin:10px 0}
+.species-row strong{padding-bottom:12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:0;border-radius:14px;padding:12px 15px;background:var(--green);color:white;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#201709}
+.btn.light{background:#eef1e8;color:var(--green);border:1px solid var(--line)}
+.btn.warn{background:#fff4df;color:#6b4212;border:1px solid #ead3a4}
+.btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.metric{background:linear-gradient(135deg,#fbfbf7,#eef4e8);border:1px solid var(--line);border-radius:20px;padding:18px}
+.metric .label{text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;color:#697160;font-weight:950}
+.metric .value{font-size:clamp(1.8rem,4vw,3.1rem);line-height:1;font-weight:950;letter-spacing:-.06em;margin-top:8px;color:var(--green)}
+.metric .hint{font-size:.9rem;margin-top:8px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:white;border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+th,td{padding:12px;border-bottom:1px solid #edf0e7;text-align:left}
+th{background:#f0f3e9;color:#33402e;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+canvas{width:100%;height:280px;border:1px solid var(--line);border-radius:18px;background:white}
+.report-box{white-space:pre-wrap;background:#0f1f14;color:#f5edd9;border-radius:18px;padding:18px;min-height:240px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92rem;line-height:1.55}
+.source-list a{display:block;border:1px solid var(--line);background:white;border-radius:16px;padding:14px;margin:9px 0;text-decoration:none}
+.source-list a strong{color:var(--green)}
+.source-list a span{display:block;color:var(--muted);font-size:.92rem;margin-top:4px}
+.badge{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:.76rem;font-weight:950;background:#e8f1df;color:var(--green);margin-right:6px}
+.risk{background:#fff3f2;border-left:5px solid var(--danger);color:#5d2420}
+.risk p{color:#5d2420}
+.print-only{display:none}
+footer{padding:28px 22px;text-align:center;color:var(--muted)}
+@media(max-width:900px){.hero,.grid2,.grid3{grid-template-columns:1fr}.species-row{grid-template-columns:1fr 1fr}.species-row strong{grid-column:1/-1;padding-bottom:0}.input-grid{grid-template-columns:1fr}}
+@media print{
+  .header,.tabs,.actions,.nav,.no-print{display:none!important}
+  body{background:white}
+  .container{padding:0}
+  .card{box-shadow:none;border:0}
+  .panel{display:block!important}
+  .print-only{display:block}
+  .screen-only{display:none!important}
+}
+</style>
 </head>
 <body>
-
 <header class="header no-print">
-    <div class="header-inner">
-        <div class="logo-box">TMI</div>
-        <div>
-            <h1>Timber Market Intelligence</h1>
-            <p class="subtitle">Stewardship Framework for Northern Wisconsin</p>
-        </div>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">TMI</div>
+      <div>
+        <h1>Kretz Timber Market Intelligence Calculator</h1>
+        <p>Single-file AI training prototype · Stewardship, valuation assumptions, and governance review</p>
+      </div>
     </div>
-    <div id="save-status">● System Synced</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <button onclick="loadSample()">Load sample</button>
+      <button onclick="window.print()">Print report</button>
+    </nav>
+  </div>
 </header>
 
-<div class="container no-print">
-    <nav class="nav-tabs">
-        <button class="nav-tab active" data-target="inventory" onclick="switchTab(this)">1. Forest Profile</button>
-        <button class="nav-tab" data-target="market" onclick="switchTab(this)">2. Local Market</button>
-        <button class="nav-tab" data-target="analysis" onclick="switchTab(this)">3. Analysis & Strategy</button>
-    </nav>
-
-    <section id="inventory" class="tab-content">
-        <div class="grid-2">
-            <div class="card">
-                <h2>Species Composition (%)</h2>
-                <div class="input-grid">
-                    <div class="input-group"><label>Hard Maple</label><input type="number" id="maple-pct" value="40" oninput="autoSave()"></div>
-                    <div class="input-group"><label>Red Oak</label><input type="number" id="oak-pct" value="30" oninput="autoSave()"></div>
-                    <div class="input-group"><label>White Pine</label><input type="number" id="pine-pct" value="20" oninput="autoSave()"></div>
-                    <div class="input-group"><label>Aspen</label><input type="number" id="aspen-pct" value="10" oninput="autoSave()"></div>
-                </div>
-                <div class="input-group" style="margin-top: 25px;">
-                    <label>Estimated Total Volume (MBF)</label>
-                    <input type="number" id="total-mbf" value="100" oninput="autoSave()">
-                </div>
-            </div>
-            <div class="card highlight">
-                <h2>Growth Intelligence</h2>
-                <div class="input-group">
-                    <label>Veneer Quality Ratio (%)</label>
-                    <input type="range" id="veneer-ratio" min="0" max="40" value="17" oninput="autoSave()">
-                    <div class="range-val"><span id="veneer-val">17</span>% Veneer Grade</div>
-                </div>
-                <div class="input-group">
-                    <label>Annual Biological Growth (%)</label>
-                    <input type="number" id="bio-growth" value="3.8" step="0.1" oninput="autoSave()">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="market" class="tab-content" style="display:none;">
-        <div class="grid-2">
-            <div class="card">
-                <h2>Market Variables</h2>
-                <div class="input-group">
-                    <label>Mill Distance (Miles)</label>
-                    <input type="number" id="mill-dist" value="35" oninput="autoSave()">
-                </div>
-                <div class="input-group">
-                    <label>Market Cycle Demand</label>
-                    <select id="market-cycle" onchange="autoSave()">
-                        <option value="1.15">High Demand</option>
-                        <option value="1.0" selected>Stable Cycle</option>
-                        <option value="0.80">Market Contraction</option>
-                    </select>
-                </div>
-            </div>
-            <div class="card">
-                <h2>Site Access</h2>
-                <div class="input-group">
-                    <label>Logging Season</label>
-                    <select id="season" onchange="autoSave()">
-                        <option value="0">Dry/Summer</option>
-                        <option value="45">Frozen Ground (Premium)</option>
-                        <option value="-30">Spring Break-up</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>MFL Enrollment</label>
-                    <select id="mfl-enrolled" onchange="autoSave()">
-                        <option value="yes">Enrolled (Tax Optimized)</option>
-                        <option value="no" selected>Not Enrolled</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="analysis" class="tab-content" style="display:none;">
-        <div class="grid-main">
-            <div class="col">
-                <div class="card highlight">
-                    <label class="upper">Current Liquid Valuation</label>
-                    <div id="net-value-display" class="metric-hero">$0</div>
-                    <p id="valuation-subtext" class="hint"></p>
-                </div>
-                <div class="card chart-container">
-                    <canvas id="mainChart"></canvas>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card dark">
-                    <h3>Strategic Intelligence</h3>
-                    <div id="strategy-output"></div>
-                    <hr class="gold-hr">
-                    <p class="blog-link">Insights derived from <a href="https://www.kretzlumber.com/how-timber-markets-really-work/" target="_blank">"How Timber Markets Really Work"</a> by Troy Brown.</p>
-                </div>
-                <div class="card">
-                    <button class="btn-primary" onclick="window.print()">
-                        <span>🖨️</span> Print Stewardship Report
-                    </button>
-                </div>
-                <div class="card">
-                    <h3>Biological Growth Premium</h3>
-                    <div id="growth-premium" style="font-size: 1.8rem; color: var(--primary); font-weight: 800;">$0</div>
-                    <p class="hint">Added value after 1 year of biological volume accrual.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
-
-<div id="print-report" class="print-only">
-    <div class="report-wrapper">
-        <div class="report-header">
-            <div class="report-logo">TMI</div>
-            <div>
-                <h1>Timber Stewardship Assessment</h1>
-                <p id="report-date"></p>
-            </div>
-        </div>
-        
-        <div class="report-hero">
-            <div class="report-metric">
-                <label>Current Liquid Value</label>
-                <h2 id="print-value"></h2>
-            </div>
-            <div class="report-metric">
-                <label>1-Year Biological Growth</label>
-                <h2 id="print-growth"></h2>
-            </div>
-        </div>
-
-        <div class="report-body">
-            <h3>Strategic Analysis</h3>
-            <div id="print-strategy"></div>
-            <div class="report-disclaimer">
-                <p><strong>Note:</strong> This assessment utilizes the Kretz Lumber Stewardship Framework. For detailed concepts, visit: <em>kretzlumber.com/how-timber-markets-really-work/</em></p>
-            </div>
-        </div>
+<main class="container">
+  <section class="hero">
+    <div class="card hero-card">
+      <span class="eyebrow">Prototype demo</span>
+      <h2>Turning Kretz knowledge into an interactive tool.</h2>
+      <p>This page is built for the AI leadership training. It demonstrates how a web app can turn company expertise, public-facing educational content, and a repeated decision process into an interactive tool.</p>
+      <p>The important leadership question is not just “Can AI build this?” It is “What data does it depend on, what could it get wrong, who owns it, and what must a Kretz person review?”</p>
+      <div class="notice"><strong>Training disclaimer:</strong> This is not a timber appraisal, forestry prescription, purchasing offer, contract estimate, safety recommendation, or financial recommendation. Outputs are illustrative and must be reviewed by qualified Kretz personnel before business use.</div>
     </div>
-</div>
+    <div class="card">
+      <h3>How to use this in the demo</h3>
+      <p><span class="badge">1</span> Load sample data or enter a simple forest profile.</p>
+      <p><span class="badge">2</span> Adjust species, volume, distance, market cycle, and growth assumptions.</p>
+      <p><span class="badge">3</span> Review the generated valuation, chart, strategy notes, and governance warnings.</p>
+      <p><span class="badge">4</span> Ask participants what this tool should never do without human review.</p>
+      <div class="actions">
+        <button class="btn gold" onclick="loadSample()">Load sample data</button>
+        <button class="btn" onclick="calculateAll()">Calculate now</button>
+      </div>
+    </div>
+  </section>
 
-<script src="script.js"></script>
+  <div class="tabs no-print">
+    <button class="tab active" onclick="showTab(event,'profile')">1. Forest profile</button>
+    <button class="tab" onclick="showTab(event,'market')">2. Market variables</button>
+    <button class="tab" onclick="showTab(event,'analysis')">3. Analysis and report</button>
+    <button class="tab" onclick="showTab(event,'governance')">4. Governance review</button>
+  </div>
+
+  <section id="profile" class="panel active">
+    <div class="grid2">
+      <div class="card">
+        <h3>Property basics</h3>
+        <div class="input-grid">
+          <div><label for="propertyName">Property name or case label</label><input id="propertyName" value="Sample Forest Property"></div>
+          <div><label for="county">County</label><input id="county" value="Langlade"></div>
+          <div><label for="acres">Total acres</label><input id="acres" type="number" value="120" min="1" step="1"></div>
+          <div><label for="distance">Estimated mill distance, miles</label><input id="distance" type="number" value="32" min="0" step="1"></div>
+        </div>
+        <div class="notice">Keep property-specific data out of public AI tools unless Kretz has approved the platform and data rules.</div>
+      </div>
+      <div class="card">
+        <h3>Species composition and volume</h3>
+        <p>Percentages should total 100. MBF/ac values are illustrative assumptions for training.</p>
+        <div id="speciesInputs"></div>
+        <p id="speciesTotal" style="font-weight:900;color:var(--green)">Total: 100%</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="market" class="panel">
+    <div class="grid2">
+      <div class="card">
+        <h3>Price assumptions</h3>
+        <div class="input-grid">
+          <div><label for="hardwoodPrice">Hardwood base price per MBF</label><input id="hardwoodPrice" type="number" value="420" step="10"></div>
+          <div><label for="pinePrice">Pine price per MBF</label><input id="pinePrice" type="number" value="285" step="10"></div>
+          <div><label for="pulpPrice">Aspen/pulpwood price per MBF</label><input id="pulpPrice" type="number" value="70" step="5"></div>
+          <div><label for="veneerPremium">Veneer premium per MBF</label><input id="veneerPremium" type="number" value="190" step="10"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Market and access assumptions</h3>
+        <div class="input-grid">
+          <div>
+            <label for="marketCycle">Market cycle</label>
+            <select id="marketCycle">
+              <option value="0.85">Market contraction</option>
+              <option value="1" selected>Stable cycle</option>
+              <option value="1.15">High demand</option>
+            </select>
+          </div>
+          <div>
+            <label for="season">Logging/access season</label>
+            <select id="season">
+              <option value="0">Dry/summer access</option>
+              <option value="45">Frozen ground premium</option>
+              <option value="-35">Spring breakup/access challenge</option>
+            </select>
+          </div>
+          <div><label for="veneerRatio">Veneer quality ratio, %</label><input id="veneerRatio" type="number" value="12" min="0" max="50" step="1"></div>
+          <div><label for="growthRate">Annual biological growth, %</label><input id="growthRate" type="number" value="3.2" min="0" max="12" step=".1"></div>
+          <div>
+            <label for="mfl">MFL or other program status</label>
+            <select id="mfl">
+              <option>Unknown or not entered</option>
+              <option>Possibly enrolled</option>
+              <option>Not enrolled</option>
+            </select>
+          </div>
+          <div>
+            <label for="reviewLevel">Review level before use</label>
+            <select id="reviewLevel">
+              <option>Training only</option>
+              <option>Forester review required</option>
+              <option>Leadership review required</option>
+              <option>Do not use externally</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions"><button class="btn gold" onclick="calculateAll(); showTab(null,'analysis')">Calculate and view analysis</button></div>
+  </section>
+
+  <section id="analysis" class="panel">
+    <div class="grid3">
+      <div class="metric"><div class="label">Illustrative net value</div><div class="value" id="netValue">$0</div><div class="hint" id="netHint">After market, access, transport, and quality assumptions.</div></div>
+      <div class="metric"><div class="label">Value per acre</div><div class="value" id="valuePerAcre">$0</div><div class="hint">Training estimate only.</div></div>
+      <div class="metric"><div class="label">1-year growth value</div><div class="value" id="growthPremium">$0</div><div class="hint">Based on entered biological growth assumption.</div></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card">
+        <h3>Species value breakdown</h3>
+        <table>
+          <thead><tr><th>Species</th><th class="num">Acres</th><th class="num">MBF</th><th class="num">Value</th></tr></thead>
+          <tbody id="breakdown"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Visual summary</h3>
+        <canvas id="chart" width="720" height="330" aria-label="Species value chart"></canvas>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card">
+        <h3>Strategic intelligence notes</h3>
+        <div class="report-box" id="strategy"></div>
+      </div>
+      <div class="card">
+        <h3>Report actions</h3>
+        <p>Use these to demonstrate how AI can turn a calculation into communication, while still requiring review.</p>
+        <div class="actions">
+          <button class="btn" onclick="copyPrompt()">Copy ChatGPT review prompt</button>
+          <button class="btn light" onclick="exportCSV()">Download CSV</button>
+          <button class="btn gold" onclick="window.print()">Print stewardship report</button>
+        </div>
+        <textarea id="promptOutput" rows="10" style="margin-top:12px" readonly></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="governance" class="panel">
+    <div class="grid2">
+      <div class="card risk">
+        <h3>What this tool must not do</h3>
+        <p>This prototype should not be used to make final timber valuations, harvest recommendations, contract terms, payment commitments, tax/legal advice, MFL guidance, safety guidance, or customer/landowner promises.</p>
+        <p>It should educate, organize assumptions, and support a conversation. It should not replace forestry judgment.</p>
+      </div>
+      <div class="card">
+        <h3>Governance questions for leaders</h3>
+        <ul>
+          <li>Who owns and maintains the assumptions?</li>
+          <li>What data can be entered safely?</li>
+          <li>Which outputs require forester review?</li>
+          <li>Could a landowner mistake this for an offer or appraisal?</li>
+          <li>Should this be internal only, customer-facing, or not used at all?</li>
+          <li>What source materials should be approved before a real version is built?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card source-list">
+      <h3>Training links and context</h3>
+      <a href="https://www.kretzlumber.com/how-timber-markets-really-work/" target="_blank" rel="noopener noreferrer"><strong>Troy Brown: “How Timber Markets Really Work”</strong><span>Use this as the public-facing example of company knowledge that inspired the training demo.</span></a>
+      <a href="https://chatgpt.com/g/g-6a427f689a888191b03c01b5608f45ec-kretz-ai-guide" target="_blank" rel="noopener noreferrer"><strong>Kretz AI Decision Guide</strong><span>Use this to ask whether a tool like this should be AI, existing software, automation, vendor system, process improvement, or no AI for now.</span></a>
+      <a href="https://chatgpt.com/g/g-6a427b6a557c8191ab8ef594a604fa58-kretz-dna-assistant" target="_blank" rel="noopener noreferrer"><strong>Kretz DNA Assistant</strong><span>Use this to rewrite any landowner-facing explanation into the Kretz voice after a human verifies the facts.</span></a>
+    </div>
+  </section>
+
+  <section class="print-only">
+    <h2>Printed Stewardship Report</h2>
+    <p>This printout is generated from a training prototype and must not be treated as an appraisal, offer, or recommendation.</p>
+  </section>
+</main>
+
+<footer class="no-print">Kretz Lumber AI Leadership and Governance Training · Single-file prototype page · All calculations are illustrative.</footer>
+
+<script>
+const STORAGE_KEY = "kretz_tmi_single_html_demo_v1";
+const species = [
+  {key:"maple", name:"Hard Maple", pct:30, mbf:2.4, category:"hardwood"},
+  {key:"oak", name:"Red Oak", pct:24, mbf:2.1, category:"hardwood"},
+  {key:"pine", name:"White Pine", pct:18, mbf:2.9, category:"pine"},
+  {key:"aspen", name:"Aspen", pct:12, mbf:1.8, category:"pulp"},
+  {key:"basswood", name:"Basswood", pct:10, mbf:1.7, category:"hardwood"},
+  {key:"other", name:"Other", pct:6, mbf:1.4, category:"hardwood"}
+];
+let lastCalc = null;
+
+function money(n){ return "$" + Math.round(Number(n)||0).toLocaleString(); }
+function num(n,d=1){ return (Number(n)||0).toFixed(d); }
+function byId(id){ return document.getElementById(id); }
+
+function initSpecies(){
+  const wrap = byId("speciesInputs");
+  wrap.innerHTML = "";
+  species.forEach(s => {
+    const row = document.createElement("div");
+    row.className = "species-row";
+    row.innerHTML = `<strong>${s.name}</strong>
+      <div><label>% of acres</label><input class="species-pct" data-key="${s.key}" type="number" min="0" max="100" step="1" value="${s.pct}"></div>
+      <div><label>MBF/ac</label><input class="species-mbf" data-key="${s.key}" type="number" min="0" step=".1" value="${s.mbf}"></div>`;
+    wrap.appendChild(row);
+  });
+  document.querySelectorAll("input,select").forEach(el => el.addEventListener("input", () => { updateTotal(); calculateAll(false); }));
+}
+
+function getInputs(){
+  const speciesData = species.map(s => {
+    const pct = parseFloat(document.querySelector(`.species-pct[data-key="${s.key}"]`).value) || 0;
+    const mbf = parseFloat(document.querySelector(`.species-mbf[data-key="${s.key}"]`).value) || 0;
+    return {...s, pct, mbf};
+  });
+  return {
+    propertyName: byId("propertyName").value || "Unnamed Property",
+    county: byId("county").value || "Unknown",
+    acres: parseFloat(byId("acres").value) || 0,
+    distance: parseFloat(byId("distance").value) || 0,
+    hardwoodPrice: parseFloat(byId("hardwoodPrice").value) || 0,
+    pinePrice: parseFloat(byId("pinePrice").value) || 0,
+    pulpPrice: parseFloat(byId("pulpPrice").value) || 0,
+    veneerPremium: parseFloat(byId("veneerPremium").value) || 0,
+    marketCycle: parseFloat(byId("marketCycle").value) || 1,
+    marketCycleText: byId("marketCycle").selectedOptions[0].textContent,
+    seasonAdj: parseFloat(byId("season").value) || 0,
+    seasonText: byId("season").selectedOptions[0].textContent,
+    veneerRatio: parseFloat(byId("veneerRatio").value) || 0,
+    growthRate: parseFloat(byId("growthRate").value) || 0,
+    mfl: byId("mfl").value,
+    reviewLevel: byId("reviewLevel").value,
+    speciesData
+  };
+}
+
+function updateTotal(){
+  const total = Array.from(document.querySelectorAll(".species-pct")).reduce((sum, el) => sum + (parseFloat(el.value)||0), 0);
+  const el = byId("speciesTotal");
+  el.textContent = "Total: " + total.toFixed(1) + "%";
+  el.style.color = Math.abs(total-100) <= .2 ? "var(--ok)" : "var(--danger)";
+}
+
+function calculateAll(save=true){
+  const d = getInputs();
+  const totalPct = d.speciesData.reduce((sum,s)=>sum+s.pct,0);
+  let rows = [];
+  let baseValue = 0, totalMbf = 0, hardwoodMbf = 0;
+  d.speciesData.forEach(s => {
+    const acres = d.acres * (s.pct/100);
+    const mbf = acres * s.mbf;
+    const basePrice = s.category === "pine" ? d.pinePrice : (s.category === "pulp" ? d.pulpPrice : d.hardwoodPrice);
+    const veneerAdd = s.category === "hardwood" ? d.veneerPremium * (d.veneerRatio/100) : 0;
+    const seasonAdd = d.seasonAdj;
+    const value = mbf * (basePrice + veneerAdd + seasonAdd) * d.marketCycle;
+    baseValue += value;
+    totalMbf += mbf;
+    if(s.category === "hardwood") hardwoodMbf += mbf;
+    rows.push({name:s.name, acres, mbf, value});
+  });
+  const transportCost = totalMbf * d.distance * 2.5;
+  const netValue = Math.max(0, baseValue - transportCost);
+  const growthPremium = netValue * (d.growthRate/100);
+  const valuePerAcre = d.acres ? netValue / d.acres : 0;
+
+  lastCalc = {...d, totalPct, rows, baseValue, transportCost, netValue, growthPremium, valuePerAcre, totalMbf, hardwoodMbf};
+
+  byId("netValue").textContent = money(netValue);
+  byId("valuePerAcre").textContent = money(valuePerAcre);
+  byId("growthPremium").textContent = money(growthPremium);
+  byId("netHint").textContent = `Total volume: ${num(totalMbf,1)} MBF · Transport assumption: $${num(transportCost,0)} · Species total: ${num(totalPct,1)}%`;
+
+  const tbody = byId("breakdown");
+  tbody.innerHTML = rows.filter(r=>r.mbf>0).map(r => `<tr><td><strong>${r.name}</strong></td><td class="num">${num(r.acres,1)}</td><td class="num">${num(r.mbf,1)}</td><td class="num"><strong>${money(r.value)}</strong></td></tr>`).join("");
+
+  buildStrategy();
+  drawChart();
+  if(save) localStorage.setItem(STORAGE_KEY, JSON.stringify(getInputs()));
+}
+
+function buildStrategy(){
+  if(!lastCalc) return;
+  const d = lastCalc;
+  const primary = d.rows.reduce((a,b)=> b.value>a.value ? b:a, {name:"None", value:0});
+  const notes = [];
+  notes.push(`PROPERTY: ${d.propertyName} (${d.county} County)`);
+  notes.push(`ILLUSTRATIVE NET VALUE: ${money(d.netValue)} | VALUE/ACRE: ${money(d.valuePerAcre)} | 1-YEAR BIOLOGICAL GROWTH VALUE: ${money(d.growthPremium)}`);
+  notes.push("");
+  notes.push("STRATEGIC NOTES");
+  notes.push(`• Primary value driver appears to be ${primary.name}. This should be verified with real inventory and qualified forestry review.`);
+  if(Math.abs(d.totalPct-100)>.2) notes.push(`• Species percentages currently total ${num(d.totalPct,1)}%. Correct this before relying on the output.`);
+  if(d.distance>45) notes.push("• Mill distance is high enough that transport assumptions matter. Actual trucking and access costs should be verified.");
+  if(d.veneerRatio>20) notes.push("• Veneer quality ratio is a major assumption. Quality claims need field verification.");
+  if(d.growthRate>5) notes.push("• Growth rate assumption is aggressive. Verify with stand data and forestry expertise.");
+  if(d.mfl.toLowerCase().includes("possibly")) notes.push("• Program status is uncertain. Do not provide MFL, tax, or compliance guidance without qualified review.");
+  notes.push("");
+  notes.push("REVIEW BEFORE USE");
+  notes.push("• This is not an appraisal, bid, harvest recommendation, or purchasing offer.");
+  notes.push("• Verify acreage, species mix, MBF/ac, access, market assumptions, quality, and ownership before discussing specifics.");
+  notes.push("• Any landowner-facing message should be rewritten carefully and reviewed by qualified Kretz personnel.");
+  byId("strategy").textContent = notes.join("\n");
+}
+
+function drawChart(){
+  const c = byId("chart");
+  const ctx = c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  if(!lastCalc) return;
+  const rows = lastCalc.rows.filter(r=>r.value>0);
+  const pad = 48, w = c.width - pad*2, h = c.height - pad*2;
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,c.width,c.height);
+  ctx.strokeStyle = "#d8dece"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad,pad); ctx.lineTo(pad,pad+h); ctx.lineTo(pad+w,pad+h); ctx.stroke();
+  const max = Math.max(...rows.map(r=>r.value),1);
+  const barW = w / rows.length * .62;
+  rows.forEach((r,i)=>{
+    const x = pad + (i+.2)*(w/rows.length);
+    const bh = (r.value/max)*h*.86;
+    const y = pad+h-bh;
+    const grad = ctx.createLinearGradient(0,y,0,y+bh);
+    grad.addColorStop(0,"#d6a848");
+    grad.addColorStop(1,"#245b3a");
+    ctx.fillStyle = grad;
+    ctx.fillRect(x,y,barW,bh);
+    ctx.fillStyle = "#263322";
+    ctx.font = "bold 14px Inter, Arial";
+    ctx.save();
+    ctx.translate(x+barW/2,pad+h+18);
+    ctx.rotate(-0.35);
+    ctx.textAlign="right";
+    ctx.fillText(r.name,0,0);
+    ctx.restore();
+    ctx.font = "12px Inter, Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(money(r.value),x+barW/2,Math.max(pad+14,y-7));
+  });
+  ctx.fillStyle = "#66705f";
+  ctx.font = "12px Inter, Arial";
+  ctx.textAlign = "left";
+  ctx.fillText("Illustrative species value by assumption", pad, 24);
+}
+
+function showTab(evt,id){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  byId(id).classList.add("active");
+  if(evt && evt.target) evt.target.classList.add("active");
+  else {
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    const map = {profile:0, market:1, analysis:2, governance:3};
+    if(tabs[map[id]]) tabs[map[id]].classList.add("active");
+  }
+  if(id==="analysis") setTimeout(drawChart,50);
+}
+
+function loadSample(){
+  byId("propertyName").value = "Training Demo Forest";
+  byId("county").value = "Langlade";
+  byId("acres").value = 120;
+  byId("distance").value = 32;
+  const vals = {maple:[32,2.4], oak:[24,2.1], pine:[18,2.9], aspen:[12,1.8], basswood:[8,1.7], other:[6,1.4]};
+  Object.keys(vals).forEach(k=>{
+    document.querySelector(`.species-pct[data-key="${k}"]`).value = vals[k][0];
+    document.querySelector(`.species-mbf[data-key="${k}"]`).value = vals[k][1];
+  });
+  byId("hardwoodPrice").value = 420;
+  byId("pinePrice").value = 285;
+  byId("pulpPrice").value = 70;
+  byId("veneerPremium").value = 190;
+  byId("marketCycle").value = "1";
+  byId("season").value = "45";
+  byId("veneerRatio").value = 12;
+  byId("growthRate").value = 3.2;
+  byId("mfl").value = "Unknown or not entered";
+  byId("reviewLevel").value = "Training only";
+  updateTotal();
+  calculateAll();
+}
+
+function copyPrompt(){
+  calculateAll();
+  const prompt = `Review this Timber Market Intelligence Calculator output as a Kretz AI governance exercise. Identify what is useful, what could be wrong, what facts need verification, what should not be sent to a landowner, and whether this should be a Custom GPT, existing software, automation, vendor system, process improvement, or no AI for now.\n\n${byId("strategy").textContent}`;
+  byId("promptOutput").value = prompt;
+  navigator.clipboard && navigator.clipboard.writeText(prompt).catch(()=>{});
+}
+
+function exportCSV(){
+  calculateAll();
+  let csv = "species,acres,mbf,illustrative_value\n";
+  lastCalc.rows.forEach(r=> csv += `${r.name},${num(r.acres,1)},${num(r.mbf,1)},${Math.round(r.value)}\n`);
+  csv += `Net value,,,${Math.round(lastCalc.netValue)}\n`;
+  csv += `Growth premium,,,${Math.round(lastCalc.growthPremium)}\n`;
+  const blob = new Blob([csv], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "kretz_timber_market_calculator_export.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function loadSaved(){
+  initSpecies();
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if(stored){
+    try{
+      const d = JSON.parse(stored);
+      Object.keys(d).forEach(k=>{ if(byId(k) && typeof d[k] !== "object") byId(k).value = d[k]; });
+      if(d.speciesData){
+        d.speciesData.forEach(s=>{
+          const p = document.querySelector(`.species-pct[data-key="${s.key}"]`);
+          const m = document.querySelector(`.species-mbf[data-key="${s.key}"]`);
+          if(p) p.value = s.pct;
+          if(m) m.value = s.mbf;
+        });
+      }
+    }catch(e){}
+  }
+  updateTotal();
+  calculateAll(false);
+}
+window.addEventListener("load", loadSaved);
+</script>
 </body>
 </html>
