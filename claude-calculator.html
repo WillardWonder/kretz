@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kretz Lumber Command</title>
+
+<!--
+  ============================================================================
+  KRETZ COMMAND  -  single-file build
+  ----------------------------------------------------------------------------
+  This is a self-contained port of the original Vite/React dashboard. It needs
+  no build step and no server. The only runtime dependency is Chart.js (CDN),
+  used for the market-history line chart. The Timber Calculator is embedded in
+  full inside an isolated <iframe srcdoc> below.
+
+  ABOUT THE DATA  (see the INTEL object in the script):
+  The original app fetched ./intelligence.json, which was generated once a day
+  by a GitHub Action running scripts/fetch-data.js server-side. That indirection
+  exists because both the FRED API (api.stlouisfed.org) and UN Comtrade do NOT
+  send CORS headers, so a browser page cannot fetch them directly. A single
+  static file therefore ships a cached snapshot of the numbers instead.
+
+  The figures below are an illustrative snapshot, not a live feed. To refresh
+  them: run scripts/fetch-data.js (or scout.py), then paste the resulting
+  fred/comtrade arrays into the INTEL object and update INTEL.updated.
+  ============================================================================
+-->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:        #020617; /* slate-950 */
+    --panel:     #0f172a; /* slate-900 */
+    --panel-2:   #020617;
+    --border:    #1e293b; /* slate-800 */
+    --border-2:  #334155; /* slate-700 */
+    --text:      #e2e8f0; /* slate-200 */
+    --muted:     #64748b; /* slate-500 */
+    --muted-2:   #475569; /* slate-600 */
+    --red:       #dc2626; /* red-600 */
+    --green:     #22c55e; /* green-500 */
+    --green-2:   #4ade80; /* green-400 */
+    --blue:      #3b82f6; /* blue-500 */
+    --blue-2:    #2563eb; /* blue-600 */
+    --emerald:   #10b981; /* emerald-500 */
+    --amber:     #f59e0b; /* amber-500 */
+    --amber-2:   #fbbf24; /* amber-400 */
+    --orange:    #f97316; /* orange-500 */
+    --purple:    #a855f7; /* purple-500 */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 80rem; margin: 0 auto; padding: 1rem; }
+  @media (min-width: 768px) { .wrap { padding: 2rem; } }
+
+  /* ---------- header ---------- */
+  header.top {
+    border-bottom: 1px solid rgba(127,29,29,0.5); /* red-900/50 */
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  @media (min-width: 768px) {
+    header.top { flex-direction: row; justify-content: space-between; align-items: flex-end; gap: 0; }
+  }
+  header.top h1 {
+    font-size: 1.875rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #fff;
+  }
+  header.top h1 .accent { color: var(--red); }
+  header.top .sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+  header.top .status {
+    text-align: left;
+  }
+  @media (min-width: 768px) { header.top .status { text-align: right; } }
+  .status .online {
+    display: flex; align-items: center; gap: 0.4rem;
+    color: var(--green); font-size: 0.72rem; font-weight: 700;
+    justify-content: flex-start;
+  }
+  @media (min-width: 768px) { .status .online { justify-content: flex-end; } }
+  .status .cached {
+    font-size: 0.72rem;
+    color: var(--muted-2);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    margin-top: 0.25rem;
+  }
+  .pulse { animation: pulse 1.6s cubic-bezier(.4,0,.6,1) infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+  /* ---------- layout ---------- */
+  main.grid {
+    max-width: 80rem; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+  }
+  @media (min-width: 1024px) { main.grid { grid-template-columns: repeat(3, 1fr); } }
+  .col-left  { display: flex; flex-direction: column; gap: 1.5rem; }
+  .col-right { display: flex; flex-direction: column; gap: 1.5rem; }
+  @media (min-width: 1024px) { .col-left { grid-column: span 2 / span 2; } }
+
+  /* ---------- panels ---------- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel.shadow { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); }
+  .panel h2, .panel h3 {
+    font-size: 1.125rem; font-weight: 600;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .panel .ghost {
+    position: absolute; top: 0; right: 0; padding: 0.5rem;
+    opacity: 0.10; pointer-events: none;
+  }
+  .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+
+  .ico { width: 20px; height: 20px; flex: none; }
+  .ico.blue { color: var(--blue); }
+  .ico.orange { color: var(--orange); }
+  .ico.emerald { color: var(--emerald); }
+  .ico.amber { color: var(--amber); }
+  .ico.purple { color: var(--purple); }
+
+  /* ---------- chart ---------- */
+  .chart-box { height: 300px; position: relative; }
+  .chart-loading {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+  }
+
+  /* ---------- table ---------- */
+  .table-scroll { overflow-x: auto; }
+  table.intel {
+    width: 100%; font-size: 0.875rem; text-align: left;
+    color: #94a3b8; border-collapse: collapse;
+  }
+  table.intel thead {
+    background: var(--panel-2); color: var(--text); text-transform: uppercase;
+  }
+  table.intel th { padding: 0.75rem 1rem; font-weight: 600; font-size: 0.75rem; }
+  table.intel td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  table.intel tbody tr:hover { background: #1e293b; }
+  table.intel td.partner { font-weight: 700; color: #fff; }
+  table.intel td.value { color: var(--green-2); }
+  table.intel td.empty { text-align: center; padding: 1rem; color: var(--muted); }
+
+  /* ---------- valuation tools ---------- */
+  .tool-btn {
+    display: block; width: 100%; text-align: center; cursor: pointer;
+    background: rgba(6,78,59,0.4);
+    border: 1px solid rgba(4,120,87,0.5);
+    color: #d1fae5;
+    font-weight: 700; padding: 1rem; border-radius: 0.5rem;
+    font-size: 1rem; transition: all .15s ease; font-family: inherit;
+  }
+  .tool-btn:hover { background: rgba(6,95,70,0.6); }
+  .tool-note { font-size: 0.72rem; text-align: center; color: var(--muted); margin-top: 0.5rem; }
+
+  /* ---------- tariff radar ---------- */
+  .tariff-row {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    padding: 0.75rem;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .tariff-row:last-child { margin-bottom: 0; }
+  .tariff-row .name { font-weight: 700; font-size: 0.875rem; color: var(--text); }
+  .badge { font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 0.3rem; }
+  .badge.crit { background: rgba(127,29,29,0.5); color: #f87171; }
+  .badge.warn { background: rgba(120,53,15,0.5); color: var(--amber-2); }
+
+  /* ---------- lobbying ---------- */
+  .field { display: flex; flex-direction: column; gap: 0.75rem; }
+  select.inp, textarea.inp {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border-2);
+    border-radius: 0.4rem;
+    color: var(--text);
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    font-family: inherit;
+  }
+  select.inp:focus, textarea.inp:focus { outline: none; border-color: var(--blue); }
+  button.gen {
+    width: 100%;
+    background: var(--blue-2);
+    color: #fff; font-weight: 700; padding: 0.5rem; border: none;
+    border-radius: 0.4rem; font-size: 0.875rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font-family: inherit;
+  }
+  button.gen:hover { background: #1d4ed8; }
+  textarea.inp.brief {
+    height: 10rem; resize: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.75rem; color: var(--green-2); padding: 0.75rem;
+  }
+
+  /* ---------- calculator view ---------- */
+  #calculatorView {
+    position: fixed; inset: 0; z-index: 50;
+    display: none; flex-direction: column; background: #f8f9fa;
+  }
+  #calculatorView.open { display: flex; }
+  .calc-bar {
+    flex: none;
+    background: linear-gradient(135deg, #0d2818 0%, #1a4d2e 100%);
+    color: #fff;
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.6rem 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+  }
+  .calc-bar button {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-weight: 600; font-size: 0.85rem;
+    padding: 0.45rem 0.9rem; border-radius: 0.4rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: inherit;
+  }
+  .calc-bar button:hover { background: rgba(255,255,255,0.22); }
+  .calc-bar .calc-title { font-weight: 700; font-size: 0.95rem; letter-spacing: 0.01em; }
+  .calc-bar .calc-title .dim { color: #d4af37; }
+  #calcFrame { flex: 1 1 auto; width: 100%; border: 0; }
+  body.locked { overflow: hidden; }
+</style>
+</head>
+<body>
+
+<div id="dashboardView">
+  <div class="wrap">
+    <!-- HEADER -->
+    <header class="top">
+      <div>
+        <h1>KRETZ <span class="accent">COMMAND</span></h1>
+        <p class="sub">Strategic Hardwood Intelligence | Antigo, WI</p>
+      </div>
+      <div class="status">
+        <div class="online">
+          <svg class="ico pulse" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          SYSTEM ONLINE
+        </div>
+        <p class="cached">DATA CACHED: <span id="lastUpdated">SYNCING...</span></p>
+      </div>
+    </header>
+  </div>
+
+  <main class="grid">
+    <!-- COL 1: MARKET STATUS -->
+    <div class="col-left">
+      <!-- CHART -->
+      <div class="panel shadow">
+        <div class="ghost">
+          <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <div class="panel-head">
+          <h2>
+            <svg class="ico blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            Market History (PPI WPU081)
+          </h2>
+        </div>
+        <div class="chart-box">
+          <div id="chartLoading" class="chart-loading pulse">Initializing Feed...</div>
+          <canvas id="ppiChart" style="display:none"></canvas>
+        </div>
+      </div>
+
+      <!-- TRADE DATA TABLE -->
+      <div class="panel">
+        <h3 style="margin-bottom:1rem">
+          <svg class="ico orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Export Intelligence (UN Comtrade)
+        </h3>
+        <div class="table-scroll">
+          <table class="intel">
+            <thead>
+              <tr>
+                <th>Partner</th>
+                <th>Year</th>
+                <th>Value ($USD)</th>
+                <th>Weight (kg)</th>
+              </tr>
+            </thead>
+            <tbody id="comtradeBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- COL 2: ACTION CENTER -->
+    <div class="col-right">
+      <!-- TIMBER TOOL -->
+      <div class="panel">
+        <h2 style="margin-bottom:1rem">
+          <svg class="ico emerald" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Valuation Tools
+        </h2>
+        <button class="tool-btn" onclick="openCalculator()">🌲 OPEN TIMBER CALCULATOR</button>
+        <p class="tool-note">Local Storage Enabled</p>
+      </div>
+
+      <!-- TARIFFS -->
+      <div class="panel">
+        <h2 style="margin-bottom:1rem">
+          <svg class="ico amber" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Tariff Radar
+        </h2>
+        <div>
+          <div class="tariff-row">
+            <div class="name">China (Sec 301)</div>
+            <span class="badge crit">CRITICAL 25%</span>
+          </div>
+          <div class="tariff-row">
+            <div class="name">EU (EUDR)</div>
+            <span class="badge warn">WARNING 10%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOBBYING -->
+      <div class="panel">
+        <h2 style="margin-bottom:1rem">
+          <svg class="ico purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Lobbying Generator
+        </h2>
+        <div class="field">
+          <select class="inp" id="lobbyTarget">
+            <option value="USTR">USTR (Ambassador)</option>
+            <option value="SENATE">US Senate (WI)</option>
+          </select>
+          <button class="gen" onclick="generateBrief()">
+            <svg class="ico" style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            GENERATE BRIEF
+          </button>
+          <textarea class="inp brief" id="brief" readonly placeholder="Brief will appear here..."></textarea>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===================== EMBEDDED TIMBER CALCULATOR ===================== -->
+<div id="calculatorView">
+  <div class="calc-bar">
+    <button onclick="closeCalculator()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Command Dashboard
+    </button>
+    <span class="calc-title">Timber Market Intelligence <span class="dim">Platform</span></span>
+  </div>
+  <iframe id="calcFrame" title="Timber Market Intelligence Platform" srcdoc="
+<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+    <meta charset=&quot;UTF-8&quot;>
+    <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+    <title>Timber Market Intelligence Platform | Wisconsin</title>
+    <link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
+    <link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
+    <link href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Fraunces:wght@600;700;800&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+    <style>
+        :root {
+            --primary: #1a4d2e;
+            --primary-light: #2d6a4f;
+            --primary-dark: #0d2818;
+            --accent: #d4af37;
+            --accent-light: #f0d478;
+            --surface: #ffffff;
+            --surface-alt: #f8f9fa;
+            --border: #e1e4e8;
+            --text-primary: #0d1117;
+            --text-secondary: #57606a;
+            --text-tertiary: #8b949e;
+            --success: #2da44e;
+            --warning: #bf8700;
+            --danger: #cf222e;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .data-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--surface);
+            padding: 0.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--surface-alt);
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-tab .icon {
+            font-size: 1.125rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-subtitle {
+            margin-top: 0.5rem;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-user {
+            background: linear-gradient(135deg, rgba(45, 164, 78, 0.1) 0%, rgba(45, 164, 78, 0.05) 100%);
+            color: var(--success);
+            border: 1px solid rgba(45, 164, 78, 0.2);
+        }
+
+        .badge-sample {
+            background: linear-gradient(135deg, rgba(191, 135, 0, 0.1) 0%, rgba(191, 135, 0, 0.05) 100%);
+            color: var(--warning);
+            border: 1px solid rgba(191, 135, 0, 0.2);
+        }
+
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            border-left: 4px solid;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(191, 135, 0, 0.08) 0%, rgba(191, 135, 0, 0.04) 100%);
+            border-color: var(--warning);
+            color: #7d5d00;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.08) 0%, rgba(13, 110, 253, 0.04) 100%);
+            border-color: #0d6efd;
+            color: #084298;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(45, 164, 78, 0.08) 0%, rgba(45, 164, 78, 0.04) 100%);
+            border-color: var(--success);
+            color: #1a7f37;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            letter-spacing: 0.01em;
+        }
+
+        .input-hint {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            margin-top: 0.375rem;
+            font-weight: 400;
+        }
+
+        .input-field, .select-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.1);
+        }
+
+        .input-field:hover, .select-field:hover {
+            border-color: var(--text-tertiary);
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-alt);
+            border-color: var(--text-secondary);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-tertiary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success);
+        }
+
+        .metric-change.negative {
+            color: var(--danger);
+        }
+
+        .metric-change.neutral {
+            color: var(--text-secondary);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9375rem;
+        }
+
+        .data-table thead {
+            background: var(--surface-alt);
+            border-radius: 8px;
+        }
+
+        .data-table th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        .data-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .data-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--surface-alt);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .value-display {
+            background: linear-gradient(135deg, rgba(26, 77, 46, 0.03) 0%, rgba(26, 77, 46, 0.01) 100%);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .value-display-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .value-display-amount {
+            font-family: 'Fraunces', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .value-display-subtitle {
+            font-size: 0.9375rem;
+            color: var(--text-tertiary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: var(--surface-alt);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.375rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .total-validation {
+            background: var(--surface-alt);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid var(--border);
+        }
+
+        .total-validation.valid {
+            background: linear-gradient(135deg, rgba(45, 164, 78, 0.05) 0%, rgba(45, 164, 78, 0.02) 100%);
+            border-color: var(--success);
+        }
+
+        .total-validation.invalid {
+            background: linear-gradient(135deg, rgba(207, 34, 46, 0.05) 0%, rgba(207, 34, 46, 0.02) 100%);
+            border-color: var(--danger);
+        }
+
+        .principles-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .principles-list li {
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            background: var(--surface-alt);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .principles-list .icon {
+            font-size: 1.25rem;
+            color: var(--accent);
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+
+            .nav-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-tab {
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-inner {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .logo-title {
+                font-size: 1.25rem;
+            }
+
+            .value-display-amount {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-text {
+            font-size: 0.9375rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <header class=&quot;header&quot;>
+        <div class=&quot;header-inner&quot;>
+            <div class=&quot;logo&quot;>
+                <div class=&quot;logo-icon&quot;>TM</div>
+                <div class=&quot;logo-text&quot;>
+                    <div class=&quot;logo-title&quot;>Timber Market Intelligence</div>
+                    <div class=&quot;logo-subtitle&quot;>North-Central &amp; Northern Wisconsin</div>
+                </div>
+            </div>
+            <div class=&quot;header-actions&quot;>
+                <div class=&quot;data-status&quot;>
+                    <div class=&quot;status-indicator&quot;></div>
+                    <span id=&quot;data-status-text&quot;>No data loaded</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class=&quot;container&quot;>
+        <nav class=&quot;nav-tabs&quot;>
+            <button class=&quot;nav-tab active&quot; onclick=&quot;showTab('setup')&quot;>
+                <span class=&quot;icon&quot;>⚙️</span>
+                <span>Setup</span>
+            </button>
+            <button class=&quot;nav-tab&quot; onclick=&quot;showTab('overview')&quot;>
+                <span class=&quot;icon&quot;>📊</span>
+                <span>Overview</span>
+            </button>
+            <button class=&quot;nav-tab&quot; onclick=&quot;showTab('valuation')&quot;>
+                <span class=&quot;icon&quot;>💰</span>
+                <span>Valuation</span>
+            </button>
+            <button class=&quot;nav-tab&quot; onclick=&quot;showTab('analysis')&quot;>
+                <span class=&quot;icon&quot;>📈</span>
+                <span>Market Analysis</span>
+            </button>
+        </nav>
+
+        <!-- SETUP TAB -->
+        <div id=&quot;setup&quot; class=&quot;tab-content active&quot;>
+            <div class=&quot;alert alert-info&quot;>
+                <span class=&quot;alert-icon&quot;>ℹ️</span>
+                <div>
+                    <strong>Data Collection Required</strong><br>
+                    This platform calculates timber values based on your specific forest composition and local market conditions. Complete all sections below to generate accurate valuations.
+                </div>
+            </div>
+
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>
+                        <span>🌲</span>
+                        Forest Profile
+                    </h2>
+                    <p class=&quot;card-subtitle&quot;>Basic information about your timber property</p>
+                </div>
+
+                <div class=&quot;grid-2&quot;>
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Property Name</label>
+                        <input type=&quot;text&quot; id=&quot;property-name&quot; class=&quot;input-field&quot; placeholder=&quot;e.g., Northwoods Estate&quot;>
+                        <span class=&quot;input-hint&quot;>Optional - for your reference</span>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Total Acreage</label>
+                        <input type=&quot;number&quot; id=&quot;forest-acres&quot; class=&quot;input-field&quot; placeholder=&quot;120&quot;>
+                        <span class=&quot;input-hint&quot;>Total forested acres</span>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>County</label>
+                        <input type=&quot;text&quot; id=&quot;county&quot; class=&quot;input-field&quot; placeholder=&quot;e.g., Oneida&quot;>
+                        <span class=&quot;input-hint&quot;>Wisconsin county location</span>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Distance to Primary Mill</label>
+                        <input type=&quot;number&quot; id=&quot;mill-distance&quot; class=&quot;input-field&quot; placeholder=&quot;15&quot;>
+                        <span class=&quot;input-hint&quot;>Miles to nearest active mill</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>
+                        <span>🌳</span>
+                        Species Composition
+                    </h2>
+                    <p class=&quot;card-subtitle&quot;>Percentage breakdown of timber species (must total 100%)</p>
+                </div>
+
+                <div class=&quot;grid-3&quot;>
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Hard Maple</label>
+                        <input type=&quot;number&quot; class=&quot;input-field species-pct&quot; data-species=&quot;maple&quot; placeholder=&quot;25&quot; min=&quot;0&quot; max=&quot;100&quot; oninput=&quot;updateTotal()&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Oak (Red/White)</label>
+                        <input type=&quot;number&quot; class=&quot;input-field species-pct&quot; data-species=&quot;oak&quot; placeholder=&quot;20&quot; min=&quot;0&quot; max=&quot;100&quot; oninput=&quot;updateTotal()&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Pine (Red/White)</label>
+                        <input type=&quot;number&quot; class=&quot;input-field species-pct&quot; data-species=&quot;pine&quot; placeholder=&quot;25&quot; min=&quot;0&quot; max=&quot;100&quot; oninput=&quot;updateTotal()&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Aspen</label>
+                        <input type=&quot;number&quot; class=&quot;input-field species-pct&quot; data-species=&quot;aspen&quot; placeholder=&quot;15&quot; min=&quot;0&quot; max=&quot;100&quot; oninput=&quot;updateTotal()&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Basswood</label>
+                        <input type=&quot;number&quot; class=&quot;input-field species-pct&quot; data-species=&quot;basswood&quot; placeholder=&quot;10&quot; min=&quot;0&quot; max=&quot;100&quot; oninput=&quot;updateTotal()&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Other Hardwoods</label>
+                        <input type=&quot;number&quot; class=&quot;input-field species-pct&quot; data-species=&quot;other&quot; placeholder=&quot;5&quot; min=&quot;0&quot; max=&quot;100&quot; oninput=&quot;updateTotal()&quot;>
+                    </div>
+                </div>
+
+                <div id=&quot;validation-display&quot; class=&quot;total-validation&quot;>
+                    <strong>Total: <span id=&quot;species-total&quot;>0</span>%</strong>
+                    <span id=&quot;validation-message&quot;></span>
+                </div>
+            </div>
+
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>
+                        <span>📊</span>
+                        Volume Estimates
+                    </h2>
+                    <p class=&quot;card-subtitle&quot;>Estimated thousand board feet (MBF) per acre by species</p>
+                </div>
+
+                <div class=&quot;grid-3&quot;>
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Hard Maple (MBF/acre)</label>
+                        <input type=&quot;number&quot; id=&quot;maple-mbf&quot; class=&quot;input-field&quot; placeholder=&quot;2.5&quot; step=&quot;0.1&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Oak (MBF/acre)</label>
+                        <input type=&quot;number&quot; id=&quot;oak-mbf&quot; class=&quot;input-field&quot; placeholder=&quot;2.2&quot; step=&quot;0.1&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Pine (MBF/acre)</label>
+                        <input type=&quot;number&quot; id=&quot;pine-mbf&quot; class=&quot;input-field&quot; placeholder=&quot;3.0&quot; step=&quot;0.1&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Aspen (MBF/acre)</label>
+                        <input type=&quot;number&quot; id=&quot;aspen-mbf&quot; class=&quot;input-field&quot; placeholder=&quot;1.8&quot; step=&quot;0.1&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Basswood (MBF/acre)</label>
+                        <input type=&quot;number&quot; id=&quot;basswood-mbf&quot; class=&quot;input-field&quot; placeholder=&quot;2.0&quot; step=&quot;0.1&quot;>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Other (MBF/acre)</label>
+                        <input type=&quot;number&quot; id=&quot;other-mbf&quot; class=&quot;input-field&quot; placeholder=&quot;1.5&quot; step=&quot;0.1&quot;>
+                    </div>
+                </div>
+            </div>
+
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>
+                        <span>💵</span>
+                        Market Pricing
+                    </h2>
+                    <p class=&quot;card-subtitle&quot;>Current prices from local mills (contact 2-3 mills for accuracy)</p>
+                </div>
+
+                <div class=&quot;grid-2&quot;>
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Hardwood Sawlogs ($/MBF)</label>
+                        <input type=&quot;number&quot; id=&quot;price-hardwood&quot; class=&quot;input-field&quot; placeholder=&quot;350&quot;>
+                        <span class=&quot;input-hint&quot;>Price per thousand board feet</span>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Pine Sawlogs ($/MBF)</label>
+                        <input type=&quot;number&quot; id=&quot;price-pine&quot; class=&quot;input-field&quot; placeholder=&quot;280&quot;>
+                        <span class=&quot;input-hint&quot;>Price per thousand board feet</span>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Pulpwood ($/Cord)</label>
+                        <input type=&quot;number&quot; id=&quot;price-pulp&quot; class=&quot;input-field&quot; placeholder=&quot;45&quot;>
+                        <span class=&quot;input-hint&quot;>Price per cord</span>
+                    </div>
+
+                    <div class=&quot;input-group&quot;>
+                        <label class=&quot;input-label&quot;>Veneer Grade ($/MBF)</label>
+                        <input type=&quot;number&quot; id=&quot;price-veneer&quot; class=&quot;input-field&quot; placeholder=&quot;550&quot;>
+                        <span class=&quot;input-hint&quot;>High-grade veneer logs</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style=&quot;display: flex; gap: 1rem;&quot;>
+                <button class=&quot;btn btn-primary&quot; onclick=&quot;saveData()&quot; style=&quot;flex: 1; padding: 1.125rem;&quot;>
+                    <span>💾</span>
+                    <span>Save &amp; Calculate Valuation</span>
+                </button>
+                <button class=&quot;btn btn-secondary&quot; onclick=&quot;loadSampleData()&quot;>
+                    <span>📋</span>
+                    <span>Load Sample Data</span>
+                </button>
+            </div>
+
+            <div class=&quot;alert alert-info&quot; style=&quot;margin-top: 2rem;&quot;>
+                <span class=&quot;alert-icon&quot;>🔒</span>
+                <div>
+                    <strong>Privacy &amp; Data Storage</strong><br>
+                    All data is stored locally in your browser using HTML5 localStorage. No information is transmitted to external servers. Your forestry data remains completely private and secure.
+                </div>
+            </div>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id=&quot;overview&quot; class=&quot;tab-content&quot;>
+            <div id=&quot;no-data-alert&quot; class=&quot;alert alert-warning&quot;>
+                <span class=&quot;alert-icon&quot;>⚠️</span>
+                <div>
+                    <strong>Data Required</strong><br>
+                    Navigate to the Setup tab to enter your forest and market data. <span class=&quot;badge badge-sample&quot;>Currently displaying sample data</span>
+                </div>
+            </div>
+
+            <div class=&quot;grid-2&quot; style=&quot;margin-bottom: 2rem;&quot;>
+                <div class=&quot;card&quot;>
+                    <div class=&quot;card-header&quot;>
+                        <h2 class=&quot;card-title&quot;>Property Summary</h2>
+                    </div>
+                    <div class=&quot;stats-grid&quot;>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Property</div>
+                            <div class=&quot;stat-value&quot; id=&quot;disp-property&quot;>—</div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Acreage</div>
+                            <div class=&quot;stat-value&quot;><span id=&quot;disp-acres&quot;>—</span> ac</div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Location</div>
+                            <div class=&quot;stat-value&quot; id=&quot;disp-county&quot;>—</div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Mill Distance</div>
+                            <div class=&quot;stat-value&quot;><span id=&quot;disp-distance&quot;>—</span> mi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class=&quot;card&quot;>
+                    <div class=&quot;card-header&quot;>
+                        <h2 class=&quot;card-title&quot;>Market Snapshot <span id=&quot;market-badge&quot; class=&quot;badge badge-sample&quot;>Sample Data</span></h2>
+                    </div>
+                    <div class=&quot;stats-grid&quot;>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Hardwood</div>
+                            <div class=&quot;stat-value&quot;>$<span id=&quot;snap-hw&quot;>350</span></div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Pine</div>
+                            <div class=&quot;stat-value&quot;>$<span id=&quot;snap-pine&quot;>280</span></div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Pulpwood</div>
+                            <div class=&quot;stat-value&quot;>$<span id=&quot;snap-pulp&quot;>45</span></div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Veneer</div>
+                            <div class=&quot;stat-value&quot;>$<span id=&quot;snap-veneer&quot;>550</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>Troy Brown's Core Principles</h2>
+                    <p class=&quot;card-subtitle&quot;>Evidence-based forestry decision framework</p>
+                </div>
+                <ul class=&quot;principles-list&quot;>
+                    <li>
+                        <span class=&quot;icon&quot;>🎯</span>
+                        <span><strong>Quality Over Timing:</strong> Good forestry decisions matter far more than perfect market timing. Focus on sustainable management practices that maximize long-term value.</span>
+                    </li>
+                    <li>
+                        <span class=&quot;icon&quot;>🌱</span>
+                        <span><strong>Biological Growth:</strong> Trees continue adding volume and value biologically during market downturns—a unique advantage over financial assets.</span>
+                    </li>
+                    <li>
+                        <span class=&quot;icon&quot;>📍</span>
+                        <span><strong>Local Markets:</strong> Transportation costs, mill capacity, and regional demand drive pricing more than national headlines.</span>
+                    </li>
+                    <li>
+                        <span class=&quot;icon&quot;>🌳</span>
+                        <span><strong>Species Diversification:</strong> A balanced mix of species provides resilience against market volatility and creates more harvest opportunities.</span>
+                    </li>
+                    <li>
+                        <span class=&quot;icon&quot;>💎</span>
+                        <span><strong>Infrastructure Investment:</strong> Quality trees, reliable access, healthy ecosystems, and disciplined long-term planning create enduring value.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- VALUATION TAB -->
+        <div id=&quot;valuation&quot; class=&quot;tab-content&quot;>
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>Standing Timber Valuation <span id=&quot;val-badge&quot; class=&quot;badge badge-sample&quot;>Sample Data</span></h2>
+                    <p class=&quot;card-subtitle&quot;>Estimated market value based on current composition and pricing</p>
+                </div>
+
+                <div class=&quot;value-display&quot;>
+                    <div class=&quot;value-display-label&quot;>Estimated Total Value</div>
+                    <div class=&quot;value-display-amount&quot;>$<span id=&quot;total-value&quot;>0</span></div>
+                    <div class=&quot;value-display-subtitle&quot;>Standing timber at current market prices</div>
+                </div>
+
+                <table class=&quot;data-table&quot;>
+                    <thead>
+                        <tr>
+                            <th>Species</th>
+                            <th style=&quot;text-align: right;&quot;>Acres</th>
+                            <th style=&quot;text-align: right;&quot;>MBF/Acre</th>
+                            <th style=&quot;text-align: right;&quot;>Total MBF</th>
+                            <th style=&quot;text-align: right;&quot;>Price/MBF</th>
+                            <th style=&quot;text-align: right;&quot;>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id=&quot;calc-breakdown&quot;>
+                        <tr>
+                            <td colspan=&quot;6&quot;>
+                                <div class=&quot;empty-state&quot;>
+                                    <div class=&quot;empty-state-icon&quot;>📊</div>
+                                    <div class=&quot;empty-state-title&quot;>No Data Available</div>
+                                    <div class=&quot;empty-state-text&quot;>Complete the Setup tab to generate your timber valuation</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class=&quot;alert alert-warning&quot;>
+                <span class=&quot;alert-icon&quot;>⚠️</span>
+                <div>
+                    <strong>Valuation Disclaimer</strong><br>
+                    These estimates are based on standing timber volumes and current market prices. Actual harvested value will vary based on log quality, grading, market conditions at time of sale, harvesting costs, and buyer negotiations. Always obtain multiple competitive bids from qualified timber buyers.
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYSIS TAB -->
+        <div id=&quot;analysis&quot; class=&quot;tab-content&quot;>
+            <div class=&quot;grid-2&quot;>
+                <div class=&quot;card&quot;>
+                    <div class=&quot;card-header&quot;>
+                        <h2 class=&quot;card-title&quot;>Decision Factors</h2>
+                    </div>
+                    <table class=&quot;data-table&quot;>
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>Your Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Transportation Cost Impact</strong></td>
+                                <td><span id=&quot;transport-impact&quot;>—</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Species Diversification</strong></td>
+                                <td><span id=&quot;diversity-status&quot;>—</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Market Accessibility</strong></td>
+                                <td><span id=&quot;market-access&quot;>—</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class=&quot;card&quot;>
+                    <div class=&quot;card-header&quot;>
+                        <h2 class=&quot;card-title&quot;>Key Metrics</h2>
+                    </div>
+                    <div class=&quot;stats-grid&quot;>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Value per Acre</div>
+                            <div class=&quot;stat-value&quot;>$<span id=&quot;value-per-acre&quot;>—</span></div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Transport Cost Factor</div>
+                            <div class=&quot;stat-value&quot;>$<span id=&quot;transport-cost&quot;>—</span></div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Primary Species</div>
+                            <div class=&quot;stat-value&quot; id=&quot;primary-species&quot;>—</div>
+                        </div>
+                        <div class=&quot;stat-item&quot;>
+                            <div class=&quot;stat-label&quot;>Species Count</div>
+                            <div class=&quot;stat-value&quot; id=&quot;species-count&quot;>—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class=&quot;card&quot;>
+                <div class=&quot;card-header&quot;>
+                    <h2 class=&quot;card-title&quot;>Market Intelligence</h2>
+                    <p class=&quot;card-subtitle&quot;>Local factors that drive timber pricing</p>
+                </div>
+                <table class=&quot;data-table&quot;>
+                    <thead>
+                        <tr>
+                            <th>Factor</th>
+                            <th>Impact Level</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Cabinet Manufacturer Demand</strong></td>
+                            <td><span class=&quot;badge&quot; style=&quot;background: rgba(45,164,78,0.1); color: var(--success);&quot;>High</span></td>
+                            <td>Affects hardwood sawlog pricing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Flooring Manufacturer Demand</strong></td>
+                            <td><span class=&quot;badge&quot; style=&quot;background: rgba(45,164,78,0.1); color: var(--success);&quot;>High</span></td>
+                            <td>Influences all species pricing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pulpwood Mill Inventory</strong></td>
+                            <td><span class=&quot;badge&quot; style=&quot;background: rgba(191,135,0,0.1); color: var(--warning);&quot;>Medium</span></td>
+                            <td>Impacts pulpwood and lower-grade pricing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Winter Access Window</strong></td>
+                            <td><span class=&quot;badge&quot; style=&quot;background: rgba(45,164,78,0.1); color: var(--success);&quot;>High</span></td>
+                            <td>Seasonal premium for frozen ground access</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'timber_platform_data_v2';
+
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('.species-pct').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            
+            document.getElementById('species-total').textContent = total.toFixed(1);
+            
+            const validation = document.getElementById('validation-display');
+            const message = document.getElementById('validation-message');
+            
+            if (Math.abs(total - 100) < 0.1 &amp;&amp; total > 0) {
+                validation.classList.remove('invalid');
+                validation.classList.add('valid');
+                message.innerHTML = '<span style=&quot;color: var(--success); font-weight: 600;&quot;>✓ Valid</span>';
+            } else if (total > 0) {
+                validation.classList.remove('valid');
+                validation.classList.add('invalid');
+                message.innerHTML = '<span style=&quot;color: var(--danger); font-weight: 600;&quot;>⚠ Must equal 100%</span>';
+            } else {
+                validation.classList.remove('valid', 'invalid');
+                message.textContent = '';
+            }
+        }
+
+        function saveData() {
+            const total = parseFloat(document.getElementById('species-total').textContent);
+            if (Math.abs(total - 100) > 0.1) {
+                alert('❌ Species percentages must total 100%. Current total: ' + total + '%');
+                return;
+            }
+
+            const data = {
+                property: document.getElementById('property-name').value || 'Unnamed Property',
+                acres: parseFloat(document.getElementById('forest-acres').value) || 0,
+                county: document.getElementById('county').value || 'Unknown',
+                distance: parseFloat(document.getElementById('mill-distance').value) || 0,
+                species: {
+                    maple: { 
+                        pct: parseFloat(document.querySelector('[data-species=&quot;maple&quot;]').value) || 0, 
+                        mbf: parseFloat(document.getElementById('maple-mbf').value) || 0 
+                    },
+                    oak: { 
+                        pct: parseFloat(document.querySelector('[data-species=&quot;oak&quot;]').value) || 0, 
+                        mbf: parseFloat(document.getElementById('oak-mbf').value) || 0 
+                    },
+                    pine: { 
+                        pct: parseFloat(document.querySelector('[data-species=&quot;pine&quot;]').value) || 0, 
+                        mbf: parseFloat(document.getElementById('pine-mbf').value) || 0 
+                    },
+                    aspen: { 
+                        pct: parseFloat(document.querySelector('[data-species=&quot;aspen&quot;]').value) || 0, 
+                        mbf: parseFloat(document.getElementById('aspen-mbf').value) || 0 
+                    },
+                    basswood: { 
+                        pct: parseFloat(document.querySelector('[data-species=&quot;basswood&quot;]').value) || 0, 
+                        mbf: parseFloat(document.getElementById('basswood-mbf').value) || 0 
+                    },
+                    other: { 
+                        pct: parseFloat(document.querySelector('[data-species=&quot;other&quot;]').value) || 0, 
+                        mbf: parseFloat(document.getElementById('other-mbf').value) || 0 
+                    }
+                },
+                prices: {
+                    hardwood: parseFloat(document.getElementById('price-hardwood').value) || 0,
+                    pine: parseFloat(document.getElementById('price-pine').value) || 0,
+                    pulp: parseFloat(document.getElementById('price-pulp').value) || 0,
+                    veneer: parseFloat(document.getElementById('price-veneer').value) || 0
+                },
+                savedAt: new Date().toISOString()
+            };
+
+            if (data.acres === 0) {
+                alert('⚠️ Please enter total acreage');
+                return;
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            loadData();
+            alert('✅ Data saved successfully! Calculations updated.');
+            showTab('overview');
+        }
+
+        function loadSampleData() {
+            document.getElementById('property-name').value = 'Sample Forest Property';
+            document.getElementById('forest-acres').value = '120';
+            document.getElementById('county').value = 'Oneida';
+            document.getElementById('mill-distance').value = '15';
+
+            document.querySelector('[data-species=&quot;maple&quot;]').value = '25';
+            document.getElementById('maple-mbf').value = '2.5';
+            
+            document.querySelector('[data-species=&quot;oak&quot;]').value = '20';
+            document.getElementById('oak-mbf').value = '2.2';
+            
+            document.querySelector('[data-species=&quot;pine&quot;]').value = '25';
+            document.getElementById('pine-mbf').value = '3.0';
+            
+            document.querySelector('[data-species=&quot;aspen&quot;]').value = '15';
+            document.getElementById('aspen-mbf').value = '1.8';
+            
+            document.querySelector('[data-species=&quot;basswood&quot;]').value = '10';
+            document.getElementById('basswood-mbf').value = '2.0';
+            
+            document.querySelector('[data-species=&quot;other&quot;]').value = '5';
+            document.getElementById('other-mbf').value = '1.5';
+
+            document.getElementById('price-hardwood').value = '350';
+            document.getElementById('price-pine').value = '280';
+            document.getElementById('price-pulp').value = '45';
+            document.getElementById('price-veneer').value = '550';
+
+            updateTotal();
+            alert('✅ Sample data loaded. Click &quot;Save &amp; Calculate Valuation&quot; to apply.');
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) {
+                document.getElementById('no-data-alert').style.display = 'flex';
+                document.getElementById('data-status-text').textContent = 'No data loaded';
+                return;
+            }
+
+            const data = JSON.parse(stored);
+            document.getElementById('no-data-alert').style.display = 'none';
+            document.getElementById('data-status-text').textContent = 'Data loaded: ' + new Date(data.savedAt).toLocaleDateString();
+            
+            // Update badges
+            document.querySelectorAll('.badge-sample').forEach(b => {
+                b.className = 'badge badge-user';
+                b.textContent = 'Your Data';
+            });
+
+            // Update overview
+            document.getElementById('disp-property').textContent = data.property;
+            document.getElementById('disp-acres').textContent = data.acres;
+            document.getElementById('disp-county').textContent = data.county;
+            document.getElementById('disp-distance').textContent = data.distance;
+
+            document.getElementById('snap-hw').textContent = data.prices.hardwood;
+            document.getElementById('snap-pine').textContent = data.prices.pine;
+            document.getElementById('snap-pulp').textContent = data.prices.pulp;
+            document.getElementById('snap-veneer').textContent = data.prices.veneer;
+
+            // Calculate values
+            let totalValue = 0;
+            const tbody = document.getElementById('calc-breakdown');
+            tbody.innerHTML = '';
+
+            const speciesNames = { 
+                maple: 'Hard Maple', 
+                oak: 'Oak', 
+                pine: 'Pine', 
+                aspen: 'Aspen', 
+                basswood: 'Basswood', 
+                other: 'Other Hardwoods' 
+            };
+
+            let maxPct = 0;
+            let speciesCount = 0;
+            let primarySpecies = '';
+
+            for (const [key, spec] of Object.entries(data.species)) {
+                if (spec.pct > 0) {
+                    speciesCount++;
+                    if (spec.pct > maxPct) {
+                        maxPct = spec.pct;
+                        primarySpecies = speciesNames[key];
+                    }
+
+                    const speciesAcres = data.acres * (spec.pct / 100);
+                    const totalMBF = speciesAcres * spec.mbf;
+                    const price = (key === 'pine') ? data.prices.pine : data.prices.hardwood;
+                    const value = totalMBF * price;
+                    totalValue += value;
+
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${speciesNames[key]}</strong></td>
+                        <td style=&quot;text-align: right;&quot;>${speciesAcres.toFixed(1)}</td>
+                        <td style=&quot;text-align: right;&quot;>${spec.mbf}</td>
+                        <td style=&quot;text-align: right;&quot;>${totalMBF.toFixed(1)}</td>
+                        <td style=&quot;text-align: right;&quot;>$${price.toLocaleString()}</td>
+                        <td style=&quot;text-align: right;&quot;><strong>$${Math.round(value).toLocaleString()}</strong></td>
+                    `;
+                }
+            }
+
+            document.getElementById('total-value').textContent = Math.round(totalValue).toLocaleString();
+
+            // Analysis metrics
+            const valuePerAcre = totalValue / data.acres;
+            const transportCost = data.distance * 2.5;
+            
+            document.getElementById('value-per-acre').textContent = Math.round(valuePerAcre).toLocaleString();
+            document.getElementById('transport-cost').textContent = transportCost.toFixed(0);
+            document.getElementById('primary-species').textContent = primarySpecies;
+            document.getElementById('species-count').textContent = speciesCount;
+
+            document.getElementById('transport-impact').textContent = `$${transportCost.toFixed(0)}/MBF (${data.distance} mi × $2.50)`;
+            
+            let diversityMsg = 'Excellent - Well diversified';
+            if (maxPct > 50) diversityMsg = 'Low - Over-concentrated in ' + primarySpecies;
+            else if (maxPct > 40) diversityMsg = 'Fair - Moderate concentration';
+            else if (maxPct > 30) diversityMsg = 'Good - Balanced mix';
+            
+            document.getElementById('diversity-status').textContent = diversityMsg;
+            
+            document.getElementById('market-access').textContent = data.distance < 20 ? 'Good - Within optimal range' : 'Fair - Consider transport costs';
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.closest('.nav-tab').classList.add('active');
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
+"></iframe>
+</div>
+
+<script>
+  /* ===================== CACHED INTELLIGENCE SNAPSHOT =====================
+     Illustrative cached data (see header comment). Replace with live output
+     from scripts/fetch-data.js / scout.py when refreshing. */
+  const INTEL = {
+    updated: "2026-06-27T06:00:00Z",
+    fred: [
+      { date: "2025-07-01", value: 268.4 },
+      { date: "2025-08-01", value: 266.1 },
+      { date: "2025-09-01", value: 263.7 },
+      { date: "2025-10-01", value: 261.2 },
+      { date: "2025-11-01", value: 259.8 },
+      { date: "2025-12-01", value: 257.3 },
+      { date: "2026-01-01", value: 255.9 },
+      { date: "2026-02-01", value: 254.1 },
+      { date: "2026-03-01", value: 252.6 },
+      { date: "2026-04-01", value: 251.0 },
+      { date: "2026-05-01", value: 249.4 },
+      { date: "2026-06-01", value: 248.1 }
+    ],
+    comtrade: [
+      { partnerDesc: "China",   refYear: 2024, primaryValue: 41800000,  netWgt: 102500000 },
+      { partnerDesc: "China",   refYear: 2023, primaryValue: 96200000,  netWgt: 228000000 },
+      { partnerDesc: "Vietnam", refYear: 2024, primaryValue: 58300000,  netWgt: 121000000 },
+      { partnerDesc: "Canada",  refYear: 2024, primaryValue: 73900000,  netWgt: 165400000 }
+    ]
+  };
+
+  /* ---------- render ---------- */
+  function renderChart() {
+    const loading = document.getElementById('chartLoading');
+    const canvas = document.getElementById('ppiChart');
+    loading.style.display = 'none';
+    canvas.style.display = 'block';
+
+    new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: INTEL.fred.map(d => d.date),
+        datasets: [{
+          label: 'Hardwood PPI Index',
+          data: INTEL.fred.map(d => d.value),
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#cbd5e1' } } },
+        scales: {
+          y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+          x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+  }
+
+  function renderComtrade() {
+    const body = document.getElementById('comtradeBody');
+    if (!INTEL.comtrade.length) {
+      body.innerHTML = '<tr><td class="empty" colspan="4">No export data available in current packet.</td></tr>';
+      return;
+    }
+    body.innerHTML = INTEL.comtrade.map(row => `
+      <tr>
+        <td class="partner">${row.partnerDesc}</td>
+        <td>${row.refYear}</td>
+        <td class="value">$${row.primaryValue.toLocaleString()}</td>
+        <td>${row.netWgt.toLocaleString()}</td>
+      </tr>`).join('');
+  }
+
+  function setTimestamp() {
+    const d = new Date(INTEL.updated);
+    document.getElementById('lastUpdated').textContent =
+      d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+  }
+
+  /* ---------- lobbying brief (ported from App.tsx) ---------- */
+  function generateBrief() {
+    const lobbyTarget = document.getElementById('lobbyTarget').value;
+    const date = new Date().toLocaleDateString();
+    const latestIndex = INTEL.fred.length > 0 ? INTEL.fred[INTEL.fred.length - 1].value : 'N/A';
+
+    let text = `TO: ${lobbyTarget}\nFROM: PRESIDENT, KRETZ LUMBER\nDATE: ${date}\nSUBJECT: URGENT TRADE IMPACT REPORT\n\n`;
+
+    if (lobbyTarget === 'USTR') {
+      text += `Ambassador,\n\nThe Hardwood Producer Price Index is currently at ${latestIndex}, reflecting extreme market compression. Retaliatory tariffs from China (Sec 301) have effectively closed our primary export channel. We request an immediate exclusion for HTS 4407.91 (Red Oak) to prevent further mill curtailments in Wisconsin.`;
+    } else {
+      text += `Senator,\n\nInput costs for our Antigo operations are rising while export markets remain capped by tariffs. We need your support for the Hardwood Access Program in the upcoming Farm Bill to protect forestry jobs in Langlade County.`;
+    }
+    document.getElementById('brief').value = text;
+  }
+
+  /* ---------- calculator view ---------- */
+  function openCalculator() {
+    document.getElementById('calculatorView').classList.add('open');
+    document.body.classList.add('locked');
+  }
+  function closeCalculator() {
+    document.getElementById('calculatorView').classList.remove('open');
+    document.body.classList.remove('locked');
+  }
+
+  /* ---------- init ---------- */
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimestamp();
+    renderChart();
+    renderComtrade();
+  });
+</script>
+</body>
+</html>
