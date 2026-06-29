@@ -1,0 +1,16 @@
+Synthetic practice process notes.
+
+Process: Landowner inquiry intake
+
+Rough notes:
+- Landowner calls or emails asking about timber, forest health, property goals, or possible harvest.
+- Office or forestry staff collects name, contact info, county, approximate acreage, basic goals, and any urgent concerns.
+- Staff should avoid giving timber value or harvest recommendations before qualified review.
+- If it seems appropriate, the inquiry is routed to forestry or land staff for follow-up.
+- Follow-up may include asking for more property details, scheduling a call, reviewing public information, or arranging a site visit.
+- Notes should be saved somewhere consistent so follow-up is not lost.
+- Sensitive info includes landowner contact info, property details, valuation discussions, contract terms, and internal strategy.
+- AI could help draft follow-up emails and checklists, but a Kretz person must review before sending.
+
+Practice task:
+Turn this into a draft SOP with purpose, owner, inputs, steps, review points, and what AI should not do.

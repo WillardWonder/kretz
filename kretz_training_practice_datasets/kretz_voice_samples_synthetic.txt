@@ -1,0 +1,13 @@
+Synthetic voice practice samples. These are not official Kretz communications.
+
+Sample 1:
+Thanks for reaching out. The best next step is for us to learn a little more about your property and your goals before anyone tries to give advice. Timber value, harvest timing, and forest health all depend on the stand, access, species, and what you want the woods to look like long term.
+
+Sample 2:
+We can help get the conversation started, but we do not want to guess at details that should be verified. If you can send a little more information, we can route it to the right person and make sure the follow-up is useful.
+
+Sample 3:
+Our goal is to keep this practical. AI can help us organize information and draft a first version, but Kretz people still need to review anything that affects customers, landowners, safety, pricing, or business commitments.
+
+Practice task:
+Upload or paste these samples, then ask ChatGPT to identify the tone and rewrite a rough message in that voice.

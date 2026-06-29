@@ -1,0 +1,23 @@
+Synthetic practice data. Do not treat this as an official Kretz record.
+
+AI Leadership Planning Meeting Notes
+
+Topics discussed:
+- Need leadership-level understanding of AI tools, business impact, and governance.
+- AI policy should explain approved tools, protected data, human review, and who is accountable.
+- Kretz DNA should capture voice, values, vocabulary, and tone so AI-assisted communication does not sound generic.
+- Office staff may benefit from support with marketing drafts, social posts, infographics, and outreach.
+- Land, sales, and forestry workflows may need better tracking of contacts, opportunities, follow-up, and project status.
+- Manufacturing and grading technology research should be explored carefully with vendor verification.
+- Start with lower-risk pilots before higher-risk use cases.
+- Any external message, pricing, safety, financial, technical, or landowner-facing recommendation needs human review.
+- Need a no-fault way to report bad outputs, hallucinations, or AI tool issues.
+- Consider whether some problems are better handled by Outlook, Teams, Planner, SharePoint, a CRM, or process cleanup before building AI tools.
+
+Practice task:
+Paste these notes into ChatGPT and ask for:
+1. A leadership summary
+2. Action items
+3. Open questions
+4. Governance risks
+5. Suggested next steps

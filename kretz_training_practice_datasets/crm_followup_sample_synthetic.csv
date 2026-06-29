@@ -1,0 +1,6 @@
+record_id,contact_type,last_contact,current_status,next_step,owner,risk_or_data_note,ai_task
+CRM-001,Landowner,Initial call,Needs follow-up email,Schedule site visit discussion,Forestry team,Do not estimate timber value,Create follow-up draft and missing info checklist
+CRM-002,Customer,Quote inquiry,Waiting on specs,"Ask for grade, volume, timeline",Sales team,Do not invent price or availability,Draft customer info request
+CRM-003,Vendor,Technology demo,Early research,Collect demo agenda and references,Operations/IT,Vendor claims need verification,Create vendor questions
+CRM-004,Internal,AI policy discussion,Open items,Assign owners for policy review,Leadership/IT,Sensitive policy content,Summarize action items
+CRM-005,Land opportunity,Possible parcel review,Research only,Verify public data source and owner info,Land/forestry,Do not treat AI findings as verified,Create review checklist
