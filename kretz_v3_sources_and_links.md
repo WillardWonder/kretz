@@ -11,7 +11,7 @@ This file supports the source-linked newsbreak section in the deck and landing p
 - Zillow Offers shutdown: https://www.wsj.com/economy/housing/zillow-quits-home-flipping-business-cites-inability-to-forecast-prices-11635883500
 - McDonald's AI drive-thru pilot: https://apnews.com/article/bebc898363f2d550e1a0cd3c682fa234
 - OpenAI GPTs FAQ: https://help.openai.com/en/articles/8554407-gpts-faq
-- Creating and editing GPTs: https://help.openai.com/en/articles/20001049-apps-in-custom-gpts-beta
+- Creating and editing GPTs: https://help.openai.com/en/articles/8554397-creating-a-custom-gpt
 
 Custom GPT links:
 
