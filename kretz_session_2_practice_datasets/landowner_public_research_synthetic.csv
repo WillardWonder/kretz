@@ -1,0 +1,37 @@
+record_id,owner_name,mailing_city,mailing_state,parcel_id,town,acres,property_class,mfl_status,mfl_expiration_year,last_contact,source_notes
+SYN-201,Doreen Bergstrom,Wausau,WI,19-203-3898,Peck,18,6,MFL-Open,2041,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-202,Stanley Radtke,Minneapolis MN,WI,17-167-6517,Price,160,5M,MFL-Closed,2041,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-203,Janet Kubiak,Rhinelander,WI,31-751-4458,Norwood,48,5M,Not enrolled,,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-204,Dale Steckbauer,Rhinelander,WI,25-405-4035,Polar,48,6,FCL,2041,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-205,Arlene Halverson,,WI,15-181-2400,Elcho,48,6,MFL-Closed,2041,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-206,Arlene Bergstrom,Minneapolis MN,WI,23-801-7836,Upham,104,5,MFL-Open,2029,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-207,Stanley Duquette,Minneapolis MN,WI,21-146-9614,Price,104,1,MFL-Open,2041,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-208,Vernon Nowicki,Minneapolis MN,WI,27-896-1476,Polar,48,6,MFL-Closed,2041,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-209,Kermit Kubiak,Wausau,WI,15-249-1159,Ackley,160,5M,Not enrolled,,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-210,Dale Bergstrom,Green Bay,WI,13-776-8349,Price,0.4,6,Not enrolled,,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-211,Wayne Nowicki,Chicago IL,WI,25-326-5312,Price,27,5M,MFL-Open,2029,2023-09-14,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-212,Kermit Bergstrom,Antigo,WI,24-846-4218,Antigo,48,6,Not enrolled,,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-213,Bonnie Kubiak,Elcho,WI,10-201-8259,Upham,160,1,MFL-Open,2041,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-214,Stanley Brandenburg,Wausau,WI,32-336-4512,Neva,18,6,Not enrolled,,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-215,Harlan Nowicki,Wausau,WI,19-698-9624,Price,27,5,MFL-Open,2029,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-216,Colleen Nowicki,Chicago IL,IL,24-219-9689,Ackley,22,1,Not enrolled,,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-217,Vernon Thibodeau,Green Bay,WI,26-118-9027,Summit,88,1,Not enrolled,,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-218,Kermit Nowicki,Madison,WI,29-678-5632,Norwood,27,6,MFL-Open,2041,2023-09-14,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-219,Arlene Duquette,Rhinelander,WI,32-667-6467,Upham,160,5,MFL-Open,2041,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-220,Lynn Halverson,Wausau,WI,17-588-8301,Elcho,27,6,Not enrolled,,2023-09-14,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-221,Kermit Sorensen,Rhinelander,WI,31-618-4328,Ackley,12,6,Not enrolled,,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-222,Dale Steckbauer,Antigo,WI,24-621-6402,Elcho,22,5M,MFL-Closed,,2023-09-14,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-223,Doreen Bergstrom,Rhinelander,WI,34-960-5033,Polar,104,6,MFL-Closed,2041,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-224,Colleen Nowicki,Antigo,WI,32-540-2144,Vilas,104,5,MFL-Closed,2032,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-225,Janet Lemieux,Rhinelander,WI,30-205-8829,Polar,63,6,FCL,2038,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-226,Stanley Steckbauer,Chicago IL,WI,25-908-7485,Norwood,12,6,FCL,,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-227,Kermit Prahl,Green Bay,WI,24-727-5296,Neva,22,6,MFL-Open,2038,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-228,Kermit Prahl,Antigo,WI,27-642-9512,Norwood,72,5M,Not enrolled,,2023-09-14,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-229,Curtis Thibodeau,Elcho,WI,13-523-7515,Vilas,72,5,MFL-Open,,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-230,Rhonda Weisman,Green Bay,WI,27-405-6799,Peck,72,5M,FCL,2032,2025-03-19,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-231,Harlan Lemieux,Antigo,WI,33-493-9813,Summit,104,6,MFL-Open,,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-232,Harlan Steckbauer,Chicago IL,WI,19-679-9264,Norwood,160,6,MFL-Open,2032,,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-233,Roger Bergstrom,Madison,WI,11-900-6264,Summit,34,5M,Not enrolled,,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-234,Curtis Lemieux,Madison,WI,10-340-2539,Elcho,127,5M,MFL-Closed,2038,2023-09-14,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-235,Doreen Osterberg,Madison,WI,27-446-1938,Peck,160,5M,MFL-Closed,2032,2024-06-02,SYNTHETIC TRAINING DATA - not real ownership records
+SYN-236,Wayne Kubiak,Elcho,WI,26-570-2685,Summit,127,5M,MFL-Open,2041,,SYNTHETIC TRAINING DATA - not real ownership records

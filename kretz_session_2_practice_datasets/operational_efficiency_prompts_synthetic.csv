@@ -1,0 +1,23 @@
+task_id,department,task_description,frequency,minutes_per_occurrence,people_involved,current_tool,pain_point,data_sensitivity
+OPS-101,Sales,Retyping quote details from email into the pricing sheet,Daily,25,2,Outlook + Excel,"Same numbers keyed twice, transcription errors",Customer pricing
+OPS-102,Sales,Building a weekly call list from last month's inquiries,Weekly,45,1,Excel,List rebuilt from scratch every Monday,Customer contact
+OPS-103,Forestry,Writing stand descriptions from field notes,Weekly,90,3,Word,Notes are inconsistent between foresters,Landowner
+OPS-104,Forestry,Tracking MFL plan renewal dates,Monthly,60,1,Paper calendar,Renewals discovered late,Landowner
+OPS-105,Forestry,Summarizing landowner phone calls into follow-up tasks,Daily,20,4,Notepad,Follow-ups get lost,Landowner
+OPS-106,Mill Operations,Logging downtime causes at shift change,Daily,15,3,Clipboard,"Never analyzed, just filed",Internal
+OPS-107,Mill Operations,Building the weekly production recap for the management team,Weekly,75,1,Excel,Manual copy from three sources,Internal
+OPS-108,Mill Operations,Checking grade tally sheets against the scanner output,Daily,40,2,Paper + software,Discrepancies found days later,Internal
+OPS-109,Logistics,Planning next-day truck routes,Daily,50,1,Paper map + phone,Depends entirely on one person,Internal
+OPS-110,Logistics,Calling customers about delivery windows,Daily,35,2,Phone,No record of what was promised,Customer commitments
+OPS-111,Logistics,Reconciling fuel receipts to loads,Weekly,60,1,Excel,"Tedious, error prone",Financial
+OPS-112,Office/Admin,Scheduling meetings across four calendars,Weekly,30,1,Outlook,Endless back and forth,Internal
+OPS-113,Office/Admin,Formatting the monthly safety newsletter,Monthly,120,1,Word,Starts blank every month,Internal
+OPS-114,Office/Admin,Answering the same five customer questions by email,Daily,40,2,Outlook,Rewritten from scratch each time,Customer
+OPS-115,HR,Assembling new hire onboarding packets,Monthly,90,1,Word + printer,Checklist lives in someone's head,Employee
+OPS-116,HR,Drafting job postings,Quarterly,60,1,Word,Tone varies wildly by author,Internal
+OPS-117,HR,Summarizing exit interview themes,Quarterly,120,1,Notes,Never actually summarized,Employee - sensitive
+OPS-118,Maintenance,Writing up PM work orders from verbal handoffs,Daily,25,2,Paper,Detail lost between shifts,Internal
+OPS-119,Maintenance,Looking up part numbers across three vendor catalogs,Weekly,45,1,PDF catalogs,"Slow, easy to order wrong part",Internal
+OPS-120,Maintenance,Tracking which equipment is due for service,Weekly,30,1,Whiteboard,Wiped accidentally last spring,Internal
+OPS-121,Sales,Producing a monthly market summary from trade reports,Monthly,150,1,Reading + Word,Takes a full day,Market
+OPS-122,Forestry,Comparing timber sale bids side by side,Monthly,70,2,Excel,Formats differ by buyer,Financial

@@ -1,0 +1,116 @@
+KRETZ VOICE SAMPLES — SYNTHETIC TRAINING FILE
+=============================================
+Not real correspondence. Written for the Session 2 prompting lab so participants
+can compare generic AI output against how Kretz actually sounds, and so the
+Kretz DNA Assistant has something to work from.
+
+Use with: "Read these samples. Describe the voice in six rules, then rewrite the
+draft below to match it."
+
+
+-------------------------------------------------------------------
+WHAT SHOWS UP IN THE KRETZ VOICE
+-------------------------------------------------------------------
+- Plain words. Short sentences. No throat-clearing before the point.
+- Says what it does not know, instead of smoothing over it.
+- Employee-owned since 1929 comes up as a fact, not a slogan.
+- Neutral about whether to harvest. Advice first, sale second.
+- Names a person and a next step. Never ends on "please don't hesitate."
+- No exclamation points. No "we're excited to." No "reach out."
+
+
+-------------------------------------------------------------------
+PAIR 1 — LANDOWNER, FIRST CONTACT
+-------------------------------------------------------------------
+GENERIC AI VERSION:
+  Dear Valued Landowner,
+  We are excited to reach out regarding an incredible opportunity to
+  maximize the value of your timber assets! Kretz Lumber is a leading
+  provider of forestry solutions, and we would love to partner with you
+  on your forest management journey. Please don't hesitate to reach out
+  at your earliest convenience!
+
+KRETZ VERSION:
+  Hello Mr. Bergstrom,
+  Your parcel in the Town of Neva came up while we were looking at
+  forested land in Langlade County. I'm a forester with Kretz Lumber in
+  Antigo.
+  I'm not writing to ask you to sell timber. Plenty of stands are better
+  left alone for another ten years, and if that's yours I'll tell you so.
+  What I can do is walk it with you and give you a straight read on what
+  you have, and handle the Managed Forest Law paperwork if you ever go
+  that direction.
+  We've been employee-owned since 1929, so the person walking your woods
+  is an owner here.
+  If you want to set up a walk, call me at the number below. If not,
+  that's a fine answer and I won't keep writing.
+
+
+-------------------------------------------------------------------
+PAIR 2 — CUSTOMER, DELAYED ORDER
+-------------------------------------------------------------------
+GENERIC AI VERSION:
+  Dear Customer,
+  We sincerely apologize for any inconvenience this may have caused. Due
+  to unforeseen circumstances beyond our control, your order has been
+  slightly delayed. We greatly value your business and appreciate your
+  patience during this time. Rest assured we are doing everything
+  possible to expedite your shipment!
+
+KRETZ VERSION:
+  Hi Dana,
+  Your maple order is going to be two days late. The kiln charge it was
+  in didn't come down to target moisture, and I'd rather send it right
+  than send it Thursday.
+  New ship date is Monday the 14th. If that breaks something on your end,
+  call me today and we'll figure out what we can pull from another
+  charge.
+  Sorry for the shuffle.
+
+
+-------------------------------------------------------------------
+PAIR 3 — INTERNAL, SAFETY REMINDER
+-------------------------------------------------------------------
+GENERIC AI VERSION:
+  Team,
+  Safety is our number one priority! Please remember to always be aware
+  of your surroundings and follow all applicable safety protocols at all
+  times. Together, we can create a culture of safety excellence!
+
+KRETZ VERSION:
+  Crew,
+  We had a near miss by the kiln Tuesday — someone walked behind a truck
+  that was backing up. Nobody was hurt.
+  Two things. Walk around the front, not the back. And if you're the one
+  backing, wait until you can see the person, not until you think they
+  moved.
+  That's it. Bring anything else up with me at shift start.
+
+
+-------------------------------------------------------------------
+PAIR 4 — QUOTE FOLLOW-UP
+-------------------------------------------------------------------
+GENERIC AI VERSION:
+  Hi there! Just circling back on the quote we sent over. Wanted to touch
+  base and see if you had any questions or if there's anything else we
+  can do to earn your business. Looking forward to hearing from you!
+
+KRETZ VERSION:
+  Hi Ray,
+  Checking on the quote from the 3rd — 4/4 hard maple, 6,200 board feet.
+  It holds through the end of the month.
+  If the price is the problem, tell me and I'll see what I can do on the
+  grade mix. If the timing is the problem, that's easier.
+
+
+-------------------------------------------------------------------
+DRAFT TO REWRITE (use this with the DNA Assistant)
+-------------------------------------------------------------------
+  Dear Sir or Madam,
+  We are thrilled to announce that Kretz Lumber is currently seeking new
+  timber acquisition opportunities in your area! Our world-class team of
+  forestry professionals leverages decades of industry expertise to
+  deliver best-in-class results for landowners like yourself. We would be
+  delighted to schedule a consultation at your earliest convenience to
+  discuss how we can help you unlock the hidden value in your woodland
+  portfolio. Don't miss out on this limited-time opportunity!

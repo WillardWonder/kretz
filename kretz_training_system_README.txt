@@ -1,43 +1,12 @@
-Kretz AI Leadership and Governance Training - GitHub Drop-In Update
+KRETZ AI TRAINING PORTAL — REPOSITORY NOTES
 
-These files are named so you can drop them into the root of the existing GitHub repo and let them overwrite the older files.
+This repository contains Session 1 leadership/governance training and Session 2 prompting practice.
 
-Overwrite mapping:
-- index.html
-  Updated landing page for the training hub.
+Apply updates by extracting the GitHub drop-in ZIP once and copying all files and folders into the repository root. Choose Replace, commit, and push.
 
-- kretz_ai_complete_training_system.html
-  Updated facilitator/training guide page for the full session.
+Session 2 details and validation: README_SESSION2.txt and FINAL_QA_SESSION2.md.
 
-- kretz_ai_step_by_step_handout.pdf
-  Updated participant activity handout.
-
-- kretz_ai_leadership_FULL_ready_to_deliver.pptx
-  Updated PowerPoint deck.
-
-- kretz_ai_complete_training_system.zip
-  Complete nested package with the updated training files.
-
-New supporting files:
-- kretz_email_response_workshop.html
-- kretz_sop_documentation_workshop.html
-- kretz_research_vendor_comparison_workshop.html
-- kretz_marketing_campaign_workshop.html
-- kretz_training_practice_datasets.zip
-- kretz_training_practice_datasets/
-- kretz_v3_sources_and_links.md
-
-How to use:
-1. Unzip kretz_GITHUB_DROP_IN_OVERWRITE.zip.
-2. Open your local GitHub repo folder.
-3. Drag all extracted files and folders into the repo root.
-4. Choose Replace for files that already exist.
-5. Commit in GitHub Desktop.
-6. Push origin.
-7. Refresh the GitHub Pages site.
-
-Suggested commit message:
-Update Kretz AI training materials and practice activities
-
-Important:
-Do not put these files inside a subfolder. They should sit at the top/root of the repo beside the existing prototype files.
+Keep these existing prototype files in the repository root:
+- Claude_Parcel.html
+- kretz-landowner-prospecting.html
+- kretz-haul-planner.html

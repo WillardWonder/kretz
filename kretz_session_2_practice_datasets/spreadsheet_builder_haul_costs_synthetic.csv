@@ -1,0 +1,29 @@
+load_id,date,origin,destination,one_way_miles,species,grade,board_feet,truck_id,driving_hours,fuel_gallons,fuel_price_per_gal,driver_rate_per_hour,tolls_and_permits
+HL-1001,2026-06-09,Antigo Yard,Aniwa,24,Soft Maple,2AC,5800,T-11,2.64,9.6,3.81,28.5,0
+HL-1002,2026-04-02,Antigo Yard,Tomahawk,38,White Ash,Select,2800,T-12,2.6,14.8,3.95,28.5,0
+HL-1003,2026-05-12,Antigo Yard,Merrill,32,Aspen,1C,3400,T-14,2.12,14.9,3.96,29.75,15
+HL-1004,2026-06-03,Antigo Yard,Shawano,48,Red Oak,F1F,3400,T-12,3.38,18.5,4.15,28.5,0
+HL-1005,2026-05-27,Antigo Yard,Mattoon,16,Basswood,3AC,5800,T-17,2.29,7.2,4.08,28.5,25
+HL-1006,2026-06-21,Antigo Yard,Elcho,18,Basswood,F1F,7000,T-14,1.78,8.6,4.11,31.0,15
+HL-1007,2026-06-23,Antigo Yard,Shawano,48,Aspen,F1F,0,T-14,3.4,20.1,3.79,28.5,0
+HL-1008,2026-05-10,Antigo Yard,Wittenberg,30,Hard Maple,F1F,4100,T-11,2.59,12.0,3.72,31.0,40
+HL-1009,2026-05-23,Antigo Yard,Eagle River,62,White Ash,F1F,5200,T-21,3.51,23.5,4.04,31.0,40
+HL-1010,2026-04-01,Antigo Yard,Stevens Point,76,Aspen,1C,6300,T-17,3.75,28.8,4.12,31.0,0
+HL-1011,2026-05-28,Antigo Yard,Wausau,42,Basswood,1C,3400,T-11,2.61,19.0,3.85,29.75,15
+HL-1012,2026-06-24,Antigo Yard,Aniwa,24,Red Oak,Select,6300,T-11,2.48,12.2,3.95,28.5,0
+HL-1013,2026-05-10,Antigo Yard,Elcho,18,Red Oak,FAS,7000,T-11,1.77,9.9,3.78,28.5,15
+HL-1014,2026-04-09,Antigo Yard,Crandon,44,Red Oak,2AC,2800,T-17,2.66,,3.67,29.75,40
+HL-1015,2026-04-01,Antigo Yard,Wittenberg,30,Aspen,3AC,7000,T-11,2.28,13.4,4.08,29.75,15
+HL-1016,2026-04-24,Antigo Yard,Elcho,18,Hard Maple,Select,2800,T-21,1.66,7.9,3.9,31.0,0
+HL-1017,2026-04-15,Antigo Yard,Shawano,48,Red Oak,2AC,2800,T-11,2.76,18.5,3.85,29.75,25
+HL-1018,2026-05-18,Antigo Yard,Elcho,18,Soft Maple,1C,4600,T-11,2.24,9.5,4.08,29.75,0
+HL-1019,2026-05-28,Antigo Yard,Crandon,44,White Ash,3AC,4100,T-12,2.97,18.4,3.88,31.0,25
+HL-1020,2026-04-18,Antigo Yard,Stevens Point,3,White Ash,Select,6300,T-11,1.78,8.4,3.95,31.0,25
+HL-1021,2026-05-06,Antigo Yard,Rhinelander,45,White Ash,1C,6300,T-11,2.79,18.6,3.79,31.0,0
+HL-1022,2026-05-01,Antigo Yard,Deerbrook,12,White Ash,1C,2800,T-21,2.25,7.3,3.64,28.5,40
+HL-1023,2026-06-24,Antigo Yard,Wausau,42,Soft Maple,2AC,3400,T-21,26.5,16.6,4.04,31.0,0
+HL-1024,2026-05-10,Antigo Yard,Wittenberg,30,White Ash,Select,4600,T-17,2.06,14.7,3.62,29.75,0
+HL-1025,2026-04-14,Antigo Yard,Tomahawk,38,Hard Maple,1C,6300,T-11,2.32,16.9,4.05,29.75,40
+HL-1026,2026-05-09,Antigo Yard,Shawano,48,Aspen,2AC,3400,T-14,3.31,18.3,3.97,28.5,15
+HL-1027,2026-04-08,Antigo Yard,Merrill,32,Soft Maple,1C,5200,T-17,2.82,15.4,3.94,28.5,40
+HL-1028,2026-04-02,Antigo Yard,Wausau,42,Yellow Birch,FAS,6300,T-11,3.19,17.4,4.15,29.75,15

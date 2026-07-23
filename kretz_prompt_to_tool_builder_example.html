@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt-to-Tool Example — Timber Sale Tracker | Kretz Session 2</title>
+<meta name="description" content="Activity 8 follow-along example: a working timber sale tracker built from two prompts, showing how a plain-language request becomes a usable tool.">
+<style>
+:root{--bg:#0b0d08;--bg2:#13170f;--panel:rgba(255,255,255,.075);--panel2:rgba(255,255,255,.12);--line:rgba(255,255,255,.16);--text:#fff7e8;--muted:#cbbfa8;--gold:#d49a3d;--green:#789d58;--cream:#f0d49a;--red:#c4564b;--shadow:0 24px 80px rgba(0,0,0,.42);--max:1180px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 18% 4%,rgba(212,154,61,.24),transparent 32%),radial-gradient(circle at 90% 10%,rgba(120,157,88,.22),transparent 34%),linear-gradient(135deg,#080a07,#151810 48%,#070806);min-height:100vh}
+a{color:inherit;text-decoration:none}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 92%);z-index:-1}
+.top{position:sticky;top:0;z-index:20;background:rgba(8,10,7,.80);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{max-width:var(--max);margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-weight:950;color:#11160d;background:linear-gradient(135deg,#f4c778,#bd7932 48%,#7ea75f);box-shadow:0 14px 34px rgba(212,154,61,.22)}
+.brand strong{display:block;letter-spacing:-.03em}.brand span span{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
+.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.links a,.tiny{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);padding:9px 12px;border-radius:999px;color:#f6eddb;font-size:.88rem;font-family:inherit;cursor:pointer}
+.links a:hover,.tiny:hover{background:rgba(255,255,255,.12)}
+section{max-width:var(--max);margin:auto;padding:34px 22px}
+.hero{max-width:var(--max);margin:auto;padding:56px 22px 22px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(212,154,61,.35);background:rgba(212,154,61,.11);padding:8px 12px;border-radius:999px;color:#ffe7bd;font-weight:800;font-size:.9rem;margin-bottom:18px}
+.dot{width:9px;height:9px;border-radius:50%;background:#92d579;box-shadow:0 0 0 8px rgba(146,213,121,.12)}
+h1{font-size:clamp(2.2rem,5vw,4.2rem);line-height:.92;letter-spacing:-.06em;margin:0}
+h1 span{display:block;color:transparent;background:linear-gradient(90deg,#fff6df,#e7b45c 50%,#a6cf83);-webkit-background-clip:text;background-clip:text}
+.lead{font-size:clamp(1rem,1.5vw,1.18rem);line-height:1.62;color:#e0d3bc;max-width:780px;margin:20px 0 0}
+.sectionHead{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}
+h2{font-size:clamp(1.7rem,3vw,2.6rem);line-height:.98;letter-spacing:-.05em;margin:0}
+.sectionHead p{margin:0;color:var(--muted);line-height:1.55;max-width:520px}
+.notice{padding:20px;border-radius:22px;background:rgba(212,154,61,.10);border:1px solid rgba(212,154,61,.25);line-height:1.55;color:#f6e6c8}.notice strong{color:#fff3d8}
+.warn{padding:18px 20px;border-radius:22px;background:rgba(196,86,75,.12);border:1px solid rgba(196,86,75,.35);line-height:1.55;color:#ffe6e1}.warn strong{color:#fff1d5}
+.prompt{white-space:pre-wrap;background:#11170e;border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;color:#fff2d8;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9rem;line-height:1.5}
+.pwrap{margin-top:12px}.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+.plabel{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);font-weight:950}
+.copy{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#f6eddb;padding:7px 11px;border-radius:999px;font-size:.76rem;font-weight:900;letter-spacing:.05em;cursor:pointer;font-family:inherit}
+.copy:hover{background:rgba(255,255,255,.13)}.copy.ok{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006;border-color:transparent}
+.panel{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);border-radius:24px;padding:22px;box-shadow:0 18px 56px rgba(0,0,0,.18)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);font-weight:950}
+.f input,.f select,.f textarea{background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:.94rem}
+.f textarea{min-height:64px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:14px;font-weight:900;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.075);font-family:inherit;font-size:.95rem;cursor:pointer;color:inherit}
+.btn.primary{background:linear-gradient(135deg,#e4a54b,#995f22);color:#161208;border:0}
+.btn.green{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006;border:0}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.stat{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);border-radius:16px;padding:14px}
+.stat strong{display:block;font-size:1.4rem;letter-spacing:-.04em;color:#fff2d6}
+.stat span{display:block;color:var(--muted);font-size:.84rem;margin-top:3px}
+#tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.9rem;min-width:820px}
+th{text-align:left;padding:11px 10px;background:rgba(0,0,0,.4);color:var(--cream);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:950;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.08);color:#e6dac5;vertical-align:top}
+tr.late td{background:rgba(196,86,75,.14)}
+tr:hover td{background:rgba(255,255,255,.04)}
+.stage{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.74rem;font-weight:900;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);white-space:nowrap}
+.stage.s3,.stage.s4{background:rgba(120,157,88,.2);border-color:rgba(120,157,88,.4)}
+.stage.s5{background:rgba(212,154,61,.2);border-color:rgba(212,154,61,.4)}
+.del{background:none;border:0;color:#e08c80;cursor:pointer;font-weight:900;font-size:.85rem;font-family:inherit}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.foot{margin-top:30px;padding:32px 22px;border-top:1px solid var(--line);background:rgba(0,0,0,.28)}
+.footInner{max-width:var(--max);margin:auto;color:var(--muted);font-size:.88rem;line-height:1.6}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.nav{flex-direction:column;align-items:flex-start}.grid,.stats{grid-template-columns:1fr}table{font-size:.82rem}th,td{padding:8px 6px}}
+@media print{.top,.copy,.bar,.del,#form,.warn{display:none!important}body{background:#fff;color:#000}td,th{color:#000}table{min-width:0}#tableWrap{overflow:visible}}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header class="top"><nav class="nav"><a class="brand" href="index.html"><span class="mark">AI</span><span><strong>Prompt-to-Tool Example</strong><span>Session 2 · Activity 8 follow-along</span></span></a>
+<div class="links"><a href="index.html">Home</a><a href="kretz_session_2_run_of_show.html">Run of show</a><a href="#prompts">The prompts</a><button class="tiny" onclick="window.print()">Print</button></div></nav></header>
+
+<main>
+<div class="hero">
+  <div class="eyebrow"><span class="dot"></span> Two prompts. Fifteen minutes. One working tool.</div>
+  <h1>Timber Sale Tracker <span>— built from a description.</span></h1>
+  <p class="lead">The follow-along example for the final activity. It solves a plain, everyday problem — timber sale follow-ups that get lost in notebooks and inboxes — and it was built with two prompts and nothing else. No coding, no software to buy, no login. The point is not this particular tracker. It is that describing a tool well is a skill anyone in the room can use on their own annoying task.</p>
+</div>
+
+<section>
+  <div class="notice"><strong>Why this problem.</strong> Land, sales, and forestry work is full of follow-ups that live in one person's head or a paper notebook — who was called, who got walked, whose bid is still out. That is a small, clear, low-risk problem, which makes it a good first tool. Everything below runs from a double-clicked file, needs no internet, and required no purchased software or hosting to build.</div>
+</section>
+
+<section>
+  <div class="sectionHead"><h2>The tool.</h2><p>Loaded with four synthetic rows so it is not empty. Add your own, filter, export, print.</p></div>
+
+  <div class="panel">
+    <div id="form">
+      <div class="grid">
+        <div class="f"><label for="i_owner">Landowner</label><input id="i_owner" placeholder="Name"></div>
+        <div class="f"><label for="i_town">Town</label><select id="i_town"></select></div>
+        <div class="f"><label for="i_acres">Acres</label><input id="i_acres" type="number" min="0" step="1" placeholder="0"></div>
+        <div class="f"><label for="i_species">Primary species</label><select id="i_species"></select></div>
+        <div class="f"><label for="i_stage">Stage</label><select id="i_stage"></select></div>
+        <div class="f"><label for="i_action">Next action</label><input id="i_action" placeholder="Call to schedule walk"></div>
+        <div class="f"><label for="i_due">Due</label><input id="i_due" type="date"></div>
+        <div class="f"><label for="i_forester">Forester</label><input id="i_forester" placeholder="Initials"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label for="i_notes">Notes</label><textarea id="i_notes" placeholder="What was said, what was promised, what still needs verifying."></textarea></div>
+      <div class="bar">
+        <button class="btn primary" id="add">Add to tracker</button>
+        <button class="btn" id="demo">Reset to sample rows</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><strong id="s_count">0</strong><span>Open prospects</span></div>
+      <div class="stat"><strong id="s_acres">0</strong><span>Acres tracked</span></div>
+      <div class="stat"><strong id="s_late">0</strong><span>Follow-ups overdue</span></div>
+      <div class="stat"><strong id="s_week">0</strong><span>Due in next 7 days</span></div>
+    </div>
+
+    <div class="bar">
+      <div class="f" style="min-width:170px"><label for="f_stage">Filter stage</label><select id="f_stage"></select></div>
+      <div class="f" style="min-width:150px"><label for="f_forester">Filter forester</label><select id="f_forester"></select></div>
+      <button class="btn green" id="exp">Export CSV</button>
+      <button class="btn" onclick="window.print()">Print list</button>
+    </div>
+
+    <div id="tableWrap"></div>
+  </div>
+
+  <div class="warn" style="margin-top:16px"><strong>Review warning — this tool tracks, it does not verify.</strong> Everything here is what a person typed in. It does not check ownership, acreage, boundaries, or Managed Forest Law status against the county record, and it does not estimate timber value. Confirm against the actual parcel record before any of it reaches a landowner, and have a person review anything that leaves the building.</div>
+</section>
+
+<section id="prompts">
+  <div class="sectionHead"><h2>The two prompts that built it.</h2><p>This is the real payload of the activity. The tool is just proof the prompts worked.</p></div>
+
+  <div class="pwrap"><div class="phead"><span class="plabel">Prompt 1 — the build</span><button class="copy">Copy</button></div>
+  <div class="prompt">Build me a single-file HTML tool to help with this problem: our
+land, sales and forestry people lose track of timber sale
+follow-ups. Everything lives in someone's head or a notebook.
+
+It should let me add a prospect with landowner, town, acres,
+primary species, stage, next action, due date, forester, and
+notes. Stages run from contacted, to walked, to bid submitted,
+to under contract, to harvest scheduled, to closed.
+
+Show them in a table sorted by due date, with anything overdue
+highlighted. Let me filter by stage and by forester, and show
+me counts of open prospects, total acres, overdue follow-ups,
+and what is due in the next week.
+
+It needs a review warning making clear the tool does not verify
+ownership or acreage and does not estimate timber value. Add a
+CSV export and a print button.
+
+No external dependencies, no login, no internet connection.
+One file that runs from a double-click on a work laptop.
+
+Ask up to five questions before coding if you need to.</div></div>
+
+  <div class="pwrap"><div class="phead"><span class="plabel">Prompt 2 — the refine</span><button class="copy">Copy</button></div>
+  <div class="prompt">Two changes only. Load it with four sample rows so it is not
+empty when someone opens it, and label them clearly as sample
+data. And make the stage badges color-code so under contract
+and harvest scheduled stand out from the early stages.
+
+Leave everything else exactly as it is.</div></div>
+
+  <div class="notice" style="margin-top:16px"><strong>That is the whole build.</strong> Two prompts, in the room, start to finish. The takeaway is not this tracker — it is that a tool worth using can come out of a clear description, and the skill of writing that description is the same one the whole session has been practicing.</div>
+</section>
+
+<section>
+  <div class="sectionHead"><h2>What it deliberately does not do.</h2><p>Knowing where a tool stops is part of building one.</p></div>
+  <div class="warn">
+    <p style="margin:0 0 10px"><strong>It does not save between sessions.</strong> Close the tab and the rows are gone — export the CSV. That is a real limitation of a fifteen-minute build, and naming it is more useful than hiding it. Saving your data between visits would be the natural next thing to add, and it makes a good follow-on exercise.</p>
+    <p style="margin:0 0 10px"><strong>It does not talk to anything.</strong> No parcel data, no accounting, no email. If it needed to, that is the moment to ask whether this should be a real system instead of a one-file tool.</p>
+    <p style="margin:0"><strong>It is one small slice.</strong> It tracks the follow-up that gets dropped, not an entire sales process. Building the piece that annoys you most, first, is a good way to find out whether a tool is worth expanding before you put more time into it.</p>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="footInner"><strong style="color:#fff7e8">Kretz AI Prompting Lab — Session 2, Activity 8</strong><br>
+Follow-along example. If you would rather build something for your own task, do that — the sequence is the lesson, not the subject.<br>
+Sample data is synthetic. Kretz Lumber · Employee-Owned · Antigo, WI</div></footer>
+
+<script>
+(function(){"use strict";
+var TOWNS=["Ackley","Antigo","Elcho","Neva","Norwood","Peck","Polar","Price","Rolling","Summit","Upham","Vilas"];
+var SPP=["Hard Maple","Red Oak","Basswood","White Ash","Yellow Birch","Soft Maple","Aspen","Mixed hardwood"];
+var STAGES=["Contacted","Walked","Bid submitted","Under contract","Harvest scheduled","Closed"];
+
+function localISO(x){var y=x.getFullYear(),m=String(x.getMonth()+1).padStart(2,'0'),d=String(x.getDate()).padStart(2,'0');return y+'-'+m+'-'+d}function iso(d){var x=new Date();x.setDate(x.getDate()+d);return localISO(x)}
+var SAMPLE=[
+ {owner:"D. Bergstrom (sample)",town:"Neva",acres:88,species:"Hard Maple",stage:"Walked",action:"Send bid",due:iso(-6),forester:"F1",notes:"Sample row. Walked the north 40, good sawtimber. Verify MFL status before bidding."},
+ {owner:"M. Kowalczyk (sample)",town:"Elcho",acres:41,species:"Red Oak",stage:"Contacted",action:"Schedule walk",due:iso(2),forester:"F2",notes:"Sample row. Out-of-county owner, prefers email."},
+ {owner:"G. Thibodeau (sample)",town:"Polar",acres:127,species:"Mixed hardwood",stage:"Under contract",action:"Confirm harvest window",due:iso(9),forester:"F1",notes:"Sample row. Wants winter harvest, wet ground in spring."},
+ {owner:"L. Vanderhoof (sample)",town:"Summit",acres:22,species:"Aspen",stage:"Bid submitted",action:"Follow up on bid",due:iso(-1),forester:"F3",notes:"Sample row. Small parcel, may not pencil out."}
+];
+var rows=[];
+
+function fill(sel,arr,all){var e=document.getElementById(sel);e.innerHTML="";
+ if(all)e.appendChild(new Option("All",""));
+ arr.forEach(function(v){e.appendChild(new Option(v,v))})}
+fill("i_town",TOWNS);fill("i_species",SPP);fill("i_stage",STAGES);
+fill("f_stage",STAGES,true);
+
+function today(){return localISO(new Date())}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+function foresters(){var s={};rows.forEach(function(r){if(r.forester)s[r.forester]=1});return Object.keys(s).sort()}
+
+function render(){
+ var fs=document.getElementById("f_stage").value, ff=document.getElementById("f_forester").value;
+ var view=rows.filter(function(r){return (!fs||r.stage===fs)&&(!ff||r.forester===ff)});
+ view.sort(function(a,b){return (a.due||"9999").localeCompare(b.due||"9999")});
+ var t=today(), wk=iso(7);
+ var open=rows.filter(function(r){return r.stage!=="Closed"});
+ document.getElementById("s_count").textContent=open.length;
+ document.getElementById("s_acres").textContent=open.reduce(function(a,r){return a+(+r.acres||0)},0).toLocaleString();
+ document.getElementById("s_late").textContent=open.filter(function(r){return r.due&&r.due<t}).length;
+ document.getElementById("s_week").textContent=open.filter(function(r){return r.due&&r.due>=t&&r.due<=wk}).length;
+
+ var w=document.getElementById("tableWrap");
+ if(!view.length){w.innerHTML='<div class="empty">Nothing matches that filter.</div>';return}
+ var h='<table><thead><tr><th>Landowner</th><th>Town</th><th>Acres</th><th>Species</th><th>Stage</th><th>Next action</th><th>Due</th><th>By</th><th>Notes</th><th></th></tr></thead><tbody>';
+ view.forEach(function(r){
+  var late=r.stage!=="Closed"&&r.due&&r.due<t;
+  var si=STAGES.indexOf(r.stage);
+  h+='<tr class="'+(late?"late":"")+'"><td>'+esc(r.owner)+'</td><td>'+esc(r.town)+'</td><td>'+esc(r.acres)+
+     '</td><td>'+esc(r.species)+'</td><td><span class="stage s'+si+'">'+esc(r.stage)+'</span></td><td>'+esc(r.action)+
+     '</td><td>'+esc(r.due||"—")+(late?' <strong style="color:#ffb3a8">late</strong>':'')+'</td><td>'+esc(r.forester)+
+     '</td><td>'+esc(r.notes)+'</td><td><button class="del" data-i="'+rows.indexOf(r)+'">remove</button></td></tr>';
+ });
+ w.innerHTML=h+'</tbody></table>';
+ w.querySelectorAll(".del").forEach(function(b){b.onclick=function(){rows.splice(+b.dataset.i,1);sync()}});
+}
+function sync(){
+ var cur=document.getElementById("f_forester").value;
+ fill("f_forester",foresters(),true);
+ document.getElementById("f_forester").value=cur||"";
+ render();
+}
+document.getElementById("add").onclick=function(){
+ var o=document.getElementById("i_owner").value.trim();
+ if(!o){document.getElementById("i_owner").focus();return}
+ rows.push({owner:o,town:document.getElementById("i_town").value,
+  acres:document.getElementById("i_acres").value||0,species:document.getElementById("i_species").value,
+  stage:document.getElementById("i_stage").value,action:document.getElementById("i_action").value.trim(),
+  due:document.getElementById("i_due").value,forester:document.getElementById("i_forester").value.trim().toUpperCase(),
+  notes:document.getElementById("i_notes").value.trim()});
+ ["i_owner","i_acres","i_action","i_due","i_forester","i_notes"].forEach(function(id){document.getElementById(id).value=""});
+ sync();
+};
+document.getElementById("demo").onclick=function(){rows=SAMPLE.map(function(r){return Object.assign({},r)});sync()};
+document.getElementById("f_stage").onchange=render;
+document.getElementById("f_forester").onchange=render;
+document.getElementById("exp").onclick=function(){
+ var head=["landowner","town","acres","species","stage","next_action","due","forester","notes"];
+ var q=function(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'};
+ var csv=[head.join(",")].concat(rows.map(function(r){
+  return [r.owner,r.town,r.acres,r.species,r.stage,r.action,r.due,r.forester,r.notes].map(q).join(",")})).join("\n");
+ var a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+ a.download="timber_sale_tracker_"+today()+".csv";a.click();URL.revokeObjectURL(a.href);
+};
+document.querySelectorAll(".copy").forEach(function(b){b.onclick=function(){
+ var p=b.closest(".pwrap").querySelector(".prompt"),t=p.innerText;
+ var ok=function(){var o=b.textContent;b.textContent="Copied";b.classList.add("ok");
+  setTimeout(function(){b.textContent=o;b.classList.remove("ok")},1400)};
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok).catch(function(){fb(t,ok)})}else{fb(t,ok)}
+}});
+function fb(t,ok){var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";
+ document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}document.body.removeChild(a)}
+
+rows=SAMPLE.map(function(r){return Object.assign({},r)});sync();
+})();
+</script>
+</body>
+</html>
