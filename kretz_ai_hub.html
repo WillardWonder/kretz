@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Kretz AI Hub</title>
+<meta content="Kretz Lumber AI Hub: track progress on Kretz's AI goals, bring any AI tool or idea into use step by step, and find every prompt and tool from the training in one place. Works offline." name="description"/>
+<style>
+
+    :root{
+      --bg:#0b0d08; --bg2:#13170f; --panel:rgba(255,255,255,.075); --panel2:rgba(255,255,255,.12);
+      --line:rgba(255,255,255,.16); --text:#fff7e8; --muted:#cbbfa8; --gold:#d49a3d; --green:#789d58;
+      --cream:#f0d49a; --red:#c4564b; --shadow:0 24px 80px rgba(0,0,0,.42); --max:1180px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 18% 4%,rgba(212,154,61,.24),transparent 32%),radial-gradient(circle at 90% 10%,rgba(120,157,88,.22),transparent 34%),linear-gradient(135deg,#080a07,#151810 48%,#070806);min-height:100vh} a{color:inherit;text-decoration:none}
+    .grain{position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 92%);z-index:-1}
+    .top{position:sticky;top:0;z-index:20;background:rgba(8,10,7,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)} .nav{max-width:var(--max);margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-weight:950;color:#11160d;background:linear-gradient(135deg,#f4c778,#bd7932 48%,#7ea75f);box-shadow:0 14px 34px rgba(212,154,61,.22)}.brand strong{display:block;letter-spacing:-.03em}.brand span span{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.links a,.tiny{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);padding:9px 12px;border-radius:999px;color:#f6eddb;font-size:.88rem}.links a:hover,.tiny:hover{background:rgba(255,255,255,.12)}
+    .hero{max-width:var(--max);margin:auto;padding:72px 22px 36px;display:grid;grid-template-columns:1.03fr .97fr;gap:34px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(212,154,61,.35);background:rgba(212,154,61,.11);padding:8px 12px;border-radius:999px;color:#ffe7bd;font-weight:800;font-size:.9rem;margin-bottom:20px}.dot{width:9px;height:9px;border-radius:50%;background:#92d579;box-shadow:0 0 0 8px rgba(146,213,121,.12)}h1{font-size:clamp(2.55rem,6.1vw,5.7rem);line-height:.9;letter-spacing:-.075em;margin:0}h1 span{display:block;color:transparent;background:linear-gradient(90deg,#fff6df,#e7b45c 50%,#a6cf83);-webkit-background-clip:text;background-clip:text}.lead{font-size:clamp(1.04rem,1.55vw,1.25rem);line-height:1.62;color:#e0d3bc;max-width:760px;margin:24px 0 0}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 17px;border-radius:15px;font-weight:900;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.075);box-shadow:0 14px 32px rgba(0,0,0,.24)}.btn.primary{background:linear-gradient(135deg,#e4a54b,#995f22);color:#161208;border:0}.btn.green{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006;border:0}.btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .heroCard{min-height:480px;border-radius:34px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.17);box-shadow:var(--shadow);background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.035)),radial-gradient(circle at 35% 16%,rgba(212,154,61,.28),transparent 38%),radial-gradient(circle at 74% 34%,rgba(120,157,88,.22),transparent 40%),linear-gradient(135deg,#171d13,#090b08)}.heroCard:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(158deg,rgba(240,212,154,.14) 0 2px,transparent 2px 20px),linear-gradient(0deg,rgba(0,0,0,.6),transparent 55%)}.orb{position:absolute;right:-90px;top:-80px;width:400px;height:400px;border-radius:50%;background:repeating-radial-gradient(circle,rgba(240,212,154,.26) 0 2px,transparent 2px 31px);opacity:.55}.stack{position:absolute;left:28px;right:28px;bottom:28px;display:grid;gap:14px}.mini{padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.36);backdrop-filter:blur(12px)}.mini .k{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);font-weight:950;margin-bottom:8px}.mini strong{display:block;margin-bottom:5px}.mini p{margin:0;color:var(--muted);line-height:1.45;font-size:.93rem}
+    .stats{max-width:var(--max);margin:auto;padding:0 22px 38px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.stat{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);border-radius:18px;padding:18px}.stat strong{display:block;font-size:1.55rem;letter-spacing:-.04em;color:#fff2d6}.stat span{display:block;color:var(--muted);font-size:.91rem;margin-top:4px}
+    section{max-width:var(--max);margin:auto;padding:42px 22px}.sectionHead{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}h2{font-size:clamp(2rem,3.4vw,3.25rem);line-height:.96;letter-spacing:-.05em;margin:0}.sectionHead p{margin:0;color:var(--muted);line-height:1.55;max-width:500px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);border-radius:24px;padding:22px;box-shadow:0 18px 56px rgba(0,0,0,.18)}.card:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 12% 0%,rgba(212,154,61,.14),transparent 34%);pointer-events:none}.card>*{position:relative;z-index:1}.icon{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:rgba(212,154,61,.13);border:1px solid rgba(212,154,61,.28);font-size:1.35rem;margin-bottom:15px}.card h3{margin:0 0 9px;font-size:1.2rem;letter-spacing:-.02em}.card p{margin:0 0 17px;color:var(--muted);line-height:1.55}.audio-player{display:block;width:100%;margin:2px 0 13px}.demo-actions{display:flex;gap:9px;flex-wrap:wrap}.res{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);font-size:.9rem;font-weight:900}.res:hover{background:rgba(255,255,255,.14)}
+    .split{display:grid;grid-template-columns:.86fr 1.14fr;gap:16px}.notice{padding:20px;border-radius:22px;background:rgba(212,154,61,.10);border:1px solid rgba(212,154,61,.25);line-height:1.55;color:#f6e6c8}.notice strong{color:#fff3d8}.toolList{display:grid;gap:12px}.tool{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07)}.tool:hover{background:rgba(255,255,255,.115);transform:translateY(-1px)}.badge{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:rgba(120,157,88,.17);border:1px solid rgba(120,157,88,.32);font-size:1.28rem}.tool h3{margin:0 0 4px}.tool p{margin:0;color:var(--muted);font-size:.91rem;line-height:1.45}.pill{display:inline-flex;align-items:center;padding:7px 9px;border-radius:999px;background:rgba(212,154,61,.12);border:1px solid rgba(212,154,61,.24);color:#fff0d3;font-weight:900;font-size:.78rem;white-space:nowrap}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;counter-reset:step}.step{counter-increment:step;min-height:190px;border-radius:22px;padding:18px;border:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.045))}.step:before{content:"0" counter(step);display:inline-flex;padding:5px 9px;border-radius:999px;background:var(--cream);color:#17130b;font-weight:950;margin-bottom:14px}.step h3{font-size:1rem;margin:0 0 8px}.step p{font-size:.92rem;color:var(--muted);line-height:1.48;margin:0}.newsGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.news{display:block;border:1px solid rgba(196,86,75,.28);background:linear-gradient(135deg,rgba(196,86,75,.14),rgba(255,255,255,.055));border-radius:22px;padding:20px;transition:transform .15s ease, background .15s ease, border-color .15s ease}.news:hover{transform:translateY(-2px);background:linear-gradient(135deg,rgba(196,86,75,.22),rgba(255,255,255,.075));border-color:rgba(255,208,201,.42)}.tag{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:#ffd0c9;font-weight:950;margin-bottom:12px}.news h3{margin:0 0 8px}.news p{margin:0 0 12px;color:var(--muted);line-height:1.5}.lesson{font-weight:900;color:#fff1d5}.source{margin-top:12px;display:inline-flex;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);color:#ffe4bd;font-size:.82rem;font-weight:900}.govGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.gov{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);border-radius:22px;padding:19px}.gov strong{display:block;margin-bottom:9px}.gov span{display:block;color:var(--muted);line-height:1.5;font-size:.91rem}.searchbox{width:min(420px,100%);padding:13px 15px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--text);font-size:1rem}.hide{display:none!important}.foot{margin-top:36px;padding:36px 22px;border-top:1px solid var(--line);background:rgba(0,0,0,.28)}.footInner{max-width:var(--max);margin:auto;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center}.small{font-size:.88rem;color:var(--muted);line-height:1.55}.foot p{margin:6px 0 0;color:var(--muted)}
+    .gptGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.gptCard{position:relative;overflow:hidden;border:1px solid rgba(120,157,88,.32);background:linear-gradient(135deg,rgba(120,157,88,.16),rgba(255,255,255,.065));border-radius:24px;padding:24px;box-shadow:0 20px 58px rgba(0,0,0,.22)}.gptCard h3{margin:0 0 10px;font-size:1.35rem}.gptCard p{margin:0 0 16px;color:var(--muted);line-height:1.55}.gptActions{display:flex;gap:10px;flex-wrap:wrap}.activity{border:1px solid rgba(212,154,61,.26);background:rgba(212,154,61,.10);border-radius:24px;padding:22px;margin-top:16px}.activity h3{margin:0 0 10px}.activity ol,.activity ul{color:var(--muted);line-height:1.55}.accessNote{display:block;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.065);border-radius:18px;padding:16px;margin-top:14px;color:#f3e4cb}.accessNote:hover{background:rgba(255,255,255,.11)}
+    .navtoggle{display:none;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#f6eddb;border-radius:12px;padding:9px 13px;font-family:inherit;font-size:.9rem;font-weight:800;cursor:pointer}
+    @media(max-width:960px){.hero,.split{grid-template-columns:1fr}.stats,.cards,.flow,.govGrid,.newsGrid,.gptGrid{grid-template-columns:repeat(2,1fr)}.heroCard{min-height:390px}.sectionHead{align-items:start;flex-direction:column}}@media(max-width:650px){.navtoggle{display:block}.links{display:none;width:100%;flex-direction:column;align-items:stretch;margin-top:12px}.links.open{display:flex}.nav{flex-wrap:wrap}.nav{align-items:flex-start;flex-direction:column}.stats,.cards,.flow,.govGrid,.newsGrid,.gptGrid{grid-template-columns:1fr}.tool{grid-template-columns:46px 1fr}.tool .pill{grid-column:1/-1;justify-content:center}.footInner{grid-template-columns:1fr}}
+  
+
+    /* ---- shared with the Session 2 run of show ---- */
+    .prompt{white-space:pre-wrap;background:#11170e;border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;color:#fff2d8;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92rem;line-height:1.5;margin:0}
+    .pwrap{margin-top:12px}.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+    .plabel,.lbl{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);font-weight:950}
+    .copy{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#f6eddb;padding:7px 11px;border-radius:999px;font-size:.76rem;font-weight:900;letter-spacing:.05em;cursor:pointer;font-family:inherit}.copy:hover{background:rgba(255,255,255,.13)}.copy.ok{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006;border-color:transparent}
+
+    /* ---- Session 3 tools ---- */
+    .builder{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;align-items:start}
+    .panel{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);border-radius:24px;padding:22px;box-shadow:0 18px 56px rgba(0,0,0,.18)}
+    .panel h3{margin:0 0 6px;font-size:1.2rem;letter-spacing:-.02em}.panel .hint{margin:0 0 16px;color:var(--muted);line-height:1.5;font-size:.93rem}
+    .field{display:grid;gap:6px;margin-bottom:13px}
+    .in,textarea.in,select.in{width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.3);color:var(--text);font:inherit;font-size:.95rem}
+    textarea.in{min-height:70px;resize:vertical;line-height:1.45}.in:focus{outline:2px solid rgba(212,154,61,.6);outline-offset:1px}
+    .in::placeholder{color:rgba(203,191,168,.6)}
+    .rowsHead{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px}
+    .r3{display:grid;grid-template-columns:1.4fr 1fr 1fr 34px;gap:8px;margin-bottom:8px;align-items:start}
+    .r4{display:grid;grid-template-columns:1.1fr 1fr 1fr auto 34px;gap:8px;margin-bottom:8px;align-items:center}
+    .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.r3b{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+    @media(min-width:961px){.builder>.panel:last-child{position:sticky;top:92px;max-height:calc(100vh - 110px);overflow:auto}}
+    .x{width:34px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;font:inherit;font-size:1.05rem}.x:hover{background:rgba(196,86,75,.25);color:#fff}
+    .chk{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:.82rem;font-weight:800;white-space:nowrap;cursor:pointer}.chk input{width:16px;height:16px;accent-color:#789d58}
+    .mini-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#f6eddb;padding:9px 12px;border-radius:12px;font:inherit;font-size:.86rem;font-weight:900;cursor:pointer}.mini-btn:hover{background:rgba(255,255,255,.14)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .status{border-radius:16px;padding:14px 16px;line-height:1.5;font-size:.95rem;margin-bottom:12px;border:1px solid}
+    .status strong{display:block;font-size:1.05rem;letter-spacing:-.01em;margin-bottom:3px}
+    .status.ok{background:rgba(120,157,88,.18);border-color:rgba(154,202,117,.55);color:#e4f5d6}
+    .status.no{background:rgba(196,86,75,.16);border-color:rgba(196,86,75,.5);color:#ffd9d3}
+    .status.wait{background:rgba(212,154,61,.12);border-color:rgba(212,154,61,.4);color:#ffe7bd}
+    .warns{margin:0 0 12px;padding-left:18px;color:#ffd9b0;line-height:1.5;font-size:.9rem}
+    .item{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);border-radius:16px;padding:12px;margin-bottom:10px}
+    .item.pass{border-color:rgba(154,202,117,.5)}.item.fail{border-color:rgba(196,86,75,.55)}
+    .itemTop{display:grid;grid-template-columns:28px 1fr 34px;gap:8px;align-items:start}
+    .num{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--cream);color:#17130b;font-weight:950;font-size:.85rem;margin-top:7px}
+    .seg{display:inline-flex;border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:hidden;margin-top:9px}
+    .seg button{border:0;background:rgba(255,255,255,.05);color:var(--muted);padding:8px 14px;font:inherit;font-size:.84rem;font-weight:900;cursor:pointer}
+    .seg button+button{border-left:1px solid rgba(255,255,255,.14)}
+    .seg button.on.p{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006}.seg button.on.f{background:linear-gradient(135deg,#d77064,#8f3a31);color:#fff}
+    .lint{margin:8px 0 0 36px;color:#ffd9b0;font-size:.84rem;line-height:1.45}
+    .itemFoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:36px}
+    .reg{display:grid;gap:8px;margin-top:10px}
+    .regRow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.2)}
+    .regRow b{display:block}.regRow span{color:var(--muted);font-size:.84rem}
+    .dotS{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:#c4564b}.dotS.ok{background:#92d579}
+    .chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:step}
+    .loop{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+    .loop div{border:1px dashed rgba(196,86,75,.45);background:rgba(196,86,75,.08);border-radius:18px;padding:14px;font-size:.92rem;line-height:1.45;color:#f3dcd6}
+    .loop div b{display:block;color:#fff;margin-bottom:4px}
+    .pvRule{border-left:3px solid var(--gold);padding:4px 0 4px 14px;margin:12px 0 0;color:#f6e6c8;line-height:1.5}
+    .anchorNote{font-size:.85rem;color:var(--muted);margin-top:10px;line-height:1.5}
+    @media(max-width:960px){.builder,.chain,.loop{grid-template-columns:1fr}.r3,.r4{grid-template-columns:1fr 1fr}.r3 .x,.r4 .x{grid-column:auto}}
+    @media(max-width:650px){.r2,.r3,.r3b,.r4{grid-template-columns:1fr}}
+    @media print{
+      .top,.grain,.toolbar,.copy,.x,.mini-btn,.actions,.navtoggle{display:none!important}
+      body{background:#fff!important;color:#000}
+      .panel,.card,.gov,.step,.item{break-inside:avoid;background:#fff!important;color:#000;border-color:#999!important;box-shadow:none}
+      .in{border-color:#999;color:#000;background:#fff}
+      body.print-one main>section:not(.printing),body.print-one .hero,body.print-one .stats,body.print-one .foot{display:none!important}
+      body.print-one .printing .builder{grid-template-columns:1fr}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+    /* ---- hub ---- */
+    .rules{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+    .rule{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);border-radius:18px;padding:14px}
+    .rule b{display:block;font-size:.95rem;margin-bottom:6px;color:#fff2d6}.rule span{color:var(--muted);font-size:.86rem;line-height:1.45}
+    .goals{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .goal{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);border-radius:24px;padding:20px;box-shadow:0 18px 56px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:10px}
+    .goal.leadGoal{grid-column:1/-1;border-color:rgba(212,154,61,.45);background:linear-gradient(135deg,rgba(212,154,61,.12),rgba(255,255,255,.06))}
+    .goalHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .goal h3{margin:0;font-size:1.25rem;letter-spacing:-.02em}.goal .desc{margin:4px 0 0;color:var(--muted);line-height:1.5;font-size:.93rem}
+    .prog{height:8px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}.prog i{display:block;height:100%;background:linear-gradient(90deg,#e4a54b,#9aca75)}
+    .gmeta{display:flex;gap:8px;flex-wrap:wrap;font-size:.84rem;color:var(--muted)}
+    .ms{display:grid;grid-template-columns:1fr 140px 124px 34px;gap:6px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)}.ms .msTitle{grid-column:1/-1}
+    .ms .in{padding:8px 10px;font-size:.88rem}.ms.done .msTitle{text-decoration:line-through;opacity:.65}
+    .ms.over .due{border-color:rgba(196,86,75,.8)}
+    .links2{display:flex;gap:8px;flex-wrap:wrap}
+    .links2 a{font-size:.82rem;padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);font-weight:800}
+    .links2 a:hover{background:rgba(255,255,255,.13)}
+    .goalEdit{display:none;gap:8px;flex-direction:column}.goal.editing .goalEdit{display:flex}.goal.editing .goalView{display:none}
+    .tg{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:.74rem;font-weight:900;border:1px solid}
+    .tg.ok{background:rgba(120,157,88,.18);border-color:rgba(154,202,117,.5);color:#e4f5d6}.tg.no{background:rgba(196,86,75,.16);border-color:rgba(196,86,75,.5);color:#ffd9d3}
+    .tg.soon{background:rgba(212,154,61,.14);border-color:rgba(212,154,61,.45);color:#ffe7bd}.tg.muted{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:var(--muted)}
+    /* wizard */
+    .wiz{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);border-radius:28px;padding:26px;box-shadow:var(--shadow)}
+    .steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+    .steps button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--muted);border-radius:999px;padding:7px 11px;font:inherit;font-size:.8rem;font-weight:900;cursor:pointer}
+    .steps button.on{background:var(--cream);color:#17130b;border-color:transparent}.steps button.done{color:#e4f5d6;border-color:rgba(154,202,117,.5)}
+    .steps button.skip{opacity:.4;text-decoration:line-through}
+    .q{font-size:clamp(1.5rem,2.6vw,2.2rem);letter-spacing:-.04em;line-height:1.05;margin:0 0 6px}
+    .qsub{color:var(--muted);margin:0 0 18px;line-height:1.55;max-width:760px}.qsub i{font-style:normal;color:var(--cream);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;font-weight:900;margin-left:6px}
+    .choice{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+    .opt{text-align:left;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.2);color:var(--text);border-radius:16px;padding:14px;font:inherit;cursor:pointer;line-height:1.4}
+    .opt b{display:block;margin-bottom:4px}.opt span{color:var(--muted);font-size:.86rem}
+    .opt.on{border-color:rgba(212,154,61,.75);background:rgba(212,154,61,.14)}
+    .yn{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(0,0,0,.18);margin-bottom:8px}
+    .yn p{margin:0;line-height:1.45}.yn small{display:block;color:var(--muted);margin-top:3px}
+    .wizNav{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+    .eg{color:var(--muted);font-size:.85rem;margin:-6px 0 12px;line-height:1.45}
+    .risk{display:inline-flex;padding:6px 11px;border-radius:999px;font-weight:950;font-size:.84rem;border:1px solid}
+    .risk.Low{background:rgba(120,157,88,.18);border-color:rgba(154,202,117,.55);color:#e4f5d6}.risk.Medium{background:rgba(212,154,61,.14);border-color:rgba(212,154,61,.5);color:#ffe7bd}.risk.High{background:rgba(196,86,75,.16);border-color:rgba(196,86,75,.55);color:#ffd9d3}
+    .pkg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .pkg .panel{padding:18px}
+    /* prompts */
+    .filterRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .chip{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#f6eddb;border-radius:999px;padding:8px 12px;font:inherit;font-size:.84rem;font-weight:800;cursor:pointer}
+    .chip.on{background:var(--cream);color:#17130b;border-color:transparent}
+    .plib{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .pcard{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);border-radius:20px;padding:16px}
+    .pcard h3{margin:0 0 4px;font-size:1.02rem}.pcard .why{color:var(--muted);font-size:.86rem;margin:0 0 6px;line-height:1.45}
+    @media(max-width:1100px){.rules{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:960px){.goals,.plib,.pkg,.choice{grid-template-columns:1fr}.rules{grid-template-columns:repeat(2,1fr)}.ms{grid-template-columns:1fr 1fr}}
+    @media(max-width:650px){.rules{grid-template-columns:1fr}.ms{grid-template-columns:1fr 1fr}.ms .x{justify-self:end}}
+    @media print{
+      .wizNav,.steps,.filterRow,#program .toolbar,.links2{display:none!important}
+      body.print-pkg main>section:not(#path),body.print-pkg .hero,body.print-pkg .stats,body.print-pkg .foot,body.print-pkg #path .sectionHead,body.print-pkg .qsub{display:none!important}
+      body.print-goals main>section:not(#goals),body.print-goals .hero,body.print-goals .stats,body.print-goals .foot{display:none!important}
+      .goal,.pcard,.rule,.wiz{break-inside:avoid;background:#fff!important;color:#000;border-color:#999!important;box-shadow:none}
+    }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header class="top"><nav aria-label="Main navigation" class="nav"><a class="brand" href="#top"><span class="mark">AI</span><span><strong>Kretz AI Hub</strong><span>Goals · Tools · Prompts · Control</span></span></a><button aria-controls="navlinks" aria-expanded="false" class="navtoggle">Menu</button><div class="links" id="navlinks"><a href="#goals">Goals</a><a href="#path">Bring a tool into use</a><a href="#prompts">Prompt library</a><a href="#tools">Tools</a><a href="#rules">Rules</a><a href="#program">Save &amp; share</a><a href="index.html">Training portal</a></div></nav></header>
+<main id="top">
+<section class="hero" style="padding-bottom:22px">
+<div>
+<div class="eyebrow"><span class="dot"></span> Built in training · kept after it</div>
+<h1>Keep making <span>progress with AI.</span></h1>
+<p class="lead">Kretz's AI goals, the next step on each, and everything from the training that helps get there. Bring any new AI tool or idea into use one question at a time. Your work saves to files you own, and the page works offline.</p>
+<div class="actions"><a class="btn primary" href="#path">Bring a tool or idea into use</a><a class="btn green" href="#goals">See goal progress</a><a class="btn" download href="kretz_ai_hub.html">Download for offline use</a></div>
+</div>
+<aside aria-label="How the hub works" class="heroCard" style="min-height:400px"><div class="orb"></div><div class="stack"><div class="mini"><div class="k">Goals first</div><strong>Every tool serves a goal.</strong><p>Tools, cards and checklists add up to milestones on Kretz's goals, not a pile of documents.</p></div><div class="mini"><div class="k">Control built in</div><strong>One question at a time.</strong><p>The guided path asks only what your idea needs, then hands you a rule, steps, a checklist and a Tool Card.</p></div></div></aside>
+</section>
+<div class="stats" id="hubStats"></div>
+
+<section id="rules"><div class="sectionHead"><h2>Start here.</h2><p>Seven habits from the training. If you remember nothing else, remember these.</p></div>
+<div class="rules">
+<div class="rule"><b>A person signs off</b><span>No external, financial, safety or technical AI work goes out without human review.</span></div>
+<div class="rule"><b>Protect the data</b><span>Confidential Kretz or landowner information stays out of unapproved tools.</span></div>
+<div class="rule"><b>AI is not a calculator</b><span>Ask for formulas and sources, not finished numbers. Verify anything that matters.</span></div>
+<div class="rule"><b>Sound like Kretz</b><span>Outgoing messages use the Kretz DNA voice and keep every fact intact.</span></div>
+<div class="rule"><b>Pass means done</b><span>When every checklist item passes, it is approved. Suggestions never block.</span></div>
+<div class="rule"><b>The builder owns it</b><span>Unless a sign-off owner is named, whoever built the tool answers for it.</span></div>
+<div class="rule"><b>Report without blame</b><span>Errors and near-misses get reported so the process improves.</span></div>
+</div>
+</section>
+
+<section id="goals"><div class="sectionHead"><h2>Kretz's AI goals.</h2><p>The next step on each goal, who owns it, and which AI tools serve it. Rename goals, add your own, and update milestones as work moves.</p></div>
+<div class="toolbar" style="margin:0 0 14px"><button class="mini-btn" id="addGoal" type="button">+ Add a goal</button><button class="mini-btn" id="printGoals" type="button">Print goal progress</button></div>
+<div class="goals" id="goalList"></div>
+</section>
+
+<section id="path"><div class="sectionHead"><h2>Bring a tool or idea into use.</h2><p>One question per screen. Low-risk ideas take a minute; anything touching money, landowners or the public gets the full path. You finish with a rule, steps, a checklist and a Tool Card, linked to a goal.</p></div>
+<div class="wiz" id="wiz"></div>
+</section>
+
+<section id="prompts"><div class="sectionHead"><h2>Prompt library.</h2><p>The prompts from all three sessions that do real work, adapted for your own files and data. Filter by goal, search, copy.</p></div>
+<div class="filterRow" id="pFilters"></div>
+<input aria-label="Search prompts" class="in" id="pSearch" placeholder="Search prompts..." style="margin-bottom:14px;max-width:420px" type="search"/>
+<div class="plib" id="pList"></div>
+</section>
+
+<section id="tools"><div class="sectionHead"><h2>Tools.</h2><p>Everything that works today, from the training and after it.</p></div>
+<div class="split"><div class="toolList">
+<a class="tool" href="https://kretzdemo-phi.vercel.app/" rel="noopener noreferrer" target="_blank"><span class="badge">🗺️</span><span><h3>Kretz Parcel Scout</h3><p>Parcel record, MFL status, soils, comparable land sales and lead signals for any location. Every number linked to its public source.</p></span><span class="pill">Land · Leads</span></a>
+<a class="tool" href="https://chatgpt.com/g/g-6a427b6a557c8191ab8ef594a604fa58-kretz-dna-assistant" rel="noopener noreferrer" target="_blank"><span class="badge">✉️</span><span><h3>Kretz DNA Assistant</h3><p>Rewrites outgoing messages in the Kretz voice and flags what needs review.</p></span><span class="pill">GPT</span></a>
+<a class="tool" href="https://chatgpt.com/g/g-6a427f689a888191b03c01b5608f45ec-kretz-ai-guide" rel="noopener noreferrer" target="_blank"><span class="badge">🧭</span><span><h3>Kretz AI Decision Guide</h3><p>Decides whether a problem needs AI, existing software, automation, process cleanup, or nothing yet.</p></span><span class="pill">GPT</span></a>
+<a class="tool" href="kretz_ai_tool_register.html"><span class="badge">🗃️</span><span><h3>AI Tool Register</h3><p>Every Tool Card in one place: cleared or not, sign-off owners, review dates. Export JSON or CSV.</p></span><span class="pill">Control</span></a>
+<a class="tool" href="kretz_ai_tool_register_reference.xlsx"><span class="badge">📗</span><span><h3>Reference register workbook</h3><p>The register in Excel, with status formulas, change log and review log.</p></span><span class="pill">XLSX</span></a>
+<a class="tool" href="kretz_session_3.html#policy"><span class="badge">📜</span><span><h3>Full builders (advanced)</h3><p>The Session 3 workspaces: policy, procedure and workflow; checklist; Tool Card.</p></span><span class="pill">Session 3</span></a>
+</div>
+<div class="toolList">
+<a class="tool" href="kretz_prompt_to_tool_builder_example.html"><span class="badge">🛠️</span><span><h3>Prompt-to-tool example</h3><p>A timber sale tracker built from two prompts, both printed on the page.</p></span><span class="pill">Ops</span></a>
+<a class="tool" href="kretz-haul-planner.html"><span class="badge">🚚</span><span><h3>Haul planner (prototype)</h3><p>Pickups, drop-offs and routing, with human review of recommendations.</p></span><span class="pill">Ops</span></a>
+<a class="tool" href="kretz_haul_costs_reference_workbook.xlsx"><span class="badge">📊</span><span><h3>Haul cost workbook</h3><p>Formulas, subtotals, labelled assumptions, and a review-warnings sheet.</p></span><span class="pill">Ops</span></a>
+<a class="tool" href="kretz-landowner-prospecting.html"><span class="badge">🌲</span><span><h3>Landowner prospecting (prototype)</h3><p>Outreach workflow concept built through conversation.</p></span><span class="pill">Leads</span></a>
+<a class="tool" href="kretz-timber-market-calculator.html"><span class="badge">📈</span><span><h3>Timber market calculator (prototype)</h3><p>Company knowledge made interactive, from a public Kretz blog post.</p></span><span class="pill">Market</span></a>
+<a class="tool" href="kretz_ai_governance_leadership_quickstart.pdf"><span class="badge">⚖</span><span><h3>Governance quickstart</h3><p>Sign-off, no-fault reporting, platform selection and Kretz DNA in plain language.</p></span><span class="pill">PDF</span></a>
+</div></div>
+</section>
+
+<section id="program"><div class="sectionHead"><h2>Save &amp; share.</h2><p>Your goals, milestones and Tool Cards live in this browser. Save them as one program file to back up, share with the team, or move to another computer.</p></div>
+<div class="split"><div class="notice"><strong>How the files fit together.</strong><br/>The <strong>program file</strong> holds goals, milestones and every Tool Card. The <strong>AI Tool Register</strong> and the Session 3 tools read the same Tool Cards, so a card saved anywhere on this site shows up everywhere on it. An offline copy of this page keeps its own data, so use the program file to move work between copies.<br/><br/>This is one suggested way to track progress. The CSV export from the register moves the cards into Excel, SharePoint or any system Kretz chooses.</div>
+<div class="panel"><h3>Program file</h3><p class="hint">One file, everything in it.</p><div id="progMsg"></div>
+<div class="toolbar" style="margin-top:0"><button class="mini-btn" id="progExport" type="button">Download program file</button><label class="mini-btn" style="display:inline-flex;align-items:center">Load program file<input accept=".json,application/json" hidden id="progImport" type="file"/></label><a class="mini-btn" href="kretz_ai_tool_register.html">Open the register</a><button class="mini-btn" id="progReset" type="button">Reset goals to the training defaults</button></div></div>
+</div>
+</section>
+</main>
+<footer class="foot"><div class="footInner"><div><strong>Kretz Lumber AI Hub</strong><p>Built during the Kretz AI training to keep the work going after it.</p></div><div class="small">Works offline once downloaded.<br/><a href="index.html" style="text-decoration:underline">Training portal</a> · <a href="kretz_session_3.html" style="text-decoration:underline">Session 3</a></div></div></footer>
+<script>
+/* ---- Kretz AI Tool Card: shared format and rules (used by the Session 3 page and the register) ---- */
+var CARD = (function(){
+  "use strict";
+  var FIELDS=[
+    {k:"name",l:"Tool name",req:true},
+    {k:"purpose",l:"What it does",req:true,area:true},
+    {k:"users",l:"Who uses it"},
+    {k:"builder",l:"Builder",req:true},
+    {k:"signoff",l:"Sign-off owner"},
+    {k:"decisions",l:"Decisions it supports"},
+    {k:"data",l:"Data it uses (sources)",req:true,area:true},
+    {k:"never",l:"Data it must never receive",req:true,area:true},
+    {k:"checklist",l:"Checklist it must pass",req:true},
+    {k:"failure",l:"When it is wrong",req:true,area:true},
+    {k:"platform",l:"Platform"},
+    {k:"review",l:"Next review date",req:true,date:true}
+  ];
+  var TYPE="kretz-ai-tool-card", BUNDLE="kretz-ai-tool-register", VERSION=1, KEY="k3_register";
+  var str=function(v){return v==null?"":String(v).trim()};
+  var isDate=function(v){return /^\d{4}-\d{2}-\d{2}$/.test(v)};
+  function newId(){return "tc-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+
+  // Accepts anything; returns a clean card or null. Unknown keys are ignored.
+  function normalize(o){
+    if(!o||typeof o!=="object"||Array.isArray(o))return null;
+    var c={type:TYPE,version:VERSION,id:str(o.id).slice(0,60)||newId(),builderOwns:o.builderOwns===true||o.builderOwns==="true"||o.builderOwns==="Yes",custom:[],updatedAt:str(o.updatedAt)||new Date().toISOString()};
+    FIELDS.forEach(function(f){c[f.k]=str(o[f.k]).slice(0,4000)});
+    if(c.review&&!isDate(c.review))c.review="";
+    if(Array.isArray(o.custom))c.custom=o.custom.slice(0,40).map(function(x){return {label:str(x&&x.label).slice(0,120),value:str(x&&x.value).slice(0,4000)}}).filter(function(x){return x.label||x.value});
+    return c.name?c:null;
+  }
+  function missing(c){
+    var m=[];
+    FIELDS.forEach(function(f){
+      if(f.req&&!str(c[f.k]))m.push(f.l);
+      if(f.k==="builder"&&!c.builderOwns&&!str(c.signoff))m.push("Sign-off owner");
+    });
+    return m;
+  }
+  function owner(c){return c.builderOwns?(str(c.builder)||"the builder")+" (builder owns the outcome)":str(c.signoff)}
+  function reviewState(c,today){
+    if(!isDate(c.review))return {code:"none",label:"No review date"};
+    var t=today||new Date().toISOString().slice(0,10);
+    var days=Math.round((Date.parse(c.review)-Date.parse(t))/864e5);
+    if(days<0)return {code:"overdue",label:"Review overdue ("+(-days)+" day"+(days===-1?"":"s")+")"};
+    if(days<=30)return {code:"soon",label:"Review due in "+days+" day"+(days===1?"":"s")};
+    return {code:"ok",label:"Next review "+c.review};
+  }
+  function asText(c){
+    var m=missing(c),lines=["AI TOOL CARD: "+(str(c.name)||"(unnamed)"),"Status: "+(m.length?"NOT CLEARED (missing "+m.join(", ")+")":"CLEARED FOR USE"),""];
+    FIELDS.forEach(function(f){
+      if(f.k==="name")return;
+      lines.push((f.k==="signoff"?"Sign-off owner":f.l)+": "+(f.k==="signoff"?(owner(c)||"NOT NAMED"):(str(c[f.k])||"-")));
+    });
+    (c.custom||[]).forEach(function(x){lines.push((x.label||"Custom")+": "+(x.value||"-"))});
+    return lines.join("\n");
+  }
+  function slug(s){return (str(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"card").slice(0,60)}
+  function download(name,text,mime){
+    var blob=new Blob([text],{type:mime||"application/json"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);
+  }
+  function cardFile(c){var x=normalize(c);return {name:"kretz-ai-tool-card_"+slug(x.name)+".json",text:JSON.stringify(x,null,2)}}
+
+  /* CSV: RFC 4180 */
+  function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  function parseCsv(text){
+    var rows=[],row=[],f="",q=false,i=text.charCodeAt(0)===0xFEFF?1:0;
+    for(;i<text.length;i++){var ch=text[i];
+      if(q){if(ch==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}
+      else if(ch==='"')q=true;else if(ch===","){row.push(f);f=""}
+      else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&text[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}
+      else f+=ch}
+    if(f||row.length){row.push(f);rows.push(row)}
+    return rows.filter(function(r){return r.some(function(x){return x!==""})});
+  }
+  var CSV_EXTRA=["Builder owns outcome","Custom fields","Status","Card ID","Updated"];
+  function toCsv(cards){
+    var head=FIELDS.map(function(f){return f.l}).concat(CSV_EXTRA);
+    var rows=cards.map(function(c){
+      return FIELDS.map(function(f){return c[f.k]}).concat([
+        c.builderOwns?"Yes":"No",
+        (c.custom||[]).map(function(x){return x.label+": "+x.value}).join(" | "),
+        missing(c).length?"Not cleared":"Cleared", c.id, c.updatedAt]);
+    });
+    return [head].concat(rows).map(function(r){return r.map(csvCell).join(",")}).join("\r\n");
+  }
+  function fromCsv(text){
+    var rows=parseCsv(text);if(rows.length<2)return [];
+    var head=rows[0].map(str),map={};
+    FIELDS.forEach(function(f){var i=head.indexOf(f.l);if(i<0&&f.k==="signoff")i=head.indexOf("Sign-off owner");if(i>=0)map[f.k]=i});
+    var iOwn=head.indexOf("Builder owns outcome"),iCus=head.indexOf("Custom fields"),iId=head.indexOf("Card ID"),iUp=head.indexOf("Updated");
+    return rows.slice(1).map(function(r){
+      var o={};Object.keys(map).forEach(function(k){o[k]=r[map[k]]});
+      if(iOwn>=0)o.builderOwns=str(r[iOwn]).toLowerCase()==="yes";
+      if(iCus>=0&&str(r[iCus]))o.custom=str(r[iCus]).split(" | ").map(function(p){var j=p.indexOf(": ");return j<0?{label:p,value:""}:{label:p.slice(0,j),value:p.slice(j+2)}});
+      if(iId>=0)o.id=r[iId];if(iUp>=0)o.updatedAt=r[iUp];
+      return normalize(o);
+    }).filter(Boolean);
+  }
+  // Parse an uploaded file's text: a card, a register bundle, an array of cards, or register CSV.
+  function parseFile(name,text){
+    if(/\.csv$/i.test(name)||(!/^\s*[\[{]/.test(text)&&text.indexOf(",")>=0))return fromCsv(text);
+    var d=JSON.parse(text);
+    var list=Array.isArray(d)?d:(d&&d.type===BUNDLE&&Array.isArray(d.cards))?d.cards:[d];
+    return list.map(normalize).filter(Boolean);
+  }
+  function bundle(cards){return JSON.stringify({type:BUNDLE,version:VERSION,exportedAt:new Date().toISOString(),cards:cards.map(normalize).filter(Boolean)},null,2)}
+
+  /* local register (same key on every page served from the same site) */
+  function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v.map(normalize).filter(Boolean):[]}catch(e){return []}}
+  function save(cards){try{localStorage.setItem(KEY,JSON.stringify(cards));return true}catch(e){return false}}
+  // Insert or replace by id, then by name. Returns "added" or "updated".
+  function upsert(cards,c){
+    var i=cards.findIndex(function(x){return x.id===c.id});
+    if(i<0)i=cards.findIndex(function(x){return str(x.name).toLowerCase()===str(c.name).toLowerCase()});
+    if(i>=0){c.id=cards[i].id;cards[i]=c;return "updated"}
+    cards.push(c);return "added";
+  }
+  return {FIELDS:FIELDS,TYPE:TYPE,normalize:normalize,missing:missing,owner:owner,reviewState:reviewState,asText:asText,slug:slug,download:download,cardFile:cardFile,toCsv:toCsv,fromCsv:fromCsv,parseFile:parseFile,bundle:bundle,load:load,save:save,upsert:upsert,newId:newId};
+})();
+
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var str=function(v){return v==null?"":String(v).trim()};
+function el(tag,attrs,kids){var e=document.createElement(tag);if(attrs)Object.keys(attrs).forEach(function(k){if(k==="text")e.textContent=attrs[k];else if(k==="cls")e.className=attrs[k];else e.setAttribute(k,attrs[k])});(kids||[]).forEach(function(c){if(c!=null&&c!==false)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});return e}
+function status(box,kind,title,body){box.replaceChildren(el("div",{cls:"status "+kind},[el("strong",{text:title}),body?el("span",{text:body}):null]))}
+var store={get:function(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+var today=function(){return new Date().toISOString().slice(0,10)};
+var plusDays=function(n){var d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+var uid=function(p){return p+"-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)};
+function copyText(text,btn){
+  var ok=function(){var o=btn.textContent;btn.textContent="Copied";btn.classList.add("ok");setTimeout(function(){btn.textContent=o;btn.classList.remove("ok")},1400)};
+  var fb=function(){var a=document.createElement("textarea");a.value=text;a.setAttribute("readonly","");a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}a.remove()};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(ok).catch(fb);else fb();
+}
+function printWith(cls){document.body.classList.add(cls);var done=function(){document.body.classList.remove(cls);window.removeEventListener("afterprint",done)};window.addEventListener("afterprint",done);window.print();setTimeout(done,1500)}
+var t=$(".navtoggle"),l=$("#navlinks");
+if(t&&l)t.addEventListener("click",function(){var o=l.classList.toggle("open");t.setAttribute("aria-expanded",o?"true":"false")});
+
+/* ======================================================================
+   Goals and milestones
+   ====================================================================== */
+var PS="https://kretzdemo-phi.vercel.app/";
+function ms(title){return {id:uid("ms"),title:title,owner:"",due:"",status:"Not started"}}
+function defaultGoals(){return [
+  {id:"land",lead:true,title:"Value land faster and more reliably",desc:"Timberland and hunting-property valuation built on public records, with every number traceable and a named person signing off.",
+   links:[["Parcel Scout",PS],["Valuation review checklist","kretz_session_3.html#review"],["Valuation procedure example","kretz_session_3.html#policy"]],
+   milestones:[ms("Adopt the valuation procedure and name its sign-off owner"),ms("Run the current valuation tool through the valuation checklist; record the result"),ms("Pilot Parcel Scout with one or two foresters for 30 days and log every disagreement"),ms("Add timber volume (USFS TreeMap) and the DNR stumpage table as a labeled value range"),ms("Load two to three years of DOR land sales for Kretz counties into comparable sales")]},
+  {id:"leads",title:"Find and reach the right landowners",desc:"Public-record lead signals turned into careful, on-brand outreach that never overstates what Kretz knows.",
+   links:[["Parcel Scout lead signals",PS],["Landowner prospecting","kretz-landowner-prospecting.html"],["Kretz DNA Assistant","https://chatgpt.com/g/g-6a427b6a557c8191ab8ef594a604fa58-kretz-dna-assistant"],["Letter checklist","kretz_session_3.html#checklist"]],
+   milestones:[ms("Agree the lead criteria: acreage, absentee owner, MFL status, counties"),ms("Build a township or county lead list from public records"),ms("Approve an outreach letter template through the DNA Assistant and the letter checklist"),ms("Name who approves outreach before it is sent")]},
+  {id:"ops",title:"Run operations with less friction",desc:"Fix the recurring tasks that waste the most time, with the simplest tool that works.",
+   links:[["Kretz AI Decision Guide","https://chatgpt.com/g/g-6a427f689a888191b03c01b5608f45ec-kretz-ai-guide"],["Prompt-to-tool example","kretz_prompt_to_tool_builder_example.html"],["Haul planner","kretz-haul-planner.html"],["Haul cost workbook","kretz_haul_costs_reference_workbook.xlsx"]],
+   milestones:[ms("List the five most annoying recurring tasks and run each through the Decision Guide"),ms("Build or buy for the top two"),ms("Write a Tool Card for anything built")]},
+  {id:"market",title:"Read the market with real data",desc:"A sourced view of timber and lumber markets. Scenarios and monitoring, never invented forecasts.",
+   links:[["Timber market calculator","kretz-timber-market-calculator.html"],["Kretz Crystal Ball","https://kretz-timber-decision-support-demo.stutting-josh.workers.dev/"],["Market prompts","#prompts"]],
+   milestones:[ms("Choose four to six market drivers to track, each with its source"),ms("Create a one-page monthly market brief template"),ms("Name who owns the brief and when it is reviewed")]},
+  {id:"rollout",title:"Roll AI out across Kretz safely",desc:"Every AI tool owned, checked and reviewed, so more people can use AI with confidence.",
+   links:[["AI Tool Register","kretz_ai_tool_register.html"],["Reference workbook","kretz_ai_tool_register_reference.xlsx"],["Session 3 tools","kretz_session_3.html"],["Governance quickstart","kretz_ai_governance_leadership_quickstart.pdf"]],
+   milestones:[ms("Choose where the AI tool register lives and name its owner"),ms("Write a Tool Card for every AI tool in use"),ms("Adopt policy and procedure for valuations and outgoing communication"),ms("Decide on a business workspace for ChatGPT"),ms("Plan training for the next group of staff"),ms("Hold a quarterly no-fault review of AI errors and near-misses")]}
+]}
+var STATUSES=["Not started","In progress","Done"];
+function cleanGoals(g){
+  if(!Array.isArray(g))return null;
+  var out=g.filter(function(x){return x&&typeof x==="object"&&str(x.title)}).slice(0,30).map(function(x){return {
+    id:str(x.id).slice(0,40)||uid("goal"),lead:!!x.lead,title:str(x.title).slice(0,160),desc:str(x.desc).slice(0,600),
+    links:Array.isArray(x.links)?x.links.filter(function(k){return Array.isArray(k)&&k.length===2&&/^(https?:\/\/|#|[\w.-]+\.(html|xlsx|pdf|zip)(#[\w-]+)?$)/.test(String(k[1]))}).slice(0,8).map(function(k){return [str(k[0]).slice(0,80),String(k[1])]}):[],
+    milestones:Array.isArray(x.milestones)?x.milestones.filter(function(m){return m&&str(m.title)}).slice(0,60).map(function(m){return {id:str(m.id)||uid("ms"),title:str(m.title).slice(0,240),owner:str(m.owner).slice(0,80),due:/^\d{4}-\d{2}-\d{2}$/.test(m.due)?m.due:"",status:STATUSES.indexOf(m.status)>=0?m.status:"Not started"}}):[]
+  }});
+  return out.length?out:null;
+}
+var HUB=store.get("k3_hub",null);
+var goals=(HUB&&cleanGoals(HUB.goals))||defaultGoals();
+function saveGoals(){store.set("k3_hub",{version:1,goals:goals});renderStats()}
+function goalById(id){return goals.find(function(g){return g.id===id})}
+function cardsFor(g){return CARD.load().filter(function(c){return (c.custom||[]).some(function(x){return x.label==="Goal"&&x.value===g.title})})}
+function retitleCards(oldT,newT){var cards=CARD.load(),n=0;cards.forEach(function(c){(c.custom||[]).forEach(function(x){if(x.label==="Goal"&&x.value===oldT){x.value=newT;n++}})});if(n)CARD.save(cards)}
+
+function renderStats(){
+  var all=[].concat.apply([],goals.map(function(g){return g.milestones}));
+  var done=all.filter(function(m){return m.status==="Done"}).length;
+  var cards=CARD.load(),cleared=cards.filter(function(c){return !CARD.missing(c).length}).length;
+  var due=cards.filter(function(c){var r=CARD.reviewState(c).code;return r==="overdue"||r==="soon"}).length;
+  var late=all.filter(function(m){return m.status!=="Done"&&m.due&&m.due<today()}).length;
+  var s=$("#hubStats");s.replaceChildren();
+  [[goals.length,"Goals"],[done+" / "+all.length,"Milestones done"],[cleared+" / "+cards.length,"AI tools cleared for use"],[late+due,"Overdue milestones or tool reviews due"]].forEach(function(x){s.appendChild(el("div",{cls:"stat"},[el("strong",{text:String(x[0])}),el("span",{text:x[1]})]))});
+}
+function renderGoals(){
+  var box=$("#goalList");box.replaceChildren();
+  goals.forEach(function(g,gi){
+    var done=g.milestones.filter(function(m){return m.status==="Done"}).length,total=g.milestones.length;
+    var next=g.milestones.find(function(m){return m.status!=="Done"});
+    var cards=cardsFor(g),cleared=cards.filter(function(c){return !CARD.missing(c).length}).length;
+    var card=el("article",{cls:"goal"+(g.lead?" leadGoal":""),id:"goal-"+g.id});
+    var editBtn=el("button",{cls:"mini-btn",type:"button",text:"Edit"});editBtn.addEventListener("click",function(){card.classList.add("editing")});
+    card.appendChild(el("div",{cls:"goalView"},[el("div",{cls:"goalHead"},[el("div",null,[el("h3",{text:g.title}),el("p",{cls:"desc",text:g.desc})]),editBtn])]));
+    var ti=el("input",{cls:"in",placeholder:"Goal"});ti.value=g.title;var di=el("textarea",{cls:"in",placeholder:"What success looks like"});di.value=g.desc;
+    var sv=el("button",{cls:"mini-btn",type:"button",text:"Save"}),cn=el("button",{cls:"mini-btn",type:"button",text:"Cancel"}),dl=el("button",{cls:"mini-btn",type:"button",text:"Delete goal"});
+    sv.addEventListener("click",function(){var nt=str(ti.value);if(!nt)return;if(nt!==g.title)retitleCards(g.title,nt);g.title=nt;g.desc=str(di.value);saveGoals();renderGoals();renderWizard()});
+    cn.addEventListener("click",function(){card.classList.remove("editing")});
+    dl.addEventListener("click",function(){if(!window.confirm("Delete the goal “"+g.title+"” and its milestones? Tool Cards linked to it stay in the register."))return;goals.splice(gi,1);saveGoals();renderGoals();renderWizard()});
+    card.appendChild(el("div",{cls:"goalEdit"},[ti,di,el("div",{cls:"toolbar",style:"margin:0"},[sv,cn,dl])]));
+    card.appendChild(el("div",{cls:"prog",title:done+" of "+total+" milestones done"},[el("i",{style:"width:"+(total?Math.round(100*done/total):0)+"%"})]));
+    var late=g.milestones.filter(function(m){return m.status!=="Done"&&m.due&&m.due<today()}).length;
+    card.appendChild(el("div",{cls:"gmeta"},[
+      el("span",{cls:"tg muted",text:done+" of "+total+" milestones done"}),
+      el("span",{cls:"tg "+(cards.length?(cleared===cards.length?"ok":"soon"):"muted"),text:cards.length?cards.length+" AI tool"+(cards.length>1?"s":"")+" · "+cleared+" cleared":"No AI tools linked yet"}),
+      late?el("span",{cls:"tg no",text:late+" overdue"}):null
+    ]));
+    card.appendChild(el("div",{cls:"pvRule",text:next?"Next: "+next.title+(next.owner?" · "+next.owner:" · owner not named")+(next.due?" · due "+next.due:""):(total?"Every milestone is done. Add the next one.":"Add the first milestone.")}));
+    var list=el("div");
+    g.milestones.forEach(function(m,mi){
+      var a=el("input",{cls:"in msTitle",placeholder:"Milestone","aria-label":"Milestone"});a.value=m.title;a.addEventListener("change",function(){if(str(a.value)){m.title=str(a.value);saveGoals();renderGoals()}});
+      var o=el("input",{cls:"in",placeholder:"Owner","aria-label":"Owner"});o.value=m.owner;o.addEventListener("change",function(){m.owner=str(o.value);saveGoals();renderGoals()});
+      var d=el("input",{cls:"in due",type:"date","aria-label":"Due date"});d.value=m.due;d.addEventListener("change",function(){m.due=d.value;saveGoals();renderGoals()});
+      var s=el("select",{cls:"in","aria-label":"Status"});STATUSES.forEach(function(x){var op=el("option",{text:x});op.value=x;if(x===m.status)op.selected=true;s.appendChild(op)});
+      s.addEventListener("change",function(){m.status=s.value;saveGoals();renderGoals()});
+      var x=el("button",{cls:"x",type:"button","aria-label":"Remove milestone",text:"×"});x.addEventListener("click",function(){g.milestones.splice(mi,1);saveGoals();renderGoals()});
+      list.appendChild(el("div",{cls:"ms"+(m.status==="Done"?" done":"")+(m.status!=="Done"&&m.due&&m.due<today()?" over":"")},[a,o,d,s,x]));
+    });
+    card.appendChild(list);
+    var add=el("button",{cls:"mini-btn",type:"button",text:"+ Milestone"});add.addEventListener("click",function(){g.milestones.push(ms("New milestone"));saveGoals();renderGoals();var ins=$$("#goal-"+g.id+" .ms .msTitle");if(ins.length){ins[ins.length-1].focus();ins[ins.length-1].select()}});
+    var start=el("button",{cls:"mini-btn",type:"button",text:"Bring a tool into use for this goal"});start.addEventListener("click",function(){newDraft(g.id);$("#path").scrollIntoView({behavior:"smooth"})});
+    card.appendChild(el("div",{cls:"toolbar",style:"margin-top:2px"},[add,start]));
+    if(cards.length)card.appendChild(el("div",{cls:"gmeta"},cards.map(function(c){var ok=!CARD.missing(c).length;return el("span",{cls:"tg "+(ok?"ok":"no"),text:c.name+(ok?"":" · not cleared")})})));
+    if(g.links.length)card.appendChild(el("div",{cls:"links2"},g.links.map(function(k){var a=el("a",{href:k[1],text:k[0]});if(/^https?:/.test(k[1])){a.target="_blank";a.rel="noopener noreferrer"}return a})));
+    box.appendChild(card);
+  });
+}
+$("#addGoal").addEventListener("click",function(){var g={id:uid("goal"),title:"New goal",desc:"",links:[],milestones:[]};goals.push(g);saveGoals();renderGoals();var c=$("#goal-"+g.id);c.classList.add("editing");c.scrollIntoView({behavior:"smooth"});$(".goalEdit .in",c).select();renderWizard()});
+$("#printGoals").addEventListener("click",function(){printWith("print-goals")});
+
+/* ======================================================================
+   Guided path
+   ====================================================================== */
+var TYPES=[
+  {k:"numbers",b:"Numbers for decisions",s:"Valuations, estimates, prices, volumes"},
+  {k:"writing",b:"Writing that leaves Kretz",s:"Letters, emails, posts, proposals"},
+  {k:"spreadsheet",b:"Spreadsheet or small tool",s:"Trackers, cost models, calculators"},
+  {k:"research",b:"Research and summaries",s:"Landowners, vendors, markets, meetings"},
+  {k:"other",b:"Something else",s:"Anything that doesn't fit above"}
+];
+var RISKQ=[
+  {k:"external",q:"Will its output reach landowners, customers or the public?",s:"Letters, emails, posts, anything with Kretz's name on it."},
+  {k:"money",q:"Will its output feed a price, offer, purchase or other money decision?",s:"Valuations, bids, cost estimates."},
+  {k:"data",q:"Will it handle confidential Kretz or landowner information?",s:"Offers, deal terms, personnel, private landowner details."},
+  {k:"auto",q:"Will it send or act on anything without a person checking first?",s:"Automations, scheduled sends, auto-updates."},
+  {k:"shared",q:"Will other people rely on it, not just you?",s:"A tool or GPT the team uses."}
+];
+var AIQ=[
+  {k:"software",q:"Does software Kretz already has do this, or nearly?",yes:"Check the existing software first. It may only need a setting or a report, and it is already supported."},
+  {k:"process",q:"Is the underlying process unclear or done differently by different people?",yes:"Agree the process first. AI will automate the confusion, not fix it."},
+  {k:"once",q:"Is this a one-time task?",yes:"A one-time task does not need a tool. Use a normal ChatGPT conversation and the Sign-Off Rule."}
+];
+var WHY={numbers:"Numbers from AI can look precise with nothing behind them, and these numbers feed money decisions.",writing:"Messages carry Kretz's name. Errors and invented commitments reach landowners and customers.",spreadsheet:"Spreadsheets get trusted long after anyone checks them.",research:"AI research mixes real sources with confident guesses.",other:"Anything people rely on needs a known owner and a check."};
+function ruleFor(w){
+  var n=str(w.name)||"This tool",r={
+    numbers:"Output from "+n+" is decision support. No figure from it reaches an offer, letter, report or price without review and sign-off by the sign-off owner.",
+    writing:"Nothing drafted with "+n+" leaves Kretz until the sender has checked every fact, and anything with a price or commitment is approved by the sign-off owner.",
+    spreadsheet:n+" calculates with visible formulas. Results used in decisions are spot-checked against the source data first.",
+    research:"Findings from "+n+" are leads, not facts. Each fact used in a decision or message is verified at its source first.",
+    other:n+" is used only for "+(str(w.purpose).replace(/\.$/,"")||"its stated purpose")+". A person reviews its output before anyone relies on it."}[w.type||"other"];
+  if(w.risk.data)r+=" Confidential Kretz or landowner information is entered only into platforms approved for it.";
+  if(w.risk.auto)r+=" It does not send or act on anything without a person approving it first.";
+  return r;
+}
+function stepsFor(type){
+  var S={numbers:[["Run the tool and save its output with sources","User","Each use",false],["Check every figure against its source; mark anything unsourced","User","Same day",false],["Label estimates as ranges with their inputs","User","Before sharing",false],["Approve, adjust or reject the figures","Sign-off owner","Before any offer or letter",true],["Record the approved figures and the tool version","Sign-off owner","At approval",false]],
+    writing:[["Draft with the tool","Sender","Each message",false],["Run it through the Kretz DNA Assistant or voice guide","Sender","Before review",false],["Check every fact, name and number","Sender","Before sending",false],["Approve anything with a price or commitment","Sign-off owner","Before sending",true],["Send and keep a copy","Sender","At sending",false]],
+    spreadsheet:[["Build or update with formulas visible","Builder","Each change",false],["Spot-check three results against the source data","Builder","After each change",false],["Review before results are used in a decision","Sign-off owner","Before use",true],["Log what changed","Builder","Each change",false]],
+    research:[["Run the research and keep every source","User","Each use",false],["Verify each fact that will be used, at its source","User","Before use",false],["Mark unverified items clearly","User","Before sharing",false],["Approve before it drives outreach or a decision","Sign-off owner","Before use",true]],
+    other:[["Use the tool for its stated purpose","User","Each use",false],["Review the output","User","Before relying on it",false],["Approve uses that leave the team","Sign-off owner","Before use",true]]};
+  return (S[type]||S.other).map(function(x){return {what:x[0],who:x[1],when:x[2],signoff:x[3]}});
+}
+var CHECK={numbers:["Every number in the output names or links to its source.","A reviewer can trace each figure to its source in under five minutes.","When source data is missing, the tool says so instead of producing a number.","Estimates are labeled as estimates and shown as ranges, with their inputs visible.","Calculations follow a written method: the same inputs always give the same answer.","The date or version of each data source is shown.","A named sign-off owner approved any figure before it reached a landowner or an offer.","No confidential information was entered into an unapproved tool."],
+  writing:["Every fact in the message was checked against its source.","There is no price, volume or commitment without sign-off owner approval.","Names, parcel and contact details match the record.","The message matches the Kretz voice (DNA Assistant or voice guide).","No information about other landowners or internal deliberations is included.","The sender read the final version in full."],
+  spreadsheet:["Formulas are visible in the cells; there are no typed-in results.","Three results were checked against the source data.","Assumptions are labeled where the reader will see them.","Blank, zero and impossible values are flagged.","The sheet names its owner."],
+  research:["Every fact used names its source.","Each fact used in a decision or message was verified at the source.","Unverified items are marked as unverified.","No estimate is presented as a fact.","No confidential information was entered into an unapproved tool."],
+  other:["The output does what the Tool Card says the tool does.","A person reviewed the output before anyone relied on it.","No confidential information was entered into an unapproved tool.","Errors found were reported through No-Fault Reporting."]};
+var VAGUE=/\b(better|improve\w*|high[- ]quality|good|great|appropriate(ly)?|optimi[sz]\w*|enhanc\w*|robust|best|excellent|polish\w*|as needed|where possible|consider|sufficient\w*|adequate\w*|professional\w*|engaging)\b/i;
+var STEPS=[{id:"goal",l:"Goal"},{id:"idea",l:"The idea"},{id:"risk",l:"Risk"},{id:"ai",l:"Should it be AI?"},{id:"rule",l:"The rule",full:true},{id:"steps",l:"Who does what",full:true},{id:"done",l:"Done means"},{id:"owner",l:"Who owns it"},{id:"finish",l:"Your package"}];
+
+function blankDraft(goalId){return {step:0,goalId:goalId||"",type:"",name:"",purpose:"",users:"",platform:"",
+  risk:{external:false,money:false,data:false,auto:false,shared:false},ai:{software:false,process:false,once:false},
+  rule:"",why:"",ruleTouched:false,steps:[],stepsTouched:false,clOwner:"",items:[],clTouched:false,
+  builder:"",signoff:"",builderOwns:false,review:plusDays(90),data:"",never:"Confidential offers and deal terms, personnel matters, landowner personal details beyond the public record",failure:"Report through No-Fault Reporting to the builder. The builder fixes the tool. Anything already shared is re-checked by the sign-off owner.",
+  ms:{title:"",owner:"",due:plusDays(30)},savedAt:""}}
+var W=store.get("k3_hub_draft",null);if(!W||typeof W!=="object"||!W.risk)W=blankDraft();
+function saveDraft(){store.set("k3_hub_draft",W)}
+function riskLevel(){var r=W.risk;if(r.money||r.auto||(r.external&&r.data))return "High";if(r.external||r.data||r.shared)return "Medium";return "Low"}
+function activeSteps(){var low=W.step>2&&riskLevel()==="Low";return STEPS.map(function(s,i){return {s:s,i:i,skip:low&&s.full}})}
+function newDraft(goalId){W=blankDraft(goalId);if(goalId)W.step=1;saveDraft();renderWizard()}
+function goalTitle(){var g=goalById(W.goalId);return g?g.title:""}
+// Fill templates the user has not edited yet.
+function refreshTemplates(){
+  if(!W.ruleTouched){W.rule=ruleFor(W);W.why=WHY[W.type||"other"]}
+  if(!W.stepsTouched)W.steps=stepsFor(W.type);
+  if(!W.clTouched){var items=CHECK[W.type||"other"];W.items=(riskLevel()==="Low"?items.slice(0,3):items).slice()}
+  if(!str(W.ms.title))W.ms.title="Run the "+(str(W.name)||"new tool")+" checklist on three real outputs and record the results";
+}
+function canNext(id){
+  if(id==="goal")return W.goalId&&goalById(W.goalId)?"":"Choose the goal this serves.";
+  if(id==="idea")return !str(W.name)?"Give it a short name.":!str(W.purpose)?"Say what it does in one sentence.":!W.type?"Choose what kind of work it does.":"";
+  if(id==="rule")return str(W.rule)?"":"Write the rule in one sentence.";
+  if(id==="steps")return W.steps.some(function(s){return str(s.what)&&str(s.who)})?"":"Add at least one step with who does it.";
+  if(id==="done")return !str(W.clOwner)?"Name who owns the checklist.":!W.items.some(function(x){return str(x)})?"Add at least one item.":"";
+  if(id==="owner")return str(W.builder)?"":"Name who built or set it up.";
+  return "";
+}
+function field(label,input,hint){return el("div",{cls:"field"},[el("span",{cls:"lbl",text:label}),input,hint?el("div",{cls:"eg",style:"margin:4px 0 0",text:hint}):null])}
+function textIn(key,ph,area,onChange){var i=el(area?"textarea":"input",{cls:"in",placeholder:ph||""});i.value=W[key]||"";i.addEventListener("input",function(){W[key]=i.value;if(onChange)onChange();saveDraft()});return i}
+function yn(on,q,s,cb){var b=el("input",{type:"checkbox"});b.checked=!!on;b.addEventListener("change",function(){cb(b.checked)});return el("label",{cls:"yn"},[el("p",null,[q,s?el("small",{text:s}):null]),el("span",{cls:"chk"},[b,"Yes"])])}
+
+function buildCard(){
+  var g=goalTitle();
+  return CARD.normalize({name:W.name,purpose:W.purpose,users:W.users,builder:W.builder,signoff:W.signoff,builderOwns:W.builderOwns,
+    decisions:"",data:W.data,never:W.never,checklist:(str(W.name)||"Tool")+" checklist (owner: "+(str(W.clOwner)||"not named")+")",failure:W.failure,platform:W.platform,review:W.review,
+    custom:[{label:"Goal",value:g},{label:"Risk level",value:riskLevel()},{label:"Rule",value:W.rule}].concat(W.ai.software||W.ai.process||W.ai.once?[{label:"Before building",value:AIQ.filter(function(a){return W.ai[a.k]}).map(function(a){return a.yes}).join(" ")}]:[])});
+}
+function packageText(){
+  var c=buildCard(),low=riskLevel()==="Low",L=[];
+  L.push("AI TOOL PACKAGE: "+(str(W.name)||"(unnamed)"),"Goal: "+goalTitle(),"Risk level: "+riskLevel(),"");
+  if(!low){L.push("RULE",str(W.rule),"Why: "+str(W.why),"","WHO DOES WHAT");W.steps.filter(function(s){return str(s.what)}).forEach(function(s,i){L.push((i+1)+". "+s.what+" | "+(str(s.who)||"UNASSIGNED")+" | "+(str(s.when)||"-")+(s.signoff?"  << SIGN-OFF":""))});L.push("")}
+  else L.push("RULE","Low risk: the Sign-Off Rule applies. "+str(W.rule),"");
+  L.push("DONE MEANS (checklist owner: "+(str(W.clOwner)||"NOT NAMED")+")");W.items.filter(str).forEach(function(x,i){L.push((i+1)+". [ ] "+x)});L.push("Pass means done. Suggestions never block approval.","");
+  L.push(c?CARD.asText(c):"(Tool Card needs a name)","");
+  if(str(W.ms.title))L.push("NEXT STEP TOWARD THE GOAL",W.ms.title+" | "+(str(W.ms.owner)||"owner not named")+" | due "+(W.ms.due||"not set"));
+  return L.join("\n");
+}
+
+function renderWizard(){
+  var box=$("#wiz");box.replaceChildren();
+  if(W.step>=STEPS.length)W.step=STEPS.length-1;
+  var act=activeSteps(),cur=STEPS[W.step];
+  if(act[W.step].skip){W.step=act.find(function(a){return a.i>W.step&&!a.skip}).i;cur=STEPS[W.step]}
+  if(W.goalId&&!goalById(W.goalId))W.goalId="";
+  if(W.step>=4)refreshTemplates();
+  // step chips
+  var chips=el("div",{cls:"steps"});
+  act.forEach(function(a){
+    var b=el("button",{type:"button",text:(a.i+1)+". "+a.s.l,cls:(a.i===W.step?"on":a.i<W.step&&!a.skip?"done":"")+(a.skip?" skip":"")});
+    b.disabled=a.skip||a.i>W.step+1&&!W.savedAt;if(a.skip)b.title="Not needed for low-risk uses";
+    b.addEventListener("click",function(){if(a.i<=W.step||!canNext(cur.id)){W.step=a.i;if(W.step>=4)refreshTemplates();saveDraft();renderWizard()}});
+    chips.appendChild(b);
+  });
+  box.appendChild(chips);
+  var body=el("div"),msg=el("div",{cls:"eg",style:"margin:10px 0 0;color:#ffd9b0"});
+  var Q=function(q,sub,term){body.appendChild(el("h3",{cls:"q",text:q}));body.appendChild(el("p",{cls:"qsub"},[sub||"",term?el("i",{text:term}):null]))};
+
+  if(cur.id==="goal"){
+    Q("Which goal does this serve?","Every AI tool should move one of Kretz's goals forward. If none fit, add the goal first.");
+    var grid=el("div",{cls:"choice"});
+    goals.forEach(function(g){var o=el("button",{type:"button",cls:"opt"+(W.goalId===g.id?" on":"")},[el("b",{text:g.title}),el("span",{text:g.desc})]);o.addEventListener("click",function(){W.goalId=g.id;saveDraft();renderWizard()});grid.appendChild(o)});
+    body.appendChild(grid);
+    var ng=el("input",{cls:"in",placeholder:"Or name a new goal"}),nb=el("button",{cls:"mini-btn",type:"button",text:"Add goal and choose it"});
+    nb.addEventListener("click",function(){var tt=str(ng.value);if(!tt)return;var g={id:uid("goal"),title:tt,desc:"",links:[],milestones:[]};goals.push(g);saveGoals();renderGoals();W.goalId=g.id;saveDraft();renderWizard()});
+    body.appendChild(el("div",{cls:"r2",style:"grid-template-columns:1fr auto"},[ng,nb]));
+  }
+  if(cur.id==="idea"){
+    Q("What do you want AI to help with?","Describe it the way you would to a coworker.");
+    body.appendChild(field("Short name",textIn("name","e.g. Hunting land valuation helper"),"A name people will recognize in the register."));
+    body.appendChild(field("What it does, in one sentence",textIn("purpose","e.g. Summarizes a parcel's public record and comparable sales for a forester before a landowner call",true)));
+    body.appendChild(el("span",{cls:"lbl",text:"What kind of work is it?"}));
+    var tg=el("div",{cls:"choice",style:"margin-top:8px"});
+    TYPES.forEach(function(x){var o=el("button",{type:"button",cls:"opt"+(W.type===x.k?" on":"")},[el("b",{text:x.b}),el("span",{text:x.s})]);o.addEventListener("click",function(){if(W.type!==x.k){W.type=x.k;W.ruleTouched=W.stepsTouched=W.clTouched=false}saveDraft();renderWizard()});tg.appendChild(o)});
+    body.appendChild(tg);
+    var pl=textIn("platform","e.g. ChatGPT, a custom GPT, Excel, web app");
+    body.appendChild(el("div",{cls:"r2"},[field("Who will use it",textIn("users","Roles, e.g. Foresters")),field("Where it runs",pl)]));
+  }
+  if(cur.id==="risk"){
+    Q("What could go wrong?","Five yes-or-no questions. The answers decide how much of the path you need.");
+    RISKQ.forEach(function(r){body.appendChild(yn(W.risk[r.k],r.q,r.s,function(v){W.risk[r.k]=v;saveDraft();renderWizard()}))});
+    var lv=riskLevel();
+    body.appendChild(el("div",{cls:"status "+(lv==="Low"?"ok":lv==="Medium"?"wait":"no"),style:"margin-top:12px"},[el("strong",null,["Risk level: ",el("span",{cls:"risk "+lv,text:lv})]),el("span",{text:lv==="Low"?" Short path: you will skip the rule and the step-by-step procedure. A person still signs off before anything relies on it.":lv==="Medium"?" Full path: a rule, who does what, a checklist and an owner.":" Full path, and the sign-off owner should not be the same person who uses the output."})]));
+  }
+  if(cur.id==="ai"){
+    Q("Should this be AI at all?","Three quick checks. You can continue either way; this is advice, not a gate.");
+    AIQ.forEach(function(a){body.appendChild(yn(W.ai[a.k],a.q,"",function(v){W.ai[a.k]=v;saveDraft();renderWizard()}))});
+    var adv=AIQ.filter(function(a){return W.ai[a.k]}).map(function(a){return a.yes});
+    body.appendChild(el("div",{cls:"status "+(adv.length?"wait":"ok"),style:"margin-top:12px"},[el("strong",{text:adv.length?"Consider this before building.":"AI looks reasonable here."}),el("span",{text:adv.length?" "+adv.join(" "):" For a harder call, ask the Kretz AI Decision Guide."})]));
+    body.appendChild(el("a",{cls:"mini-btn",href:"https://chatgpt.com/g/g-6a427f689a888191b03c01b5608f45ec-kretz-ai-guide",target:"_blank",rel:"noopener noreferrer",text:"Open the Kretz AI Decision Guide"}));
+  }
+  if(cur.id==="rule"){
+    Q("What must always be true when this is used?","One sentence anyone can follow. It is filled in from your answers; change anything.","Policy");
+    var ri=textIn("rule","",true,function(){W.ruleTouched=true});ri.style.minHeight="90px";
+    body.appendChild(field("The rule",ri));
+    body.appendChild(field("Why it exists",textIn("why","",true,function(){W.ruleTouched=true}),"People follow rules they understand."));
+    var rr=el("button",{cls:"mini-btn",type:"button",text:"Reset to the suggested rule"});rr.addEventListener("click",function(){W.ruleTouched=false;refreshTemplates();saveDraft();renderWizard()});body.appendChild(rr);
+  }
+  if(cur.id==="steps"){
+    Q("Who does what, and when?","Suggested steps for this kind of work. Use roles, not names, so it survives staff changes. Mark where sign-off happens.","Procedure");
+    W.steps.forEach(function(s,i){
+      var mk=function(k,ph){var x=el("input",{cls:"in",placeholder:ph});x.value=s[k];x.addEventListener("input",function(){s[k]=x.value;W.stepsTouched=true;saveDraft();warn()});return x};
+      var cb=el("input",{type:"checkbox"});cb.checked=!!s.signoff;cb.addEventListener("change",function(){s.signoff=cb.checked;W.stepsTouched=true;saveDraft();warn()});
+      var x=el("button",{cls:"x",type:"button","aria-label":"Remove step",text:"×"});x.addEventListener("click",function(){W.steps.splice(i,1);W.stepsTouched=true;saveDraft();renderWizard()});
+      body.appendChild(el("div",{cls:"r4"},[mk("what",(i+1)+". What happens"),mk("who","Who (role)"),mk("when","When"),el("label",{cls:"chk"},[cb,"Sign-off"]),x]));
+    });
+    var as=el("button",{cls:"mini-btn",type:"button",text:"+ Step"});as.addEventListener("click",function(){W.steps.push({what:"",who:"",when:"",signoff:false});W.stepsTouched=true;saveDraft();renderWizard()});
+    var wb=el("ul",{cls:"warns",style:"margin-top:10px"});
+    var warn=function(){wb.replaceChildren();var w=[];W.steps.forEach(function(s,i){if(str(s.what)&&!str(s.who))w.push("Step "+(i+1)+" has no owner.")});if(!W.steps.some(function(s){return s.signoff}))w.push("No step is marked as the sign-off point.");w.forEach(function(m){wb.appendChild(el("li",{text:m}))})};
+    warn();body.appendChild(as);body.appendChild(wb);
+  }
+  if(cur.id==="done"){
+    Q("How will you know the output is right?","Pass/fail checks, suggested for this kind of work. When every item passes, it is approved. Ideas beyond the list never block.","Checklist");
+    body.appendChild(field("Who owns this checklist",textIn("clOwner","The person qualified to judge this work"),"Only this person changes the list, on a schedule, based on real outcomes."));
+    W.items.forEach(function(it,i){
+      var x=el("input",{cls:"in",placeholder:"Pass/fail check"});x.value=it;
+      var lint=el("div",{cls:"lint",style:"margin:4px 0 8px"});var setL=function(){var m=str(x.value).match(VAGUE);lint.textContent=m?"“"+m[0]+"” is not pass/fail. Rewrite so two reviewers would agree.":"";lint.style.display=m?"block":"none"};
+      x.addEventListener("input",function(){W.items[i]=x.value;W.clTouched=true;setL();saveDraft()});
+      var rm=el("button",{cls:"x",type:"button","aria-label":"Remove item",text:"×"});rm.addEventListener("click",function(){W.items.splice(i,1);W.clTouched=true;saveDraft();renderWizard()});
+      body.appendChild(el("div",{cls:"r3",style:"grid-template-columns:28px 1fr 34px;margin-bottom:0"},[el("span",{cls:"num",text:String(i+1),style:"margin-top:7px"}),x,rm]));body.appendChild(lint);setL();
+    });
+    var ai=el("button",{cls:"mini-btn",type:"button",text:"+ Item"});ai.addEventListener("click",function(){W.items.push("");W.clTouched=true;saveDraft();renderWizard()});body.appendChild(ai);
+  }
+  if(cur.id==="owner"){
+    Q("Who answers for it?","If no sign-off owner is named, the person who built it owns every outcome.","Tool Card");
+    var so=textIn("signoff","Who approves what it produces"),cbx=el("input",{type:"checkbox"});cbx.checked=W.builderOwns;
+    var sync=function(){so.disabled=W.builderOwns;so.style.opacity=W.builderOwns?".5":"1"};
+    cbx.addEventListener("change",function(){W.builderOwns=cbx.checked;sync();saveDraft();cs()});sync();
+    body.appendChild(el("div",{cls:"r2"},[field("Who built or set it up",textIn("builder","Name",false,function(){cs()})),field("Who signs off on its output",so)]));
+    body.appendChild(el("label",{cls:"chk",style:"margin:-4px 0 12px"},[cbx,"The builder is the sign-off owner"]));
+    var rv=el("input",{cls:"in",type:"date"});rv.value=W.review;rv.addEventListener("change",function(){W.review=rv.value;saveDraft();cs()});
+    body.appendChild(el("div",{cls:"r2"},[field("Next review date",rv,"Suggested: 90 days from today."),field("Data it uses (sources)",textIn("data","Where every input comes from",false,function(){cs()}))]));
+    body.appendChild(field("Data it must never receive",textIn("never","",true,function(){cs()})));
+    body.appendChild(field("When it is wrong",textIn("failure","",true,function(){cs()})));
+    var cb2=el("div");body.appendChild(cb2);
+    var cs=function(){var c=buildCard();if(!c){cb2.replaceChildren();return}var m=CARD.missing(c);status(cb2,m.length?"wait":"ok",m.length?"Tool Card not cleared yet.":"Tool Card cleared for use.",m.length?"Missing: "+m.join(", ")+". You can finish now and complete it later.":"Sign-off owner: "+CARD.owner(c)+".")};cs();
+  }
+  if(cur.id==="finish"){
+    var c=buildCard(),m=c?CARD.missing(c):["Tool name"];
+    Q("Your package.","Everything this tool needs, in one place. Save it to the goal and the register, and take the next step.");
+    body.appendChild(el("div",{cls:"gmeta",style:"margin-bottom:12px"},[el("span",{cls:"risk "+riskLevel(),text:"Risk: "+riskLevel()}),el("span",{cls:"tg muted",text:"Goal: "+goalTitle()}),el("span",{cls:"tg "+(m.length?"no":"ok"),text:m.length?"Tool Card not cleared (missing "+m.join(", ")+")":"Tool Card cleared for use"})]));
+    body.appendChild(el("div",{cls:"panel",style:"margin-bottom:14px;padding:18px"},[
+      el("h3",{text:"Next step toward “"+goalTitle()+"”"}),el("p",{cls:"hint",text:"Added to the goal's milestones when you save."}),
+      field("Milestone",(function(){var x=el("input",{cls:"in"});x.value=W.ms.title;x.addEventListener("input",function(){W.ms.title=x.value;saveDraft()});return x})()),
+      el("div",{cls:"r2"},[field("Owner",(function(){var x=el("input",{cls:"in",placeholder:"Who"});x.value=W.ms.owner;x.addEventListener("input",function(){W.ms.owner=x.value;saveDraft()});return x})()),field("Due",(function(){var x=el("input",{cls:"in",type:"date"});x.value=W.ms.due;x.addEventListener("change",function(){W.ms.due=x.value;saveDraft()});return x})())])
+    ]));
+    var out=el("pre",{cls:"prompt",text:packageText()});
+    var saveMsg=el("div");
+    var bSave=el("button",{cls:"btn primary",type:"button",text:W.savedAt?"Save again (updates)":"Save to goal and register"});
+    bSave.addEventListener("click",function(){
+      var card=buildCard();if(!card){status(saveMsg,"no","Give the tool a name first.","");return}
+      if(W.cardId)card.id=W.cardId;card.updatedAt=new Date().toISOString();
+      var reg=CARD.load(),r=CARD.upsert(reg,card);W.cardId=card.id;var okSave=CARD.save(reg);
+      var g=goalById(W.goalId),added=false;
+      if(g&&str(W.ms.title)&&!g.milestones.some(function(x){return x.title===str(W.ms.title)})){g.milestones.push({id:uid("ms"),title:str(W.ms.title),owner:str(W.ms.owner),due:W.ms.due||"",status:"Not started"});added=true;saveGoals()}
+      W.savedAt=new Date().toISOString();saveDraft();renderGoals();renderStats();
+      status(saveMsg,okSave?"ok":"no",okSave?"Saved.":"Not saved in this browser.",okSave?"Tool Card "+(r==="added"?"added to":"updated in")+" the register"+(added?"; milestone added to the goal":"")+". Download the files below to keep copies.":"Storage is blocked here. Download the files below instead.");
+      bSave.textContent="Save again (updates)";
+    });
+    body.appendChild(el("div",{cls:"toolbar",style:"margin:0 0 12px"},[bSave]));body.appendChild(saveMsg);
+    var dlCard=el("button",{cls:"mini-btn",type:"button",text:"Download Tool Card file"});dlCard.addEventListener("click",function(){var card=buildCard();if(!card)return;var f=CARD.cardFile(card);CARD.download(f.name,f.text)});
+    var dlPol=el("button",{cls:"mini-btn",type:"button",text:"Download rule & steps file"});dlPol.addEventListener("click",function(){
+      CARD.download("kretz-policy_"+CARD.slug(W.name)+".json",JSON.stringify({type:"kretz-policy",version:1,savedAt:new Date().toISOString(),data:{policy:W.rule,why:W.why,scope:W.users,steps:W.steps.map(function(s){return {what:s.what,who:s.who,when:s.when}}),stages:[{stage:"Use",tool:W.platform||W.name,next:"Review",signoff:false},{stage:"Approve",tool:"Sign-off owner review",next:"Rely on output",signoff:true}]}},null,2))});
+    var dlCl=el("button",{cls:"mini-btn",type:"button",text:"Download checklist file"});dlCl.addEventListener("click",function(){
+      CARD.download("kretz-checklist_"+CARD.slug(W.name)+".json",JSON.stringify({type:"kretz-checklist",version:1,savedAt:new Date().toISOString(),data:{name:(str(W.name)||"Tool")+" output",owner:W.clOwner,reviewed:"",next:"",sugg:"",items:W.items.filter(str).map(function(x){return {text:x,result:null,note:""}})}},null,2))});
+    var cp=el("button",{cls:"mini-btn",type:"button",text:"Copy everything"});cp.addEventListener("click",function(){copyText(packageText(),cp)});
+    var pr=el("button",{cls:"mini-btn",type:"button",text:"Print package"});pr.addEventListener("click",function(){printWith("print-pkg")});
+    body.appendChild(el("div",{cls:"toolbar",style:"margin:0 0 12px"},[dlCard,dlPol,dlCl,cp,pr]));
+    body.appendChild(el("p",{cls:"eg",text:"The rule & steps file opens in the Session 3 policy builder; the checklist file opens in the Session 3 checklist, where you can mark pass/fail on real output."}));
+    body.appendChild(out);
+  }
+  box.appendChild(body);
+  // nav
+  var back=el("button",{cls:"btn",type:"button",text:"Back"});back.disabled=W.step===0;back.style.opacity=W.step===0?".5":"1";
+  back.addEventListener("click",function(){var p=act.filter(function(a){return a.i<W.step&&!a.skip}).pop();if(p){W.step=p.i;saveDraft();renderWizard()}});
+  var nextA=act.find(function(a){return a.i>W.step&&!a.skip});
+  var next=el("button",{cls:"btn primary",type:"button",text:nextA?(nextA.s.id==="finish"?"See my package":"Next: "+nextA.s.l):"Start another"});
+  next.addEventListener("click",function(){
+    if(!nextA){if(!W.savedAt&&!window.confirm("Start another without saving this one?"))return;newDraft(W.goalId);$("#path").scrollIntoView({behavior:"smooth"});return}
+    var why=canNext(cur.id);if(why){msg.textContent=why;return}
+    W.step=nextA.i;saveDraft();renderWizard();$("#path").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  var restart=el("button",{cls:"mini-btn",type:"button",text:"Start over"});restart.addEventListener("click",function(){if(window.confirm("Clear this draft and start over?"))newDraft("")});
+  box.appendChild(msg);
+  box.appendChild(el("div",{cls:"wizNav"},[el("div",{cls:"toolbar",style:"margin:0"},[back,restart]),next]));
+}
+
+/* ======================================================================
+   Prompt library
+   ====================================================================== */
+var PROMPTS=[
+  {g:["land"],t:"Review a valuation against its sources",w:"Use on any AI-produced valuation before anyone relies on it.",p:"Review this valuation output: [paste or upload].\nFor every number, tell me: where it came from (named source or 'no source given'), whether I can verify it, and whether it could have been generated without data.\nList any number with no source first. Do not add new estimates."},
+  {g:["land"],t:"Summarize a parcel record without inventing value",w:"Turns a public record into a call-ready summary.",p:"Here is a parcel's public record and its sources: [paste].\nWrite a five-line summary for a forester before a landowner call: acreage, ownership, MFL status, assessed values and soils.\nUse only what is in the record. Where a value is missing, write 'Not in public records'. Do not estimate timber or market value."},
+  {g:["leads"],t:"Find where public landowner data lives",w:"From Session 2. Research before building anything.",p:"How can I find all the landowners in a single Wisconsin county using free, public data? I want owner names, mailing addresses and acreage. Tell me exactly where that data lives, who publishes it, what format it comes in, what it costs, and how current it is."},
+  {g:["leads"],t:"Narrow to forest parcels worth a conversation",w:"From Session 2. Gets the field names and thresholds right.",p:"Narrow it down to private forested parcels big enough to be worth a conversation about timber. In Wisconsin parcel data, which field tells me a parcel is forest land, and what are the class codes? What acreage threshold makes sense, and why? Explain how Managed Forest Law enrollment works and its minimum acreage."},
+  {g:["leads"],t:"Careful outreach draft from public records",w:"Pairs with the letter checklist and the DNA Assistant.",p:"Using these public-record facts about a landowner: [paste], write a short, respectful first letter from Kretz.\nDo not estimate timber value, imply Kretz inspected the property, or treat public data as verified. Then list every fact in the letter that the sender must check before sending."},
+  {g:["leads","rollout"],t:"Describe and match the Kretz voice",w:"Best inside the Kretz DNA Assistant.",p:"Read these examples of how Kretz writes: [paste]. Describe the Kretz voice in six rules, then rewrite this draft to match it without changing any facts: [paste draft]."},
+  {g:["ops"],t:"Spreadsheet with real formulas",w:"From Session 2. AI is not a calculator.",p:"Build [what] with columns for [fields]. Add [calculation] and subtotals by [grouping]. Write the actual Excel formulas in the cells, not the computed numbers. Flag anything you had to assume, and any blank, zero or impossible values in my data."},
+  {g:["ops"],t:"Sort tasks: AI, software, or process?",w:"From Session 2. Best inside the AI Decision Guide.",p:"Here are recurring tasks from our operation: [paste list].\nClassify each as: existing software first, narrow custom GPT, automation, process cleanup, vendor system, or do not use AI yet. One sentence of reasoning each. If a task is really a process problem, say so."},
+  {g:["ops"],t:"Re-check with real constraints",w:"From Session 2. Stops generic answers.",p:"Now redo the top three with my actual constraints: [who is available, what equipment is down, hard deadlines this week]. If a constraint makes your recommendation wrong, say so instead of working around it."},
+  {g:["ops"],t:"Build a small single-file tool",w:"From Session 2. The five things a tool request needs: what, who, in, out, constraints.",p:"Build a single-file HTML tool to help with this problem: [describe]. It should have inputs, output, a review warning, no external dependencies, and a print button. Ask up to five questions before coding if needed."},
+  {g:["ops"],t:"Two changes only",w:"From Session 2. Keeps a working tool working.",p:"Two changes only. [First change.] [Second change.] Leave everything else exactly as it is."},
+  {g:["market"],t:"Patterns and scenarios, not predictions",w:"From Session 2. AI cannot forecast lumber prices.",p:"Using the market data I attach: [file or paste], identify patterns and possible leading indicators. Do not state a prediction as fact. Give scenarios, assumptions, confidence, and what would need verifying at the source."},
+  {g:["market"],t:"Monthly market brief template",w:"From Session 2. The deliverable worth keeping.",p:"Turn that into a one-page monthly monitoring template: the drivers worth tracking, where each number comes from, how often to check it, and what a meaningful change looks like versus normal noise. Use only what is in the data I gave you. If something is not in it, say so rather than filling it in."},
+  {g:["rollout"],t:"Policy into procedure and workflow",w:"From Session 3, principle 1.",p:"Here is a company policy: [paste policy].\nTurn it into:\n1. A procedure: numbered steps, each with a role responsible and the trigger or deadline.\n2. A workflow: the tools and hand-offs the steps run through, marking every sign-off point.\n3. Gaps: any step with no owner, any decision with no sign-off, anything the policy requires that no step covers.\nDo not add requirements that are not in the policy. List suggested additions separately."},
+  {g:["rollout"],t:"Make a checklist testable",w:"From Session 3, principle 2.",p:"Rewrite each checklist item below so it is pass/fail: two reviewers looking at the same work would mark it the same way. Remove words like 'better', 'high quality', 'appropriate', 'improve'. Keep the same number of items and the same intent. Do not add new items.\nChecklist: [paste items]"},
+  {g:["rollout","land","leads"],t:"Review against a checklist, with a stop rule",w:"From Session 3. Prevents the approval loop that never ends.",p:"Review the work below against this checklist only: [paste checklist].\nFor each item, answer PASS or FAIL with one sentence of evidence.\nIf every item passes, say \"APPROVED\" and stop.\nPut any other ideas under \"Optional suggestions — not required for approval.\" Do not use them to fail an item.\nWork: [paste or upload]"},
+  {g:["rollout"],t:"Draft an AI Tool Card",w:"From Session 3, principle 3.",p:"Draft a one-page AI Tool Card for this tool: [describe the tool].\nFields: tool name, what it does in one sentence, who uses it, builder, sign-off owner, decisions it supports, data it uses with sources, data it must never receive, checklist it must pass, what happens when it is wrong, next review date.\nWhere you do not know a field, write \"NEEDS OWNER INPUT\". Do not guess names, data sources or dates."},
+  {g:["any"],t:"Intention: say who it is for and why",w:"From Session 2. The single highest-leverage habit.",p:"[Do this thing] for [who is going to read it], because [what happens next]. Keep it [length and format]. [What to leave out]."},
+  {g:["any"],t:"Teach me back",w:"From Session 2. Use after anything that took more than three tries.",p:"Looking back at everything we just worked through, how could I have gotten this from a single prompt? Write me that prompt, then tell me which parts of it mattered most."}
+];
+var pFilter="all";
+function renderPrompts(){
+  var f=$("#pFilters");f.replaceChildren();
+  var chips=[["all","All"]].concat(goals.filter(function(g){return PROMPTS.some(function(p){return p.g.indexOf(g.id)>=0})}).map(function(g){return [g.id,g.title]})).concat([["any","Any work"]]);
+  chips.forEach(function(c){var b=el("button",{cls:"chip"+(pFilter===c[0]?" on":""),type:"button",text:c[1]});b.addEventListener("click",function(){pFilter=c[0];renderPrompts()});f.appendChild(b)});
+  var q=str($("#pSearch").value).toLowerCase(),list=$("#pList");list.replaceChildren();
+  PROMPTS.filter(function(p){return (pFilter==="all"||p.g.indexOf(pFilter)>=0)&&(!q||(p.t+" "+p.w+" "+p.p).toLowerCase().indexOf(q)>=0)}).forEach(function(p){
+    var cb=el("button",{cls:"copy",type:"button",text:"Copy"}),pre=el("pre",{cls:"prompt",text:p.p});cb.addEventListener("click",function(){copyText(p.p,cb)});
+    list.appendChild(el("article",{cls:"pcard"},[el("h3",{text:p.t}),el("p",{cls:"why",text:p.w}),el("div",{cls:"pwrap"},[el("div",{cls:"phead"},[el("span",{cls:"plabel",text:p.g.map(function(id){var g=goalById(id);return id==="any"?"Any work":g?g.title:""}).filter(Boolean).join(" · ")}),cb]),pre])]));
+  });
+  if(!list.children.length)list.appendChild(el("div",{cls:"eg",text:"No prompts match."}));
+}
+$("#pSearch").addEventListener("input",renderPrompts);
+var hash=location.hash.match(/^#prompts-(\w+)$/);if(hash)pFilter=hash[1];
+
+/* ======================================================================
+   Program file
+   ====================================================================== */
+$("#progExport").addEventListener("click",function(){
+  CARD.download("kretz-ai-program_"+today()+".json",JSON.stringify({type:"kretz-ai-program",version:1,exportedAt:new Date().toISOString(),goals:goals,cards:CARD.load()},null,2));
+  status($("#progMsg"),"ok","Program file downloaded.","Keep it in a shared folder. Load it here or on any copy of this page to pick up where you left off.");
+});
+$("#progImport").addEventListener("change",function(e){
+  var f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+  var r=new FileReader();r.onload=function(){
+    try{var d=JSON.parse(String(r.result));if(!d||d.type!=="kretz-ai-program")throw 0;
+      var g=cleanGoals(d.goals),cards=Array.isArray(d.cards)?d.cards.map(CARD.normalize).filter(Boolean):[];
+      if(!g&&!cards.length)throw 0;
+      if(g&&!window.confirm("Replace the goals and milestones on this page with the "+g.length+" goals in this file? Tool Cards are merged, not replaced."))return;
+      if(g){goals=g;saveGoals()}
+      var reg=CARD.load(),a=0,u=0;cards.forEach(function(c){if(CARD.upsert(reg,c)==="added")a++;else u++});CARD.save(reg);
+      renderAll();status($("#progMsg"),"ok","Program file loaded.",(g?g.length+" goals loaded. ":"")+a+" Tool Cards added, "+u+" updated.");
+    }catch(x){status($("#progMsg"),"no","Not a program file.","Choose a kretz-ai-program .json file downloaded from this page.")}
+  };r.readAsText(f);
+});
+$("#progReset").addEventListener("click",function(){if(!window.confirm("Replace the goals and milestones with the training defaults? Download the program file first if you want to keep the current ones."))return;goals=defaultGoals();saveGoals();renderAll()});
+
+function renderAll(){renderStats();renderGoals();renderWizard();renderPrompts()}
+window.addEventListener("storage",function(e){if(e.key==="k3_register")renderAll()});
+renderAll();
+})();
+
+</script>
+</body>
+</html>
