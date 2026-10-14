@@ -89,7 +89,7 @@
 </head>
 <body>
 <div class="grain"></div>
-<header class="top"><nav aria-label="Main navigation" class="nav"><a class="brand" href="index.html"><span class="mark">AI</span><span><strong>Kretz AI Training</strong><span>Session 3 · Operating model</span></span></a><button aria-controls="navlinks" aria-expanded="false" class="navtoggle">Menu</button><div class="links" id="navlinks"><a href="#principles">Principles</a><a href="#policy">Policy builder</a><a href="#checklist">Checklist</a><a href="#toolcard">Tool Card</a><a href="#review">Tool review</a><a href="#roadmap">Roadmap</a><a href="#prompts">Prompts</a><a href="index.html">Portal</a></div></nav></header>
+<header class="top"><nav aria-label="Main navigation" class="nav"><a class="brand" href="index.html"><span class="mark">AI</span><span><strong>Kretz AI Training</strong><span>Session 3 · Operating model</span></span></a><button aria-controls="navlinks" aria-expanded="false" class="navtoggle">Menu</button><div class="links" id="navlinks"><a href="#principles">Principles</a><a href="#policy">Policy builder</a><a href="#checklist">Checklist</a><a href="#toolcard">Tool Card</a><a href="#review">Tool review</a><a href="#roadmap">Roadmap</a><a href="#prompts">Prompts</a><a href="kretz_ai_tool_register.html">Tool Register</a><a href="index.html">Portal</a><a download href="kretz_session_3.html">Download for offline</a></div></nav></header>
 <main id="top">
 <section class="hero">
 <div>
@@ -115,6 +115,7 @@
 <div class="step"><h3>Checklist</h3><p>Pass/fail items. Owned by the person qualified to judge the work.</p></div>
 <div class="step"><h3>Sign-off</h3><p>A named person approves. The approval and tool version are recorded.</p></div>
 </div>
+<div class="notice" style="margin-top:16px"><strong>Keep using these after the training.</strong> Every tool on this page saves your work as a file you can reopen later, email, or keep in a shared folder. Download this page (or the <a href="kretz_session_3_offline_kit.zip" style="text-decoration:underline">offline kit</a>) and it works with no internet. These tools are one suggested method; rename fields, add your own, or move the files into whatever system Kretz prefers.</div>
 </section>
 
 <section id="loop"><div class="sectionHead"><h2>The approval loop that never ends.</h2><p>A pattern from another organization, worth avoiding before it starts here.</p></div>
@@ -138,7 +139,7 @@
 <div id="steps"></div>
 <div class="rowsHead"><span class="lbl">Workflow: stages</span><button class="mini-btn" id="addStage" type="button">+ Stage</button></div>
 <div id="stages"></div>
-<div class="toolbar"><button class="mini-btn" id="pExample" type="button">Load Kretz valuation example</button><button class="mini-btn" id="pClear" type="button">Clear</button></div>
+<div class="toolbar"><button class="mini-btn" id="pExample" type="button">Load Kretz valuation example</button><button class="mini-btn" id="pSaveFile" type="button">Download file</button><label class="mini-btn" style="display:inline-flex;align-items:center">Open file<input accept=".json,application/json" hidden id="pOpenFile" type="file"/></label><button class="mini-btn" id="pClear" type="button">Clear</button></div>
 </div>
 <div class="panel">
 <h3>Result</h3><p class="hint">Copy it into ChatGPT to refine, or into the policy document.</p>
@@ -159,7 +160,7 @@
 <div class="rowsHead"><span class="lbl">Items</span><button class="mini-btn" id="addItem" type="button">+ Item</button></div>
 <div id="items"></div>
 <div class="field" style="margin-top:6px"><span class="lbl">Optional suggestions (never block approval)</span><textarea class="in" id="cSugg" placeholder="Ideas beyond the checklist. One per line. These go to the checklist owner for the next scheduled review."></textarea></div>
-<div class="toolbar"><button class="mini-btn" data-preset="valuation" type="button">Load: AI valuation tool review</button><button class="mini-btn" data-preset="letter" type="button">Load: outgoing landowner letter</button><button class="mini-btn" id="cResetMarks" type="button">Clear pass/fail marks</button><button class="mini-btn" id="cClear" type="button">Blank checklist</button></div>
+<div class="toolbar"><button class="mini-btn" data-preset="valuation" type="button">Load: AI valuation tool review</button><button class="mini-btn" data-preset="letter" type="button">Load: outgoing landowner letter</button><button class="mini-btn" id="cResetMarks" type="button">Clear pass/fail marks</button><button class="mini-btn" id="cClear" type="button">Blank checklist</button><button class="mini-btn" id="cSaveFile" type="button">Download file</button><label class="mini-btn" style="display:inline-flex;align-items:center">Open file<input accept=".json,application/json" hidden id="cOpenFile" type="file"/></label></div>
 </div>
 <div class="panel">
 <h3>Decision</h3><p class="hint">This is the whole point: a clear stopping rule.</p>
@@ -170,7 +171,7 @@
 </div>
 </section>
 
-<section id="toolcard"><div class="sectionHead"><h2>AI Tool Card.</h2><p>One page per tool. A tool is cleared for routine use only when every required field is filled in, including who signs off on what it produces.</p></div>
+<section id="toolcard"><div class="sectionHead"><h2>AI Tool Card.</h2><p>One card per tool, saved as a file that loads into the AI Tool Register. A tool is cleared for routine use only when every required field is filled in, including who signs off. Add custom fields for anything else Kretz tracks.</p></div>
 <div class="builder">
 <div class="panel">
 <h3>The card</h3><p class="hint">Fields marked * are required for "cleared for use."</p>
@@ -185,16 +186,18 @@
 <div class="field"><span class="lbl">Checklist it must pass *</span><input class="in" data-tc="checklist" placeholder="Name of the checklist and its owner"/></div>
 <div class="field"><span class="lbl">When it is wrong *</span><textarea class="in" data-tc="failure" placeholder="How errors are reported (No-Fault Reporting), who fixes them, what happens to work already sent"></textarea></div>
 <div class="r2"><div class="field"><span class="lbl">Platform</span><input class="in" data-tc="platform" placeholder="e.g. ChatGPT custom GPT, web app"/></div><div class="field"><span class="lbl">Next review date *</span><input class="in" data-tc="review" type="date"/></div></div>
-<div class="toolbar"><button class="mini-btn" id="tcExample" type="button">Load example: Parcel Scout</button><button class="mini-btn" id="tcNew" type="button">New blank card</button></div>
+<div class="rowsHead"><span class="lbl">Custom fields</span><button class="mini-btn" id="tcAddCustom" type="button">+ Field</button></div>
+<div id="tcCustom"></div>
+<div class="toolbar"><button class="mini-btn" id="tcExample" type="button">Load example: Parcel Scout</button><button class="mini-btn" id="tcNew" type="button">New blank card</button><label class="mini-btn" style="display:inline-flex;align-items:center">Open card file<input accept=".json,.csv,application/json,text/csv" hidden id="tcOpen" type="file"/></label></div>
 </div>
 <div class="panel">
-<h3>Status</h3><p class="hint">Save cards to build an AI Tool Register on this device.</p>
+<h3>Status</h3><p class="hint">Download the card as a file to keep it, share it, or load it into the register on any computer.</p>
 <div id="tcStatus"></div>
 <div class="pwrap"><div class="phead"><span class="plabel">AI Tool Card</span><button class="copy" data-copy="tcOut" type="button">Copy</button></div><pre class="prompt" id="tcOut"></pre></div>
-<div class="toolbar"><button class="mini-btn" id="tcSave" type="button">Save to register</button><button class="mini-btn" data-print="toolcard" type="button">Print card</button><button class="mini-btn" id="tcExport" type="button">Export register (CSV)</button></div>
+<div class="toolbar"><button class="mini-btn" id="tcFile" type="button">Download card file</button><button class="mini-btn" id="tcSave" type="button">Save to register</button><button class="mini-btn" data-print="toolcard" type="button">Print card</button><a class="mini-btn" href="kretz_ai_tool_register.html">Open the full register</a></div>
 <div class="rowsHead"><span class="lbl">AI Tool Register (this device)</span></div>
 <div class="reg" id="tcReg"></div>
-<p class="anchorNote">The register is stored only in this browser. Export the CSV to keep a shared copy.</p>
+<p class="anchorNote">Saved cards stay in this browser and appear in the <a href="kretz_ai_tool_register.html" style="text-decoration:underline">AI Tool Register</a>, where you can load card files from others and export the register as JSON or CSV.</p>
 </div>
 </div>
 </section>
@@ -246,6 +249,129 @@ Where you do not know a field, write "NEEDS OWNER INPUT". Do not guess names, da
 </main>
 <footer class="foot"><div class="footInner"><div><strong>Kretz Lumber AI Training · Session 3</strong><p>Policy into practice, checklists as the final judgment, and named ownership of every AI tool.</p></div><div class="small">Location: Kretz Lumber, W11143 County Rd G, Antigo, WI 54409<br/>Time: 10:00 AM to 12:00 noon<br/><a href="index.html" style="text-decoration:underline">Back to the training portal</a></div></div></footer>
 <script>
+/* ---- Kretz AI Tool Card: shared format and rules (used by the Session 3 page and the register) ---- */
+var CARD = (function(){
+  "use strict";
+  var FIELDS=[
+    {k:"name",l:"Tool name",req:true},
+    {k:"purpose",l:"What it does",req:true,area:true},
+    {k:"users",l:"Who uses it"},
+    {k:"builder",l:"Builder",req:true},
+    {k:"signoff",l:"Sign-off owner"},
+    {k:"decisions",l:"Decisions it supports"},
+    {k:"data",l:"Data it uses (sources)",req:true,area:true},
+    {k:"never",l:"Data it must never receive",req:true,area:true},
+    {k:"checklist",l:"Checklist it must pass",req:true},
+    {k:"failure",l:"When it is wrong",req:true,area:true},
+    {k:"platform",l:"Platform"},
+    {k:"review",l:"Next review date",req:true,date:true}
+  ];
+  var TYPE="kretz-ai-tool-card", BUNDLE="kretz-ai-tool-register", VERSION=1, KEY="k3_register";
+  var str=function(v){return v==null?"":String(v).trim()};
+  var isDate=function(v){return /^\d{4}-\d{2}-\d{2}$/.test(v)};
+  function newId(){return "tc-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+
+  // Accepts anything; returns a clean card or null. Unknown keys are ignored.
+  function normalize(o){
+    if(!o||typeof o!=="object"||Array.isArray(o))return null;
+    var c={type:TYPE,version:VERSION,id:str(o.id).slice(0,60)||newId(),builderOwns:o.builderOwns===true||o.builderOwns==="true"||o.builderOwns==="Yes",custom:[],updatedAt:str(o.updatedAt)||new Date().toISOString()};
+    FIELDS.forEach(function(f){c[f.k]=str(o[f.k]).slice(0,4000)});
+    if(c.review&&!isDate(c.review))c.review="";
+    if(Array.isArray(o.custom))c.custom=o.custom.slice(0,40).map(function(x){return {label:str(x&&x.label).slice(0,120),value:str(x&&x.value).slice(0,4000)}}).filter(function(x){return x.label||x.value});
+    return c.name?c:null;
+  }
+  function missing(c){
+    var m=[];
+    FIELDS.forEach(function(f){
+      if(f.req&&!str(c[f.k]))m.push(f.l);
+      if(f.k==="builder"&&!c.builderOwns&&!str(c.signoff))m.push("Sign-off owner");
+    });
+    return m;
+  }
+  function owner(c){return c.builderOwns?(str(c.builder)||"the builder")+" (builder owns the outcome)":str(c.signoff)}
+  function reviewState(c,today){
+    if(!isDate(c.review))return {code:"none",label:"No review date"};
+    var t=today||new Date().toISOString().slice(0,10);
+    var days=Math.round((Date.parse(c.review)-Date.parse(t))/864e5);
+    if(days<0)return {code:"overdue",label:"Review overdue ("+(-days)+" day"+(days===-1?"":"s")+")"};
+    if(days<=30)return {code:"soon",label:"Review due in "+days+" day"+(days===1?"":"s")};
+    return {code:"ok",label:"Next review "+c.review};
+  }
+  function asText(c){
+    var m=missing(c),lines=["AI TOOL CARD: "+(str(c.name)||"(unnamed)"),"Status: "+(m.length?"NOT CLEARED (missing "+m.join(", ")+")":"CLEARED FOR USE"),""];
+    FIELDS.forEach(function(f){
+      if(f.k==="name")return;
+      lines.push((f.k==="signoff"?"Sign-off owner":f.l)+": "+(f.k==="signoff"?(owner(c)||"NOT NAMED"):(str(c[f.k])||"-")));
+    });
+    (c.custom||[]).forEach(function(x){lines.push((x.label||"Custom")+": "+(x.value||"-"))});
+    return lines.join("\n");
+  }
+  function slug(s){return (str(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"card").slice(0,60)}
+  function download(name,text,mime){
+    var blob=new Blob([text],{type:mime||"application/json"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);
+  }
+  function cardFile(c){var x=normalize(c);return {name:"kretz-ai-tool-card_"+slug(x.name)+".json",text:JSON.stringify(x,null,2)}}
+
+  /* CSV: RFC 4180 */
+  function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  function parseCsv(text){
+    var rows=[],row=[],f="",q=false,i=text.charCodeAt(0)===0xFEFF?1:0;
+    for(;i<text.length;i++){var ch=text[i];
+      if(q){if(ch==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}
+      else if(ch==='"')q=true;else if(ch===","){row.push(f);f=""}
+      else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&text[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}
+      else f+=ch}
+    if(f||row.length){row.push(f);rows.push(row)}
+    return rows.filter(function(r){return r.some(function(x){return x!==""})});
+  }
+  var CSV_EXTRA=["Builder owns outcome","Custom fields","Status","Card ID","Updated"];
+  function toCsv(cards){
+    var head=FIELDS.map(function(f){return f.l}).concat(CSV_EXTRA);
+    var rows=cards.map(function(c){
+      return FIELDS.map(function(f){return c[f.k]}).concat([
+        c.builderOwns?"Yes":"No",
+        (c.custom||[]).map(function(x){return x.label+": "+x.value}).join(" | "),
+        missing(c).length?"Not cleared":"Cleared", c.id, c.updatedAt]);
+    });
+    return [head].concat(rows).map(function(r){return r.map(csvCell).join(",")}).join("\r\n");
+  }
+  function fromCsv(text){
+    var rows=parseCsv(text);if(rows.length<2)return [];
+    var head=rows[0].map(str),map={};
+    FIELDS.forEach(function(f){var i=head.indexOf(f.l);if(i<0&&f.k==="signoff")i=head.indexOf("Sign-off owner");if(i>=0)map[f.k]=i});
+    var iOwn=head.indexOf("Builder owns outcome"),iCus=head.indexOf("Custom fields"),iId=head.indexOf("Card ID"),iUp=head.indexOf("Updated");
+    return rows.slice(1).map(function(r){
+      var o={};Object.keys(map).forEach(function(k){o[k]=r[map[k]]});
+      if(iOwn>=0)o.builderOwns=str(r[iOwn]).toLowerCase()==="yes";
+      if(iCus>=0&&str(r[iCus]))o.custom=str(r[iCus]).split(" | ").map(function(p){var j=p.indexOf(": ");return j<0?{label:p,value:""}:{label:p.slice(0,j),value:p.slice(j+2)}});
+      if(iId>=0)o.id=r[iId];if(iUp>=0)o.updatedAt=r[iUp];
+      return normalize(o);
+    }).filter(Boolean);
+  }
+  // Parse an uploaded file's text: a card, a register bundle, an array of cards, or register CSV.
+  function parseFile(name,text){
+    if(/\.csv$/i.test(name)||(!/^\s*[\[{]/.test(text)&&text.indexOf(",")>=0))return fromCsv(text);
+    var d=JSON.parse(text);
+    var list=Array.isArray(d)?d:(d&&d.type===BUNDLE&&Array.isArray(d.cards))?d.cards:[d];
+    return list.map(normalize).filter(Boolean);
+  }
+  function bundle(cards){return JSON.stringify({type:BUNDLE,version:VERSION,exportedAt:new Date().toISOString(),cards:cards.map(normalize).filter(Boolean)},null,2)}
+
+  /* local register (same key on every page served from the same site) */
+  function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v.map(normalize).filter(Boolean):[]}catch(e){return []}}
+  function save(cards){try{localStorage.setItem(KEY,JSON.stringify(cards));return true}catch(e){return false}}
+  // Insert or replace by id, then by name. Returns "added" or "updated".
+  function upsert(cards,c){
+    var i=cards.findIndex(function(x){return x.id===c.id});
+    if(i<0)i=cards.findIndex(function(x){return str(x.name).toLowerCase()===str(c.name).toLowerCase()});
+    if(i>=0){c.id=cards[i].id;cards[i]=c;return "updated"}
+    cards.push(c);return "added";
+  }
+  return {FIELDS:FIELDS,TYPE:TYPE,normalize:normalize,missing:missing,owner:owner,reviewState:reviewState,asText:asText,slug:slug,download:download,cardFile:cardFile,toCsv:toCsv,fromCsv:fromCsv,parseFile:parseFile,bundle:bundle,load:load,save:save,upsert:upsert,newId:newId};
+})();
+
 (function(){
 "use strict";
 var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
@@ -279,6 +405,18 @@ document.addEventListener("click",function(e){
   window.addEventListener("afterprint",done);window.print();setTimeout(done,1500);
 });
 
+
+/* ---------- save / open work as files (policy, checklist) ---------- */
+function saveWork(kind,obj,name){CARD.download("kretz-"+kind+"_"+CARD.slug(name||kind)+".json",JSON.stringify({type:"kretz-"+kind,version:1,savedAt:new Date().toISOString(),data:obj},null,2))}
+function openWork(input,kind,apply,box){
+  input.addEventListener("change",function(e){
+    var f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+    var r=new FileReader();r.onload=function(){
+      try{var d=JSON.parse(String(r.result));if(!d||d.type!=="kretz-"+kind||!d.data)throw 0;apply(d.data)}
+      catch(x){status(box,"no","Not a "+kind+" file.","Choose a .json file saved from this section.")}
+    };r.readAsText(f);
+  });
+}
 /* ======================================================================
    1. Policy -> procedure -> workflow
    ====================================================================== */
@@ -359,6 +497,8 @@ $("#addStage").addEventListener("click",function(){P.stages.push({stage:"",tool:
 $("#pExample").addEventListener("click",function(){pLoad(P_EXAMPLE)});
 $("#pClear").addEventListener("click",function(){pLoad({policy:"",why:"",scope:"",steps:[{what:"",who:"",when:""}],stages:[{stage:"",tool:"",next:"",signoff:false}]})});
 pLoad(P);
+$("#pSaveFile").addEventListener("click",function(){saveWork("policy",P,P.policy.slice(0,40))});
+openWork($("#pOpenFile"),"policy",function(d){pLoad({policy:String(d.policy||""),why:String(d.why||""),scope:String(d.scope||""),steps:Array.isArray(d.steps)&&d.steps.length?d.steps.map(function(s){return {what:String(s.what||""),who:String(s.who||""),when:String(s.when||"")}}):[{what:"",who:"",when:""}],stages:Array.isArray(d.stages)&&d.stages.length?d.stages.map(function(s){return {stage:String(s.stage||""),tool:String(s.tool||""),next:String(s.next||""),signoff:!!s.signoff}}):[{stage:"",tool:"",next:"",signoff:false}]})},$("#pStatus"));
 
 /* ======================================================================
    2. Checklist and "done"
@@ -433,71 +573,80 @@ $("#cResetMarks").addEventListener("click",function(){C.items.forEach(function(i
 $("#cClear").addEventListener("click",function(){cLoad(blankChecklist())});
 $("#loadValuation").addEventListener("click",function(){cPreset("valuation")});
 cLoad(C);
+$("#cSaveFile").addEventListener("click",function(){saveWork("checklist",C,C.name)});
+openWork($("#cOpenFile"),"checklist",function(d){cLoad({name:String(d.name||""),owner:String(d.owner||""),reviewed:String(d.reviewed||""),next:String(d.next||""),sugg:String(d.sugg||""),items:Array.isArray(d.items)&&d.items.length?d.items.map(function(i){return {text:String(i.text||""),result:i.result==="pass"||i.result==="fail"?i.result:null,note:String(i.note||"")}}):[{text:"",result:null,note:""}]})},$("#cStatus"));
 
 /* ======================================================================
-   3. AI Tool Card and register
+   3. AI Tool Card (shared format: see CARD)
    ====================================================================== */
-var TC_FIELDS=["name","purpose","users","builder","signoff","builderOwns","decisions","data","never","checklist","failure","platform","review"];
-var TC_LABELS={name:"Tool",purpose:"What it does",users:"Who uses it",builder:"Builder",signoff:"Sign-off owner",decisions:"Decisions it supports",data:"Data it uses",never:"Never receives",checklist:"Checklist",failure:"When it is wrong",platform:"Platform",review:"Next review"};
-var TC_REQUIRED=["name","purpose","builder","data","never","checklist","failure","review"];
-var TC_EXAMPLE={name:"Kretz Parcel Scout",purpose:"A forester taps a location or uses GPS; the tool shows the county parcel record, MFL enrollment, soils, comparable land sales and lead signals, each with its public source.",users:"Foresters, land buyers",builder:"NTC training prototype",signoff:"",builderOwns:false,decisions:"Whether to pursue a parcel and what to verify before contacting the owner",data:"WI Statewide Parcels (county records), WI DNR tax-law points, USDA soil survey, WI DOR transfer returns",never:"Confidential offers, internal deal notes, landowner personal details beyond the public record",checklist:"AI valuation tool output (owner: to be named)",failure:"Report through No-Fault Reporting with the parcel ID and a screenshot; the builder corrects the tool; figures already shared are re-checked by the sign-off owner.",platform:"Web app (Vercel)",review:""};
-var TC=store.get("k3_tc_current",null)||{};
-function tcRead(){TC_FIELDS.forEach(function(f){var i=$('[data-tc="'+f+'"]');TC[f]=i.type==="checkbox"?i.checked:i.value});store.set("k3_tc_current",TC)}
-function tcWrite(d){TC_FIELDS.forEach(function(f){var i=$('[data-tc="'+f+'"]');if(i.type==="checkbox")i.checked=!!d[f];else i.value=d[f]||""});tcOut()}
-function tcMissing(d){
-  var m=[];
-  TC_REQUIRED.forEach(function(f){
-    if(!txt(d[f]))m.push(TC_LABELS[f]);
-    if(f==="builder"&&!d.builderOwns&&!txt(d.signoff))m.push("Sign-off owner");
-  });
-  return m;
+var TC_EXAMPLE={name:"Kretz Parcel Scout",purpose:"A forester taps a location or uses GPS; the tool shows the county parcel record, MFL enrollment, soils, comparable land sales and lead signals, each with its public source.",users:"Foresters, land buyers",builder:"NTC training prototype",signoff:"",builderOwns:false,decisions:"Whether to pursue a parcel and what to verify before contacting the owner",data:"WI Statewide Parcels (county records), WI DNR tax-law points, USDA soil survey, WI DOR transfer returns",never:"Confidential offers, internal deal notes, landowner personal details beyond the public record",checklist:"AI valuation tool output (owner: to be named)",failure:"Report through No-Fault Reporting with the parcel ID and a screenshot; the builder corrects the tool; figures already shared are re-checked by the sign-off owner.",platform:"Web app (Vercel)",review:"",custom:[{label:"Web address",value:"https://kretzdemo-phi.vercel.app/"}]};
+var tcId=null, tcCustom=[];
+var TC_KEYS=CARD.FIELDS.map(function(f){return f.k});
+function tcRead(){
+  var o={id:tcId||undefined,builderOwns:$('[data-tc="builderOwns"]').checked,custom:tcCustom.map(function(x){return {label:x.label,value:x.value}})};
+  TC_KEYS.forEach(function(k){o[k]=$('[data-tc="'+k+'"]').value});
+  store.set("k3_tc_current",o);return o;
 }
-function tcOwner(d){return d.builderOwns?(txt(d.builder)||"the builder")+" (builder owns the outcome)":(txt(d.signoff)||"")}
+function tcRenderCustom(){
+  var box=$("#tcCustom");box.replaceChildren();
+  tcCustom.forEach(function(x,i){
+    var a=el("input",{cls:"in",placeholder:"Field name"});a.value=x.label;a.addEventListener("input",function(){x.label=a.value;tcOut()});
+    var b=el("input",{cls:"in",placeholder:"Value"});b.value=x.value;b.addEventListener("input",function(){x.value=b.value;tcOut()});
+    box.appendChild(el("div",{cls:"r3",style:"grid-template-columns:1fr 1.6fr 34px"},[a,b,xBtn(function(){tcCustom.splice(i,1);tcRenderCustom();tcOut()})]));
+  });
+}
+function tcWrite(d){
+  d=d||{};tcId=d.id||null;
+  TC_KEYS.forEach(function(k){$('[data-tc="'+k+'"]').value=d[k]||""});
+  $('[data-tc="builderOwns"]').checked=!!d.builderOwns;
+  tcCustom=Array.isArray(d.custom)?d.custom.map(function(x){return {label:x.label||"",value:x.value||""}}):[];
+  tcRenderCustom();tcOut();
+}
 function tcOut(){
-  tcRead();
-  var sign=$('[data-tc="signoff"]');sign.disabled=!!TC.builderOwns;sign.style.opacity=TC.builderOwns?".5":"1";
-  var miss=tcMissing(TC),box=$("#tcStatus");
-  if(!txt(TC.name))status(box,"wait","Start with the tool name.","");
+  var o=tcRead();
+  var sign=$('[data-tc="signoff"]');sign.disabled=!!o.builderOwns;sign.style.opacity=o.builderOwns?".5":"1";
+  var miss=CARD.missing(o),box=$("#tcStatus");
+  if(!txt(o.name))status(box,"wait","Start with the tool name.","");
   else if(miss.length){
-    var noOwner=miss.indexOf("Sign-off owner")>=0;
     status(box,"no","Not cleared for use.","Missing: "+miss.join(", ")+".");
-    if(noOwner)box.appendChild(el("ul",{cls:"warns"},[el("li",{text:"No sign-off owner is named. Either name one, or tick “the builder is the sign-off owner.” Until then, the builder owns every outcome."})]));
-  } else status(box,"ok","Cleared for use.","Sign-off owner: "+tcOwner(TC)+".");
-  var lines=["AI TOOL CARD: "+(txt(TC.name)||"(unnamed)"),"Status: "+(miss.length?"NOT CLEARED (missing "+miss.join(", ")+")":"CLEARED FOR USE"),""];
-  ["purpose","users","builder"].forEach(function(f){lines.push(TC_LABELS[f]+": "+(txt(TC[f])||"-"))});
-  lines.push("Sign-off owner: "+(tcOwner(TC)||"NOT NAMED"));
-  ["decisions","data","never","checklist","failure","platform","review"].forEach(function(f){lines.push(TC_LABELS[f]+": "+(txt(TC[f])||"-"))});
-  $("#tcOut").textContent=lines.join("\n");
+    if(miss.indexOf("Sign-off owner")>=0)box.appendChild(el("ul",{cls:"warns"},[el("li",{text:"No sign-off owner is named. Either name one, or tick “the builder is the sign-off owner.” Until then, the builder owns every outcome."})]));
+  } else status(box,"ok","Cleared for use.","Sign-off owner: "+CARD.owner(o)+".");
+  $("#tcOut").textContent=CARD.asText(o);
 }
-function regGet(){return store.get("k3_register",[])}
 function regRender(){
-  var reg=regGet(),box=$("#tcReg");box.replaceChildren();
+  var reg=CARD.load(),box=$("#tcReg");box.replaceChildren();
   if(!reg.length){box.appendChild(el("div",{cls:"anchorNote",text:"No saved cards yet."}));return}
-  reg.forEach(function(d,i){
-    var ok=!tcMissing(d).length;
+  reg.forEach(function(d){
+    var ok=!CARD.missing(d).length;
     var open=el("button",{cls:"mini-btn",type:"button",text:"Open"});open.addEventListener("click",function(){tcWrite(d);$("#toolcard").scrollIntoView({behavior:"smooth"})});
-    var del=xBtn(function(){var r=regGet();r.splice(i,1);store.set("k3_register",r);regRender()});
-    box.appendChild(el("div",{cls:"regRow"},[el("div",null,[el("b",null,[el("span",{cls:"dotS"+(ok?" ok":"")}),document.createTextNode(txt(d.name)||"(unnamed)")]),el("span",{text:(ok?"Cleared":"Not cleared")+" · Sign-off: "+(tcOwner(d)||"not named")})]),open,del]));
+    var del=xBtn(function(){if(!window.confirm("Remove “"+d.name+"” from this device's register?"))return;CARD.save(CARD.load().filter(function(x){return x.id!==d.id}));regRender()});
+    box.appendChild(el("div",{cls:"regRow"},[el("div",null,[el("b",null,[el("span",{cls:"dotS"+(ok?" ok":"")}),document.createTextNode(d.name)]),el("span",{text:(ok?"Cleared":"Not cleared")+" · Sign-off: "+(CARD.owner(d)||"not named")})]),open,del]));
   });
 }
-function csvCell(v){v=String(v==null?"":v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
-$$("[data-tc]").forEach(function(i){i.addEventListener(i.type==="checkbox"?"change":"input",tcOut)});
+$$("[data-tc]").forEach(function(i){i.addEventListener(i.type==="checkbox"?"change":"input",tcOut);if(i.type==="date")i.addEventListener("change",tcOut)});
+$("#tcAddCustom").addEventListener("click",function(){tcCustom.push({label:"",value:""});tcRenderCustom()});
 $("#tcExample").addEventListener("click",function(){tcWrite(TC_EXAMPLE)});
 $("#tcNew").addEventListener("click",function(){tcWrite({})});
 $("#tcSave").addEventListener("click",function(e){
-  tcRead();if(!txt(TC.name)){status($("#tcStatus"),"wait","Name the tool before saving.","");return}
-  var reg=regGet(),idx=reg.findIndex(function(d){return txt(d.name).toLowerCase()===txt(TC.name).toLowerCase()});
-  var copy=JSON.parse(JSON.stringify(TC));if(idx>=0)reg[idx]=copy;else reg.push(copy);store.set("k3_register",reg);regRender();
-  var b=e.currentTarget,o=b.textContent;b.textContent=idx>=0?"Updated":"Saved";setTimeout(function(){b.textContent=o},1200);
+  var c=CARD.normalize(tcRead());if(!c){status($("#tcStatus"),"wait","Name the tool before saving.","");return}
+  c.updatedAt=new Date().toISOString();var reg=CARD.load(),r=CARD.upsert(reg,c);tcId=c.id;
+  if(!CARD.save(reg))status($("#tcStatus"),"no","Not saved in this browser.","Storage is blocked here. Use “Download card file” instead.");
+  regRender();var b=e.currentTarget,o=b.textContent;b.textContent=r==="added"?"Saved":"Updated";setTimeout(function(){b.textContent=o},1200);
 });
-$("#tcExport").addEventListener("click",function(){
-  var reg=regGet();if(!reg.length)return;
-  var cols=["name","purpose","users","builder","signoff","decisions","data","never","checklist","failure","platform","review"];
-  var rows=[cols.map(function(c){return TC_LABELS[c]}).concat(["Status"])].concat(reg.map(function(d){return cols.map(function(c){return c==="signoff"?tcOwner(d):d[c]}).concat([tcMissing(d).length?"Not cleared":"Cleared"])}));
-  var blob=new Blob([rows.map(function(r){return r.map(csvCell).join(",")}).join("\n")],{type:"text/csv"});
-  var a=el("a",{href:URL.createObjectURL(blob),download:"kretz_ai_tool_register.csv"});document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);
+$("#tcFile").addEventListener("click",function(){
+  var c=CARD.normalize(tcRead());if(!c){status($("#tcStatus"),"wait","Name the tool before downloading.","");return}
+  var f=CARD.cardFile(c);CARD.download(f.name,f.text);
 });
-tcWrite(TC);regRender();
+$("#tcOpen").addEventListener("change",function(e){
+  var f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+  var r=new FileReader();r.onload=function(){
+    try{var list=CARD.parseFile(f.name,String(r.result));if(!list.length)throw 0;tcWrite(list[0]);
+      if(list.length>1)status($("#tcStatus"),"wait","That file holds "+list.length+" cards.","Showing the first. Open the AI Tool Register to load them all.");}
+    catch(x){status($("#tcStatus"),"no","Not a Tool Card file.","Choose a .json card file saved from this page or the register.")}
+  };r.readAsText(f);
+});
+var saved=store.get("k3_tc_current",null);
+tcWrite(saved&&typeof saved==="object"?saved:{});regRender();
 })();
 
 </script>

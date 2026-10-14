@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Kretz AI Tool Register</title>
+<meta content="Kretz Lumber AI Tool Register: load AI Tool Card files, track owners, sign-off and review dates, and export the register as JSON or CSV. Works offline." name="description"/>
+<style>
+
+    :root{
+      --bg:#0b0d08; --bg2:#13170f; --panel:rgba(255,255,255,.075); --panel2:rgba(255,255,255,.12);
+      --line:rgba(255,255,255,.16); --text:#fff7e8; --muted:#cbbfa8; --gold:#d49a3d; --green:#789d58;
+      --cream:#f0d49a; --red:#c4564b; --shadow:0 24px 80px rgba(0,0,0,.42); --max:1180px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 18% 4%,rgba(212,154,61,.24),transparent 32%),radial-gradient(circle at 90% 10%,rgba(120,157,88,.22),transparent 34%),linear-gradient(135deg,#080a07,#151810 48%,#070806);min-height:100vh} a{color:inherit;text-decoration:none}
+    .grain{position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 92%);z-index:-1}
+    .top{position:sticky;top:0;z-index:20;background:rgba(8,10,7,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)} .nav{max-width:var(--max);margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-weight:950;color:#11160d;background:linear-gradient(135deg,#f4c778,#bd7932 48%,#7ea75f);box-shadow:0 14px 34px rgba(212,154,61,.22)}.brand strong{display:block;letter-spacing:-.03em}.brand span span{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.links a,.tiny{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);padding:9px 12px;border-radius:999px;color:#f6eddb;font-size:.88rem}.links a:hover,.tiny:hover{background:rgba(255,255,255,.12)}
+    .hero{max-width:var(--max);margin:auto;padding:72px 22px 36px;display:grid;grid-template-columns:1.03fr .97fr;gap:34px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(212,154,61,.35);background:rgba(212,154,61,.11);padding:8px 12px;border-radius:999px;color:#ffe7bd;font-weight:800;font-size:.9rem;margin-bottom:20px}.dot{width:9px;height:9px;border-radius:50%;background:#92d579;box-shadow:0 0 0 8px rgba(146,213,121,.12)}h1{font-size:clamp(2.55rem,6.1vw,5.7rem);line-height:.9;letter-spacing:-.075em;margin:0}h1 span{display:block;color:transparent;background:linear-gradient(90deg,#fff6df,#e7b45c 50%,#a6cf83);-webkit-background-clip:text;background-clip:text}.lead{font-size:clamp(1.04rem,1.55vw,1.25rem);line-height:1.62;color:#e0d3bc;max-width:760px;margin:24px 0 0}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 17px;border-radius:15px;font-weight:900;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.075);box-shadow:0 14px 32px rgba(0,0,0,.24)}.btn.primary{background:linear-gradient(135deg,#e4a54b,#995f22);color:#161208;border:0}.btn.green{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006;border:0}.btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .heroCard{min-height:480px;border-radius:34px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.17);box-shadow:var(--shadow);background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.035)),radial-gradient(circle at 35% 16%,rgba(212,154,61,.28),transparent 38%),radial-gradient(circle at 74% 34%,rgba(120,157,88,.22),transparent 40%),linear-gradient(135deg,#171d13,#090b08)}.heroCard:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(158deg,rgba(240,212,154,.14) 0 2px,transparent 2px 20px),linear-gradient(0deg,rgba(0,0,0,.6),transparent 55%)}.orb{position:absolute;right:-90px;top:-80px;width:400px;height:400px;border-radius:50%;background:repeating-radial-gradient(circle,rgba(240,212,154,.26) 0 2px,transparent 2px 31px);opacity:.55}.stack{position:absolute;left:28px;right:28px;bottom:28px;display:grid;gap:14px}.mini{padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.36);backdrop-filter:blur(12px)}.mini .k{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);font-weight:950;margin-bottom:8px}.mini strong{display:block;margin-bottom:5px}.mini p{margin:0;color:var(--muted);line-height:1.45;font-size:.93rem}
+    .stats{max-width:var(--max);margin:auto;padding:0 22px 38px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.stat{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);border-radius:18px;padding:18px}.stat strong{display:block;font-size:1.55rem;letter-spacing:-.04em;color:#fff2d6}.stat span{display:block;color:var(--muted);font-size:.91rem;margin-top:4px}
+    section{max-width:var(--max);margin:auto;padding:42px 22px}.sectionHead{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}h2{font-size:clamp(2rem,3.4vw,3.25rem);line-height:.96;letter-spacing:-.05em;margin:0}.sectionHead p{margin:0;color:var(--muted);line-height:1.55;max-width:500px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);border-radius:24px;padding:22px;box-shadow:0 18px 56px rgba(0,0,0,.18)}.card:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 12% 0%,rgba(212,154,61,.14),transparent 34%);pointer-events:none}.card>*{position:relative;z-index:1}.icon{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:rgba(212,154,61,.13);border:1px solid rgba(212,154,61,.28);font-size:1.35rem;margin-bottom:15px}.card h3{margin:0 0 9px;font-size:1.2rem;letter-spacing:-.02em}.card p{margin:0 0 17px;color:var(--muted);line-height:1.55}.audio-player{display:block;width:100%;margin:2px 0 13px}.demo-actions{display:flex;gap:9px;flex-wrap:wrap}.res{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);font-size:.9rem;font-weight:900}.res:hover{background:rgba(255,255,255,.14)}
+    .split{display:grid;grid-template-columns:.86fr 1.14fr;gap:16px}.notice{padding:20px;border-radius:22px;background:rgba(212,154,61,.10);border:1px solid rgba(212,154,61,.25);line-height:1.55;color:#f6e6c8}.notice strong{color:#fff3d8}.toolList{display:grid;gap:12px}.tool{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07)}.tool:hover{background:rgba(255,255,255,.115);transform:translateY(-1px)}.badge{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:rgba(120,157,88,.17);border:1px solid rgba(120,157,88,.32);font-size:1.28rem}.tool h3{margin:0 0 4px}.tool p{margin:0;color:var(--muted);font-size:.91rem;line-height:1.45}.pill{display:inline-flex;align-items:center;padding:7px 9px;border-radius:999px;background:rgba(212,154,61,.12);border:1px solid rgba(212,154,61,.24);color:#fff0d3;font-weight:900;font-size:.78rem;white-space:nowrap}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;counter-reset:step}.step{counter-increment:step;min-height:190px;border-radius:22px;padding:18px;border:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.045))}.step:before{content:"0" counter(step);display:inline-flex;padding:5px 9px;border-radius:999px;background:var(--cream);color:#17130b;font-weight:950;margin-bottom:14px}.step h3{font-size:1rem;margin:0 0 8px}.step p{font-size:.92rem;color:var(--muted);line-height:1.48;margin:0}.newsGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.news{display:block;border:1px solid rgba(196,86,75,.28);background:linear-gradient(135deg,rgba(196,86,75,.14),rgba(255,255,255,.055));border-radius:22px;padding:20px;transition:transform .15s ease, background .15s ease, border-color .15s ease}.news:hover{transform:translateY(-2px);background:linear-gradient(135deg,rgba(196,86,75,.22),rgba(255,255,255,.075));border-color:rgba(255,208,201,.42)}.tag{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:#ffd0c9;font-weight:950;margin-bottom:12px}.news h3{margin:0 0 8px}.news p{margin:0 0 12px;color:var(--muted);line-height:1.5}.lesson{font-weight:900;color:#fff1d5}.source{margin-top:12px;display:inline-flex;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);color:#ffe4bd;font-size:.82rem;font-weight:900}.govGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.gov{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);border-radius:22px;padding:19px}.gov strong{display:block;margin-bottom:9px}.gov span{display:block;color:var(--muted);line-height:1.5;font-size:.91rem}.searchbox{width:min(420px,100%);padding:13px 15px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--text);font-size:1rem}.hide{display:none!important}.foot{margin-top:36px;padding:36px 22px;border-top:1px solid var(--line);background:rgba(0,0,0,.28)}.footInner{max-width:var(--max);margin:auto;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center}.small{font-size:.88rem;color:var(--muted);line-height:1.55}.foot p{margin:6px 0 0;color:var(--muted)}
+    .gptGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.gptCard{position:relative;overflow:hidden;border:1px solid rgba(120,157,88,.32);background:linear-gradient(135deg,rgba(120,157,88,.16),rgba(255,255,255,.065));border-radius:24px;padding:24px;box-shadow:0 20px 58px rgba(0,0,0,.22)}.gptCard h3{margin:0 0 10px;font-size:1.35rem}.gptCard p{margin:0 0 16px;color:var(--muted);line-height:1.55}.gptActions{display:flex;gap:10px;flex-wrap:wrap}.activity{border:1px solid rgba(212,154,61,.26);background:rgba(212,154,61,.10);border-radius:24px;padding:22px;margin-top:16px}.activity h3{margin:0 0 10px}.activity ol,.activity ul{color:var(--muted);line-height:1.55}.accessNote{display:block;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.065);border-radius:18px;padding:16px;margin-top:14px;color:#f3e4cb}.accessNote:hover{background:rgba(255,255,255,.11)}
+    .navtoggle{display:none;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#f6eddb;border-radius:12px;padding:9px 13px;font-family:inherit;font-size:.9rem;font-weight:800;cursor:pointer}
+    @media(max-width:960px){.hero,.split{grid-template-columns:1fr}.stats,.cards,.flow,.govGrid,.newsGrid,.gptGrid{grid-template-columns:repeat(2,1fr)}.heroCard{min-height:390px}.sectionHead{align-items:start;flex-direction:column}}@media(max-width:650px){.navtoggle{display:block}.links{display:none;width:100%;flex-direction:column;align-items:stretch;margin-top:12px}.links.open{display:flex}.nav{flex-wrap:wrap}.nav{align-items:flex-start;flex-direction:column}.stats,.cards,.flow,.govGrid,.newsGrid,.gptGrid{grid-template-columns:1fr}.tool{grid-template-columns:46px 1fr}.tool .pill{grid-column:1/-1;justify-content:center}.footInner{grid-template-columns:1fr}}
+  
+
+    /* ---- shared with the Session 2 run of show ---- */
+    .prompt{white-space:pre-wrap;background:#11170e;border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;color:#fff2d8;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92rem;line-height:1.5;margin:0}
+    .pwrap{margin-top:12px}.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+    .plabel,.lbl{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);font-weight:950}
+    .copy{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#f6eddb;padding:7px 11px;border-radius:999px;font-size:.76rem;font-weight:900;letter-spacing:.05em;cursor:pointer;font-family:inherit}.copy:hover{background:rgba(255,255,255,.13)}.copy.ok{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006;border-color:transparent}
+
+    /* ---- Session 3 tools ---- */
+    .builder{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;align-items:start}
+    .panel{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);border-radius:24px;padding:22px;box-shadow:0 18px 56px rgba(0,0,0,.18)}
+    .panel h3{margin:0 0 6px;font-size:1.2rem;letter-spacing:-.02em}.panel .hint{margin:0 0 16px;color:var(--muted);line-height:1.5;font-size:.93rem}
+    .field{display:grid;gap:6px;margin-bottom:13px}
+    .in,textarea.in,select.in{width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.3);color:var(--text);font:inherit;font-size:.95rem}
+    textarea.in{min-height:70px;resize:vertical;line-height:1.45}.in:focus{outline:2px solid rgba(212,154,61,.6);outline-offset:1px}
+    .in::placeholder{color:rgba(203,191,168,.6)}
+    .rowsHead{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px}
+    .r3{display:grid;grid-template-columns:1.4fr 1fr 1fr 34px;gap:8px;margin-bottom:8px;align-items:start}
+    .r4{display:grid;grid-template-columns:1.1fr 1fr 1fr auto 34px;gap:8px;margin-bottom:8px;align-items:center}
+    .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.r3b{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+    @media(min-width:961px){.builder>.panel:last-child{position:sticky;top:92px;max-height:calc(100vh - 110px);overflow:auto}}
+    .x{width:34px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;font:inherit;font-size:1.05rem}.x:hover{background:rgba(196,86,75,.25);color:#fff}
+    .chk{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:.82rem;font-weight:800;white-space:nowrap;cursor:pointer}.chk input{width:16px;height:16px;accent-color:#789d58}
+    .mini-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#f6eddb;padding:9px 12px;border-radius:12px;font:inherit;font-size:.86rem;font-weight:900;cursor:pointer}.mini-btn:hover{background:rgba(255,255,255,.14)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .status{border-radius:16px;padding:14px 16px;line-height:1.5;font-size:.95rem;margin-bottom:12px;border:1px solid}
+    .status strong{display:block;font-size:1.05rem;letter-spacing:-.01em;margin-bottom:3px}
+    .status.ok{background:rgba(120,157,88,.18);border-color:rgba(154,202,117,.55);color:#e4f5d6}
+    .status.no{background:rgba(196,86,75,.16);border-color:rgba(196,86,75,.5);color:#ffd9d3}
+    .status.wait{background:rgba(212,154,61,.12);border-color:rgba(212,154,61,.4);color:#ffe7bd}
+    .warns{margin:0 0 12px;padding-left:18px;color:#ffd9b0;line-height:1.5;font-size:.9rem}
+    .item{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);border-radius:16px;padding:12px;margin-bottom:10px}
+    .item.pass{border-color:rgba(154,202,117,.5)}.item.fail{border-color:rgba(196,86,75,.55)}
+    .itemTop{display:grid;grid-template-columns:28px 1fr 34px;gap:8px;align-items:start}
+    .num{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--cream);color:#17130b;font-weight:950;font-size:.85rem;margin-top:7px}
+    .seg{display:inline-flex;border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:hidden;margin-top:9px}
+    .seg button{border:0;background:rgba(255,255,255,.05);color:var(--muted);padding:8px 14px;font:inherit;font-size:.84rem;font-weight:900;cursor:pointer}
+    .seg button+button{border-left:1px solid rgba(255,255,255,.14)}
+    .seg button.on.p{background:linear-gradient(135deg,#9aca75,#53773d);color:#071006}.seg button.on.f{background:linear-gradient(135deg,#d77064,#8f3a31);color:#fff}
+    .lint{margin:8px 0 0 36px;color:#ffd9b0;font-size:.84rem;line-height:1.45}
+    .itemFoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:36px}
+    .reg{display:grid;gap:8px;margin-top:10px}
+    .regRow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.2)}
+    .regRow b{display:block}.regRow span{color:var(--muted);font-size:.84rem}
+    .dotS{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:#c4564b}.dotS.ok{background:#92d579}
+    .chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:step}
+    .loop{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+    .loop div{border:1px dashed rgba(196,86,75,.45);background:rgba(196,86,75,.08);border-radius:18px;padding:14px;font-size:.92rem;line-height:1.45;color:#f3dcd6}
+    .loop div b{display:block;color:#fff;margin-bottom:4px}
+    .pvRule{border-left:3px solid var(--gold);padding:4px 0 4px 14px;margin:12px 0 0;color:#f6e6c8;line-height:1.5}
+    .anchorNote{font-size:.85rem;color:var(--muted);margin-top:10px;line-height:1.5}
+    @media(max-width:960px){.builder,.chain,.loop{grid-template-columns:1fr}.r3,.r4{grid-template-columns:1fr 1fr}.r3 .x,.r4 .x{grid-column:auto}}
+    @media(max-width:650px){.r2,.r3,.r3b,.r4{grid-template-columns:1fr}}
+    @media print{
+      .top,.grain,.toolbar,.copy,.x,.mini-btn,.actions,.navtoggle{display:none!important}
+      body{background:#fff!important;color:#000}
+      .panel,.card,.gov,.step,.item{break-inside:avoid;background:#fff!important;color:#000;border-color:#999!important;box-shadow:none}
+      .in{border-color:#999;color:#000;background:#fff}
+      body.print-one main>section:not(.printing),body.print-one .hero,body.print-one .stats,body.print-one .foot{display:none!important}
+      body.print-one .printing .builder{grid-template-columns:1fr}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+    /* ---- register ---- */
+    .drop{border:2px dashed rgba(212,154,61,.4);background:rgba(212,154,61,.06);border-radius:20px;padding:18px;text-align:center;color:#f6e6c8;line-height:1.5;margin-bottom:14px;transition:background .15s ease,border-color .15s ease}
+    .drop.over{background:rgba(212,154,61,.16);border-color:rgba(240,212,154,.8)}
+    .drop label{text-decoration:underline;cursor:pointer;font-weight:900}
+    .filters{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+    .tc{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.2);margin-bottom:10px;cursor:pointer}
+    .tc:hover{background:rgba(255,255,255,.08)}.tc.sel{border-color:rgba(212,154,61,.6);background:rgba(212,154,61,.1)}
+    .tc h3{margin:0 0 4px;font-size:1.05rem}.tc .meta{color:var(--muted);font-size:.86rem;line-height:1.45}
+    .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .tg{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:.74rem;font-weight:900;border:1px solid}
+    .tg.ok{background:rgba(120,157,88,.18);border-color:rgba(154,202,117,.5);color:#e4f5d6}
+    .tg.no{background:rgba(196,86,75,.16);border-color:rgba(196,86,75,.5);color:#ffd9d3}
+    .tg.soon{background:rgba(212,154,61,.14);border-color:rgba(212,154,61,.45);color:#ffe7bd}
+    .tg.muted{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:var(--muted)}
+    .empty{color:var(--muted);line-height:1.55;padding:18px;border:1px dashed rgba(255,255,255,.18);border-radius:16px}
+    .msg{margin-bottom:12px}
+    .cr{display:grid;grid-template-columns:1fr 1.6fr 34px;gap:8px;margin-bottom:8px}
+    .printTable{display:none}
+    @media(max-width:650px){.filters,.cr{grid-template-columns:1fr}}
+    @media print{
+      body.print-register main>*:not(#register),body.print-register #register .builder>.panel:last-child,body.print-register .drop,body.print-register .filters,body.print-register .sectionHead p{display:none!important}
+      body.print-register #register .builder{grid-template-columns:1fr}
+      body.print-register .tc{border-color:#999;background:#fff;color:#000}
+      .tg{border-color:#999!important;color:#000!important;background:#fff!important}
+    }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header class="top"><nav aria-label="Main navigation" class="nav"><a class="brand" href="#top"><span class="mark">AI</span><span><strong>Kretz AI Tool Register</strong><span>Session 3 · Tool management</span></span></a><button aria-controls="navlinks" aria-expanded="false" class="navtoggle">Menu</button><div class="links" id="navlinks"><a href="#register">Register</a><a href="#how">How the files work</a><a href="kretz_session_3.html">Session 3 page</a><a href="index.html">Portal</a><a download href="kretz_ai_tool_register.html">Download for offline</a></div></nav></header>
+<main id="top">
+<section class="hero" style="padding-bottom:20px">
+<div>
+<div class="eyebrow"><span class="dot"></span> One suggested way to manage AI tools</div>
+<h1>Every AI tool, <span>one register.</span></h1>
+<p class="lead">Load AI Tool Card files, see which tools are cleared for use, who signs off on each one, and which reviews are due. Everything stays on this device; export the register to share or keep it.</p>
+<div class="actions"><a class="btn primary" href="#register">Open the register</a><a class="btn green" download href="kretz_ai_tool_register.html">Download this page for offline use</a></div>
+</div>
+<aside aria-label="About this register" class="heroCard" style="min-height:360px"><div class="orb"></div><div class="stack"><div class="mini"><div class="k">Cards in, register out</div><strong>One file per tool. One file for all of them.</strong><p>Card files come from the Session 3 Tool Card builder or from here. Export the whole register as JSON to reload it, or as CSV for Excel or SharePoint.</p></div><div class="mini"><div class="k">Adapt it</div><strong>This is a starting point.</strong><p>Add custom fields to any card, or move the CSV into whatever system Kretz chooses. The method matters more than the tool.</p></div></div></aside>
+</section>
+<div class="stats" id="regStats"></div>
+
+<section id="register"><div class="sectionHead"><h2>The register.</h2><p>Click a tool to view or edit its card. Drop card files, a register file, or a register CSV anywhere in the box below to load them.</p></div>
+<div class="builder">
+<div class="panel">
+<div class="toolbar" style="margin-top:0;margin-bottom:14px"><button class="mini-btn" id="newCard" type="button">+ New card</button><button class="mini-btn" id="exportJson" type="button">Export register (JSON)</button><button class="mini-btn" id="exportCsv" type="button">Export CSV</button><button class="mini-btn" id="printReg" type="button">Print register</button><button class="mini-btn" id="loadExamples" type="button">Add example cards</button></div>
+<div class="drop" id="drop">Drop <b>.json</b> card or register files, or a register <b>.csv</b>, here.<br/>or <label for="fileIn">choose files</label><input accept=".json,.csv,application/json,text/csv" hidden id="fileIn" multiple type="file"/></div>
+<div id="regMsg"></div>
+<div class="filters"><input aria-label="Search the register" class="in" id="q" placeholder="Search tools, owners, data, platforms..." type="search"/><select aria-label="Filter" class="in" id="flt"><option value="all">All tools</option><option value="cleared">Cleared</option><option value="not">Not cleared</option><option value="review">Review overdue or due soon</option></select></div>
+<div id="list"></div>
+</div>
+<div class="panel" id="editor">
+<h3 id="edTitle">New card</h3><p class="hint">Fields marked * are required for "cleared for use." Add custom fields for anything else Kretz wants to track.</p>
+<div id="edStatus"></div>
+<div id="edFields"></div>
+<label class="chk" style="margin:-2px 0 12px"><input id="edOwns" type="checkbox"/> The builder is the sign-off owner</label>
+<div class="rowsHead"><span class="lbl">Custom fields</span><button class="mini-btn" id="addCustom" type="button">+ Field</button></div>
+<div id="edCustom"></div>
+<div class="toolbar"><button class="mini-btn" id="edSave" type="button">Save card</button><button class="mini-btn" id="edFile" type="button">Download card file</button><button class="mini-btn" id="edPrint" type="button">Print card</button><button class="mini-btn" id="edCopy" type="button">Copy as text</button><button class="mini-btn" id="edDelete" type="button">Delete</button></div>
+</div>
+</div>
+</section>
+
+<section id="how"><div class="sectionHead"><h2>How the files work.</h2><p>Plain files, so the register keeps working without internet, without accounts, and without this website.</p></div>
+<div class="govGrid">
+<div class="gov"><strong>Card file (.json)</strong><span>One tool. Download it from the Session 3 Tool Card builder or from a card here. Email it, store it in a shared folder, load it into any copy of this register.</span></div>
+<div class="gov"><strong>Register file (.json)</strong><span>Every card in one file. Export it to back up or share the whole register; load it on another computer to pick up where you left off.</span></div>
+<div class="gov"><strong>Register CSV</strong><span>Opens in Excel or imports into SharePoint, Teams or another list tool. Edit it in Excel and load it back here if you want.</span></div>
+<div class="gov"><strong>Stored on this device</strong><span>Cards you save stay in this browser only. Clearing browser data erases them, so export the register after changes.</span></div>
+<div class="gov"><strong>Offline use</strong><span>Download this page and open it from your computer. It needs no internet. An offline copy keeps its own saved cards, so use files to move cards between copies.</span></div>
+<div class="gov"><strong>Cleared for use</strong><span>Every required field is filled in, including a named sign-off owner, or the builder accepts ownership. Missing any one means not cleared.</span></div>
+<div class="gov"><strong>Review dates</strong><span>Cards with a review date in the past are flagged overdue; within 30 days, due soon. The checklist owner updates the date after each review.</span></div>
+<div class="gov"><strong>Make it yours</strong><span>Add custom fields, or move to another system entirely. What matters is that every tool has an owner, a checklist and a review date.</span></div>
+</div>
+</section>
+</main>
+<footer class="foot"><div class="footInner"><div><strong>Kretz Lumber AI Tool Register</strong><p>Part of Session 3: named ownership for every AI tool.</p></div><div class="small">Works offline once downloaded.<br/><a href="kretz_session_3.html" style="text-decoration:underline">Session 3 page</a> · <a href="index.html" style="text-decoration:underline">Training portal</a></div></div></footer>
+<script>
+/* ---- Kretz AI Tool Card: shared format and rules (used by the Session 3 page and the register) ---- */
+var CARD = (function(){
+  "use strict";
+  var FIELDS=[
+    {k:"name",l:"Tool name",req:true},
+    {k:"purpose",l:"What it does",req:true,area:true},
+    {k:"users",l:"Who uses it"},
+    {k:"builder",l:"Builder",req:true},
+    {k:"signoff",l:"Sign-off owner"},
+    {k:"decisions",l:"Decisions it supports"},
+    {k:"data",l:"Data it uses (sources)",req:true,area:true},
+    {k:"never",l:"Data it must never receive",req:true,area:true},
+    {k:"checklist",l:"Checklist it must pass",req:true},
+    {k:"failure",l:"When it is wrong",req:true,area:true},
+    {k:"platform",l:"Platform"},
+    {k:"review",l:"Next review date",req:true,date:true}
+  ];
+  var TYPE="kretz-ai-tool-card", BUNDLE="kretz-ai-tool-register", VERSION=1, KEY="k3_register";
+  var str=function(v){return v==null?"":String(v).trim()};
+  var isDate=function(v){return /^\d{4}-\d{2}-\d{2}$/.test(v)};
+  function newId(){return "tc-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+
+  // Accepts anything; returns a clean card or null. Unknown keys are ignored.
+  function normalize(o){
+    if(!o||typeof o!=="object"||Array.isArray(o))return null;
+    var c={type:TYPE,version:VERSION,id:str(o.id).slice(0,60)||newId(),builderOwns:o.builderOwns===true||o.builderOwns==="true"||o.builderOwns==="Yes",custom:[],updatedAt:str(o.updatedAt)||new Date().toISOString()};
+    FIELDS.forEach(function(f){c[f.k]=str(o[f.k]).slice(0,4000)});
+    if(c.review&&!isDate(c.review))c.review="";
+    if(Array.isArray(o.custom))c.custom=o.custom.slice(0,40).map(function(x){return {label:str(x&&x.label).slice(0,120),value:str(x&&x.value).slice(0,4000)}}).filter(function(x){return x.label||x.value});
+    return c.name?c:null;
+  }
+  function missing(c){
+    var m=[];
+    FIELDS.forEach(function(f){
+      if(f.req&&!str(c[f.k]))m.push(f.l);
+      if(f.k==="builder"&&!c.builderOwns&&!str(c.signoff))m.push("Sign-off owner");
+    });
+    return m;
+  }
+  function owner(c){return c.builderOwns?(str(c.builder)||"the builder")+" (builder owns the outcome)":str(c.signoff)}
+  function reviewState(c,today){
+    if(!isDate(c.review))return {code:"none",label:"No review date"};
+    var t=today||new Date().toISOString().slice(0,10);
+    var days=Math.round((Date.parse(c.review)-Date.parse(t))/864e5);
+    if(days<0)return {code:"overdue",label:"Review overdue ("+(-days)+" day"+(days===-1?"":"s")+")"};
+    if(days<=30)return {code:"soon",label:"Review due in "+days+" day"+(days===1?"":"s")};
+    return {code:"ok",label:"Next review "+c.review};
+  }
+  function asText(c){
+    var m=missing(c),lines=["AI TOOL CARD: "+(str(c.name)||"(unnamed)"),"Status: "+(m.length?"NOT CLEARED (missing "+m.join(", ")+")":"CLEARED FOR USE"),""];
+    FIELDS.forEach(function(f){
+      if(f.k==="name")return;
+      lines.push((f.k==="signoff"?"Sign-off owner":f.l)+": "+(f.k==="signoff"?(owner(c)||"NOT NAMED"):(str(c[f.k])||"-")));
+    });
+    (c.custom||[]).forEach(function(x){lines.push((x.label||"Custom")+": "+(x.value||"-"))});
+    return lines.join("\n");
+  }
+  function slug(s){return (str(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"card").slice(0,60)}
+  function download(name,text,mime){
+    var blob=new Blob([text],{type:mime||"application/json"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);
+  }
+  function cardFile(c){var x=normalize(c);return {name:"kretz-ai-tool-card_"+slug(x.name)+".json",text:JSON.stringify(x,null,2)}}
+
+  /* CSV: RFC 4180 */
+  function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  function parseCsv(text){
+    var rows=[],row=[],f="",q=false,i=text.charCodeAt(0)===0xFEFF?1:0;
+    for(;i<text.length;i++){var ch=text[i];
+      if(q){if(ch==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}
+      else if(ch==='"')q=true;else if(ch===","){row.push(f);f=""}
+      else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&text[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}
+      else f+=ch}
+    if(f||row.length){row.push(f);rows.push(row)}
+    return rows.filter(function(r){return r.some(function(x){return x!==""})});
+  }
+  var CSV_EXTRA=["Builder owns outcome","Custom fields","Status","Card ID","Updated"];
+  function toCsv(cards){
+    var head=FIELDS.map(function(f){return f.l}).concat(CSV_EXTRA);
+    var rows=cards.map(function(c){
+      return FIELDS.map(function(f){return c[f.k]}).concat([
+        c.builderOwns?"Yes":"No",
+        (c.custom||[]).map(function(x){return x.label+": "+x.value}).join(" | "),
+        missing(c).length?"Not cleared":"Cleared", c.id, c.updatedAt]);
+    });
+    return [head].concat(rows).map(function(r){return r.map(csvCell).join(",")}).join("\r\n");
+  }
+  function fromCsv(text){
+    var rows=parseCsv(text);if(rows.length<2)return [];
+    var head=rows[0].map(str),map={};
+    FIELDS.forEach(function(f){var i=head.indexOf(f.l);if(i<0&&f.k==="signoff")i=head.indexOf("Sign-off owner");if(i>=0)map[f.k]=i});
+    var iOwn=head.indexOf("Builder owns outcome"),iCus=head.indexOf("Custom fields"),iId=head.indexOf("Card ID"),iUp=head.indexOf("Updated");
+    return rows.slice(1).map(function(r){
+      var o={};Object.keys(map).forEach(function(k){o[k]=r[map[k]]});
+      if(iOwn>=0)o.builderOwns=str(r[iOwn]).toLowerCase()==="yes";
+      if(iCus>=0&&str(r[iCus]))o.custom=str(r[iCus]).split(" | ").map(function(p){var j=p.indexOf(": ");return j<0?{label:p,value:""}:{label:p.slice(0,j),value:p.slice(j+2)}});
+      if(iId>=0)o.id=r[iId];if(iUp>=0)o.updatedAt=r[iUp];
+      return normalize(o);
+    }).filter(Boolean);
+  }
+  // Parse an uploaded file's text: a card, a register bundle, an array of cards, or register CSV.
+  function parseFile(name,text){
+    if(/\.csv$/i.test(name)||(!/^\s*[\[{]/.test(text)&&text.indexOf(",")>=0))return fromCsv(text);
+    var d=JSON.parse(text);
+    var list=Array.isArray(d)?d:(d&&d.type===BUNDLE&&Array.isArray(d.cards))?d.cards:[d];
+    return list.map(normalize).filter(Boolean);
+  }
+  function bundle(cards){return JSON.stringify({type:BUNDLE,version:VERSION,exportedAt:new Date().toISOString(),cards:cards.map(normalize).filter(Boolean)},null,2)}
+
+  /* local register (same key on every page served from the same site) */
+  function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v.map(normalize).filter(Boolean):[]}catch(e){return []}}
+  function save(cards){try{localStorage.setItem(KEY,JSON.stringify(cards));return true}catch(e){return false}}
+  // Insert or replace by id, then by name. Returns "added" or "updated".
+  function upsert(cards,c){
+    var i=cards.findIndex(function(x){return x.id===c.id});
+    if(i<0)i=cards.findIndex(function(x){return str(x.name).toLowerCase()===str(c.name).toLowerCase()});
+    if(i>=0){c.id=cards[i].id;cards[i]=c;return "updated"}
+    cards.push(c);return "added";
+  }
+  return {FIELDS:FIELDS,TYPE:TYPE,normalize:normalize,missing:missing,owner:owner,reviewState:reviewState,asText:asText,slug:slug,download:download,cardFile:cardFile,toCsv:toCsv,fromCsv:fromCsv,parseFile:parseFile,bundle:bundle,load:load,save:save,upsert:upsert,newId:newId};
+})();
+
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var str=function(v){return v==null?"":String(v).trim()};
+function el(tag,attrs,kids){var e=document.createElement(tag);if(attrs)Object.keys(attrs).forEach(function(k){if(k==="text")e.textContent=attrs[k];else if(k==="cls")e.className=attrs[k];else e.setAttribute(k,attrs[k])});(kids||[]).forEach(function(c){if(c)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});return e}
+function status(box,kind,title,body){box.replaceChildren(el("div",{cls:"status "+kind},[el("strong",{text:title}),body?el("span",{text:body}):null]))}
+function msg(kind,title,body){status($("#regMsg"),kind,title,body)}
+
+var t=$(".navtoggle"),l=$("#navlinks");
+if(t&&l)t.addEventListener("click",function(){var o=l.classList.toggle("open");t.setAttribute("aria-expanded",o?"true":"false")});
+
+var cards=CARD.load(), currentId=null, custom=[];
+var EXAMPLES=[
+  {name:"Kretz Parcel Scout",purpose:"A forester taps a location or uses GPS; the tool shows the county parcel record, MFL enrollment, soils, comparable land sales and lead signals, each with its public source.",users:"Foresters, land buyers",builder:"NTC training prototype",signoff:"",builderOwns:false,decisions:"Whether to pursue a parcel and what to verify before contacting the owner",data:"WI Statewide Parcels, WI DNR tax-law points, USDA soil survey, WI DOR transfer returns",never:"Confidential offers, internal deal notes, landowner personal details beyond the public record",checklist:"AI valuation tool output (owner: to be named)",failure:"Report through No-Fault Reporting with the parcel ID and a screenshot; the builder corrects the tool; figures already shared are re-checked by the sign-off owner.",platform:"Web app (Vercel)",review:"",custom:[{label:"Web address",value:"https://kretzdemo-phi.vercel.app/"}]},
+  {name:"Kretz DNA Assistant",purpose:"Rewrites outgoing messages into the Kretz voice, preserves facts, and flags anything that needs human review.",users:"Anyone sending external messages",builder:"NTC training (Custom GPT)",signoff:"",builderOwns:false,decisions:"None directly; drafts messages a person sends",data:"The message pasted in by the user; Kretz voice guide in the GPT instructions",never:"Confidential pricing, deal terms, personnel matters",checklist:"Outgoing landowner letter or email drafted with AI",failure:"Sender corrects before sending; repeated problems reported through No-Fault Reporting to the GPT owner.",platform:"ChatGPT Custom GPT",review:""}
+];
+
+/* ---------- list ---------- */
+function filtered(){
+  var q=str($("#q").value).toLowerCase(),f=$("#flt").value;
+  return cards.filter(function(c){
+    var hay=CARD.FIELDS.map(function(x){return c[x.k]}).concat((c.custom||[]).map(function(x){return x.label+" "+x.value})).join(" ").toLowerCase();
+    if(q&&hay.indexOf(q)<0)return false;
+    var cleared=!CARD.missing(c).length,rv=CARD.reviewState(c).code;
+    if(f==="cleared")return cleared;if(f==="not")return !cleared;if(f==="review")return rv==="overdue"||rv==="soon";
+    return true;
+  }).sort(function(a,b){return str(a.name).localeCompare(str(b.name))});
+}
+function renderStats(){
+  var cleared=cards.filter(function(c){return !CARD.missing(c).length}).length;
+  var due=cards.filter(function(c){var r=CARD.reviewState(c).code;return r==="overdue"||r==="soon"}).length;
+  var noOwner=cards.filter(function(c){return !c.builderOwns&&!str(c.signoff)}).length;
+  var s=$("#regStats");s.replaceChildren();
+  [[cards.length,"AI tools in the register"],[cleared,"Cleared for use"],[noOwner,"No named sign-off owner"],[due,"Reviews overdue or due within 30 days"]].forEach(function(x){s.appendChild(el("div",{cls:"stat"},[el("strong",{text:String(x[0])}),el("span",{text:x[1]})]))});
+}
+function renderList(){
+  var box=$("#list");box.replaceChildren();
+  if(!cards.length){box.appendChild(el("div",{cls:"empty",text:"No cards yet. Start a new card, load card files, or add the two example cards to see how it works."}));return}
+  var list=filtered();
+  if(!list.length){box.appendChild(el("div",{cls:"empty",text:"No cards match this search or filter."}));return}
+  list.forEach(function(c){
+    var miss=CARD.missing(c),rv=CARD.reviewState(c);
+    var tags=el("div",{cls:"tags"},[
+      el("span",{cls:"tg "+(miss.length?"no":"ok"),text:miss.length?"Not cleared":"Cleared"}),
+      el("span",{cls:"tg "+(rv.code==="overdue"?"no":rv.code==="soon"?"soon":"muted"),text:rv.label}),
+      str(c.platform)?el("span",{cls:"tg muted",text:c.platform}):null
+    ]);
+    var dl=el("button",{cls:"mini-btn",type:"button",text:"Card file",title:"Download this card as a file"});
+    dl.addEventListener("click",function(e){e.stopPropagation();var f=CARD.cardFile(c);CARD.download(f.name,f.text)});
+    var row=el("div",{cls:"tc"+(c.id===currentId?" sel":""),tabindex:"0",role:"button"},[
+      el("div",null,[el("h3",{text:c.name}),el("div",{cls:"meta",text:"Sign-off: "+(CARD.owner(c)||"not named")+" · Builder: "+(str(c.builder)||"not named")}),miss.length?el("div",{cls:"meta",text:"Missing: "+miss.join(", ")}):null,tags]),
+      dl
+    ]);
+    var open=function(){openEditor(c)};
+    row.addEventListener("click",open);row.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}});
+    box.appendChild(row);
+  });
+}
+function renderAll(){renderStats();renderList()}
+function persist(){if(!CARD.save(cards))msg("no","Not saved in this browser.","This browser is blocking storage (private mode or settings). Export the register to keep your work.");renderAll()}
+
+/* ---------- editor ---------- */
+function buildFields(){
+  var box=$("#edFields");box.replaceChildren();
+  CARD.FIELDS.forEach(function(f){
+    var input=f.area?el("textarea",{cls:"in","data-k":f.k}):el("input",{cls:"in","data-k":f.k,type:f.date?"date":"text"});
+    input.addEventListener(f.date?"change":"input",edStatus);if(f.date)input.addEventListener("input",edStatus);
+    box.appendChild(el("div",{cls:"field"},[el("span",{cls:"lbl",text:f.l+(f.req?" *":"")}),input]));
+  });
+}
+function renderCustom(){
+  var box=$("#edCustom");box.replaceChildren();
+  custom.forEach(function(x,i){
+    var a=el("input",{cls:"in",placeholder:"Field name"});a.value=x.label;a.addEventListener("input",function(){x.label=a.value;edStatus()});
+    var b=el("input",{cls:"in",placeholder:"Value"});b.value=x.value;b.addEventListener("input",function(){x.value=b.value;edStatus()});
+    var del=el("button",{cls:"x",type:"button","aria-label":"Remove field",text:"×"});del.addEventListener("click",function(){custom.splice(i,1);renderCustom();edStatus()});
+    box.appendChild(el("div",{cls:"cr"},[a,b,del]));
+  });
+}
+function readEditor(){
+  var o={id:currentId||undefined,builderOwns:$("#edOwns").checked,custom:custom.map(function(x){return {label:x.label,value:x.value}})};
+  CARD.FIELDS.forEach(function(f){o[f.k]=$('[data-k="'+f.k+'"]').value});
+  return o;
+}
+function edStatus(){
+  var o=readEditor(),sign=$('[data-k="signoff"]');
+  sign.disabled=o.builderOwns;sign.style.opacity=o.builderOwns?".5":"1";
+  var box=$("#edStatus");
+  if(!str(o.name)){status(box,"wait","Name the tool to start.","");return}
+  var m=CARD.missing(o);
+  if(m.length){status(box,"no","Not cleared for use.","Missing: "+m.join(", ")+".");if(m.indexOf("Sign-off owner")>=0)box.appendChild(el("ul",{cls:"warns"},[el("li",{text:"No sign-off owner named. Until one is named, or the builder accepts it, the builder owns every outcome."})]))}
+  else status(box,"ok","Cleared for use.","Sign-off owner: "+CARD.owner(o)+". "+CARD.reviewState(o).label+".");
+}
+function openEditor(c){
+  currentId=c?c.id:null;
+  CARD.FIELDS.forEach(function(f){$('[data-k="'+f.k+'"]').value=c?c[f.k]||"":""});
+  $("#edOwns").checked=!!(c&&c.builderOwns);
+  custom=c&&c.custom?c.custom.map(function(x){return {label:x.label,value:x.value}}):[];
+  $("#edTitle").textContent=c?c.name:"New card";$("#edDelete").disabled=!c;$("#edDelete").style.opacity=c?"1":".5";
+  renderCustom();edStatus();renderList();
+  if(window.innerWidth<961)$("#editor").scrollIntoView({behavior:"smooth"});
+}
+$("#edOwns").addEventListener("change",edStatus);
+$("#addCustom").addEventListener("click",function(){custom.push({label:"",value:""});renderCustom()});
+$("#newCard").addEventListener("click",function(){openEditor(null);$('[data-k="name"]').focus()});
+$("#edSave").addEventListener("click",function(e){
+  var c=CARD.normalize(readEditor());
+  if(!c){status($("#edStatus"),"wait","Name the tool before saving.","");return}
+  c.updatedAt=new Date().toISOString();
+  var r=CARD.upsert(cards,c);currentId=c.id;$("#edTitle").textContent=c.name;$("#edDelete").disabled=false;$("#edDelete").style.opacity="1";
+  persist();var b=e.currentTarget,o=b.textContent;b.textContent=r==="added"?"Saved":"Updated";setTimeout(function(){b.textContent=o},1200);
+});
+$("#edFile").addEventListener("click",function(){
+  var c=CARD.normalize(readEditor());if(!c){status($("#edStatus"),"wait","Name the tool before downloading.","");return}
+  var f=CARD.cardFile(c);CARD.download(f.name,f.text);
+});
+$("#edCopy").addEventListener("click",function(e){
+  var c=CARD.normalize(readEditor());if(!c)return;var text=CARD.asText(c),b=e.currentTarget;
+  var ok=function(){var o=b.textContent;b.textContent="Copied";setTimeout(function(){b.textContent=o},1200)};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(ok).catch(function(){});
+  else{var a=el("textarea");a.value=text;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(x){}a.remove()}
+});
+$("#edDelete").addEventListener("click",function(){
+  if(!currentId)return;var c=cards.find(function(x){return x.id===currentId});
+  if(!c||!window.confirm("Delete the card for “"+c.name+"” from this register? Download its card file first if you may need it."))return;
+  cards=cards.filter(function(x){return x.id!==currentId});persist();openEditor(null);
+});
+function printWith(cls,target){
+  if(target)target.classList.add("printing");document.body.classList.add(cls);
+  var done=function(){document.body.classList.remove(cls);if(target)target.classList.remove("printing");window.removeEventListener("afterprint",done)};
+  window.addEventListener("afterprint",done);window.print();setTimeout(done,1500);
+}
+$("#edPrint").addEventListener("click",function(){printWith("print-one",$("#register"))});
+$("#printReg").addEventListener("click",function(){printWith("print-register")});
+
+/* ---------- import / export ---------- */
+function importFiles(files){
+  files=[].slice.call(files||[]);if(!files.length)return;
+  var added=0,updated=0,errors=[],pending=files.length;
+  files.forEach(function(file){
+    if(file.size>5e6){errors.push(file.name+": larger than 5 MB");if(!--pending)finish();return}
+    var r=new FileReader();
+    r.onload=function(){
+      try{var list=CARD.parseFile(file.name,String(r.result));
+        if(!list.length)errors.push(file.name+": no tool cards found");
+        list.forEach(function(c){if(CARD.upsert(cards,c)==="added")added++;else updated++});
+      }catch(e){errors.push(file.name+": not a card, register or CSV file")}
+      if(!--pending)finish();
+    };
+    r.onerror=function(){errors.push(file.name+": could not be read");if(!--pending)finish()};
+    r.readAsText(file);
+  });
+  function finish(){
+    persist();
+    var body=(added?added+" card"+(added>1?"s":"")+" added. ":"")+(updated?updated+" updated (same ID or tool name). ":"")+(errors.length?"Problems: "+errors.join("; ")+".":"");
+    msg(errors.length&&!(added+updated)?"no":errors.length?"wait":"ok",errors.length&&!(added+updated)?"Nothing loaded.":"Files loaded.",body);
+  }
+}
+$("#fileIn").addEventListener("change",function(e){importFiles(e.target.files);e.target.value=""});
+var drop=$("#drop");
+["dragenter","dragover"].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.add("over")})});
+["dragleave","drop"].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.remove("over")})});
+drop.addEventListener("drop",function(e){importFiles(e.dataTransfer&&e.dataTransfer.files)});
+var stamp=function(){return new Date().toISOString().slice(0,10)};
+$("#exportJson").addEventListener("click",function(){if(!cards.length){msg("wait","Nothing to export yet.","");return}CARD.download("kretz-ai-tool-register_"+stamp()+".json",CARD.bundle(cards))});
+$("#exportCsv").addEventListener("click",function(){if(!cards.length){msg("wait","Nothing to export yet.","");return}CARD.download("kretz-ai-tool-register_"+stamp()+".csv","﻿"+CARD.toCsv(cards),"text/csv")});
+$("#loadExamples").addEventListener("click",function(){
+  var n=0;EXAMPLES.forEach(function(x){var c=CARD.normalize(x);if(!cards.some(function(y){return str(y.name).toLowerCase()===c.name.toLowerCase()})){cards.push(c);n++}});
+  persist();msg("ok",n?"Example cards added.":"Examples already loaded.",n?"Both are deliberately not cleared: neither has a named sign-off owner or a review date.":"");
+});
+$("#q").addEventListener("input",renderList);$("#flt").addEventListener("change",renderList);
+
+buildFields();renderAll();openEditor(null);
+})();
+
+</script>
+</body>
+</html>
