@@ -89,7 +89,7 @@
 </head>
 <body>
 <div class="grain"></div>
-<header class="top"><nav aria-label="Main navigation" class="nav"><a class="brand" href="index.html"><span class="mark">AI</span><span><strong>Kretz AI Training</strong><span>Session 3 · Operating model</span></span></a><button aria-controls="navlinks" aria-expanded="false" class="navtoggle">Menu</button><div class="links" id="navlinks"><a href="#principles">Principles</a><a href="#policy">Policy builder</a><a href="#checklist">Checklist</a><a href="#toolcard">Tool Card</a><a href="#review">Tool review</a><a href="#roadmap">Roadmap</a><a href="#prompts">Prompts</a><a href="kretz_ai_tool_register.html">Tool Register</a><a href="index.html">Portal</a><a download href="kretz_session_3.html">Download for offline</a></div></nav></header>
+<header class="top"><nav aria-label="Main navigation" class="nav"><a class="brand" href="index.html"><span class="mark">AI</span><span><strong>Kretz AI Training</strong><span>Session 3 · Operating model</span></span></a><button aria-controls="navlinks" aria-expanded="false" class="navtoggle">Menu</button><div class="links" id="navlinks"><a href="#principles">Principles</a><a href="#policy">Policy builder</a><a href="#checklist">Checklist</a><a href="#toolcard">Tool Card</a><a href="#yoursystem">Your register</a><a href="#review">Tool review</a><a href="#roadmap">Roadmap</a><a href="#prompts">Prompts</a><a href="kretz_ai_tool_register.html">Tool Register</a><a href="index.html">Portal</a><a download href="kretz_session_3.html">Download for offline</a></div></nav></header>
 <main id="top">
 <section class="hero">
 <div>
@@ -100,7 +100,7 @@
 </div>
 <aside aria-label="Session 3 summary" class="heroCard"><div class="orb"></div><div class="stack"><div class="mini"><div class="k">The chain</div><strong>Policy → procedure → workflow → checklist → sign-off.</strong><p>Each link has a named owner. A missing link is where AI work stalls or slips through.</p></div><div class="mini"><div class="k">The rule</div><strong>Pass means done.</strong><p>When every checklist item passes, the work is approved. Ideas for improvement are logged, not required.</p></div></div></aside>
 </section>
-<div class="stats"><div class="stat"><strong>3</strong><span>Operating principles</span></div><div class="stat"><strong>3</strong><span>Built-in tools on this page</span></div><div class="stat"><strong>1</strong><span>Live AI tool review</span></div><div class="stat"><strong>0</strong><span>Data sent anywhere: tools run in your browser</span></div></div>
+<div class="stats"><div class="stat"><strong>3</strong><span>Operating principles</span></div><div class="stat"><strong>3 + 1</strong><span>Built-in tools plus a register you build</span></div><div class="stat"><strong>1</strong><span>Live AI tool review</span></div><div class="stat"><strong>0</strong><span>Data sent anywhere: tools run in your browser</span></div></div>
 
 <section id="principles"><div class="sectionHead"><h2>Three operating principles.</h2><p>Kretz already has the rules: Sign-Off, No-Fault Reporting, Kretz DNA. These principles make the rules run day to day.</p></div>
 <div class="cards">
@@ -160,7 +160,7 @@
 <div class="rowsHead"><span class="lbl">Items</span><button class="mini-btn" id="addItem" type="button">+ Item</button></div>
 <div id="items"></div>
 <div class="field" style="margin-top:6px"><span class="lbl">Optional suggestions (never block approval)</span><textarea class="in" id="cSugg" placeholder="Ideas beyond the checklist. One per line. These go to the checklist owner for the next scheduled review."></textarea></div>
-<div class="toolbar"><button class="mini-btn" data-preset="valuation" type="button">Load: AI valuation tool review</button><button class="mini-btn" data-preset="letter" type="button">Load: outgoing landowner letter</button><button class="mini-btn" id="cResetMarks" type="button">Clear pass/fail marks</button><button class="mini-btn" id="cClear" type="button">Blank checklist</button><button class="mini-btn" id="cSaveFile" type="button">Download file</button><label class="mini-btn" style="display:inline-flex;align-items:center">Open file<input accept=".json,application/json" hidden id="cOpenFile" type="file"/></label></div>
+<div class="toolbar"><button class="mini-btn" data-preset="valuation" type="button">Load: AI valuation tool review</button><button class="mini-btn" data-preset="letter" type="button">Load: outgoing landowner letter</button><button class="mini-btn" data-preset="register" type="button">Load: register requirements</button><button class="mini-btn" id="cResetMarks" type="button">Clear pass/fail marks</button><button class="mini-btn" id="cClear" type="button">Blank checklist</button><button class="mini-btn" id="cSaveFile" type="button">Download file</button><label class="mini-btn" style="display:inline-flex;align-items:center">Open file<input accept=".json,application/json" hidden id="cOpenFile" type="file"/></label></div>
 </div>
 <div class="panel">
 <h3>Decision</h3><p class="hint">This is the whole point: a clear stopping rule.</p>
@@ -199,6 +199,42 @@
 <div class="reg" id="tcReg"></div>
 <p class="anchorNote">Saved cards stay in this browser and appear in the <a href="kretz_ai_tool_register.html" style="text-decoration:underline">AI Tool Register</a>, where you can load card files from others and export the register as JSON or CSV.</p>
 </div>
+</div>
+</section>
+
+<section id="yoursystem"><div class="sectionHead"><h2>Build your own register.</h2><p>The Tool Card and the AI Tool Register are one way to do this. Kretz decides where its register lives. Whatever you build, judge it against the same nine requirements, using the checklist above.</p></div>
+<div class="govGrid">
+<div class="gov"><strong>1 · One record per tool</strong><span>Every AI tool in use has exactly one record.</span></div>
+<div class="gov"><strong>2 · Named ownership</strong><span>A builder and a sign-off owner, or a recorded statement that the builder owns the outcome.</span></div>
+<div class="gov"><strong>3 · Calculated status</strong><span>Cleared or not cleared comes from the required fields, never typed by hand.</span></div>
+<div class="gov"><strong>4 · Review dates</strong><span>Every record has a next review date, and overdue reviews stand out.</span></div>
+<div class="gov"><strong>5 · Change log</strong><span>Date, what changed, who changed it, who approved it.</span></div>
+<div class="gov"><strong>6 · Review evidence</strong><span>Checklist decisions recorded with date, result and evidence.</span></div>
+<div class="gov"><strong>7 · Edit control</strong><span>Named people edit; everyone who uses the tools can view.</span></div>
+<div class="gov"><strong>8 · Backup and export · 9 · An owner</strong><span>Versioned or backed up, exportable, and the register itself has an owner and a review date.</span></div>
+</div>
+<div class="split" style="margin-top:16px"><div class="notice"><strong>How to run it.</strong><br/>1. Pick where the register will live: a spreadsheet, a SharePoint or Teams list, or a small tool.<br/>2. Build it with one of the prompts on the right. Seed it with the Tool Cards made today (export the register as CSV).<br/>3. Load "register requirements" into the checklist, name the register's owner, and mark each item.<br/>4. Pass means done. Anything else is a suggestion for the register owner's first review.<br/><br/><strong>Fallback and answer key:</strong> the <a href="kretz_ai_tool_register_reference.xlsx" style="text-decoration:underline">reference register workbook</a> already meets requirements 1–6 and 9, with formulas for status and review dates.</div>
+<div class="toolList">
+<a class="tool" href="#checklist" id="loadRegisterReq"><span class="badge">✅</span><span><h3>Load the register requirements</h3><p>Nine pass/fail items into the checklist above, to judge whatever system you build.</p></span><span class="pill">Load</span></a>
+<a class="tool" href="kretz_ai_tool_register_reference.xlsx"><span class="badge">📗</span><span><h3>Reference register workbook</h3><p>Register, change log, review log, summary, and the requirements with a pass/fail decision. Formulas, dropdowns and overdue highlighting.</p></span><span class="pill">XLSX</span></a>
+<a class="tool" href="kretz_ai_tool_register.html"><span class="badge">🗃️</span><span><h3>AI Tool Register page</h3><p>The worked example: load card files, export JSON or CSV. Use its CSV to seed your own system.</p></span><span class="pill">Open</span></a>
+</div></div>
+<div class="cards" style="grid-template-columns:repeat(3,1fr);margin-top:16px">
+<article class="card"><div class="icon">📗</div><h3>Build it in Excel</h3><div class="pwrap"><div class="phead"><span class="plabel">Prompt (ChatGPT)</span><button class="copy" type="button">Copy</button></div><pre class="prompt">Build an Excel workbook named "Kretz AI Tool Register" for tracking AI tools. Sheets:
+1. Register, one row per tool, with columns: Tool name, What it does, Who uses it, Builder, Sign-off owner, Decisions it supports, Data it uses (sources), Data it must never receive, Checklist it must pass, When it is wrong, Platform, Next review date, Builder owns outcome (Yes/No dropdown), Custom fields, Status, Review, Last updated, Updated by.
+   - Status is a formula: "Cleared" only when What it does, Builder, Data it uses, Data it must never receive, Checklist, When it is wrong and Next review date are filled, and either Sign-off owner is filled or Builder owns outcome = Yes. Otherwise "Not cleared".
+   - Review is a formula using TODAY(): "Overdue", "Due within 30 days", or "OK". Highlight Overdue red and Due amber.
+2. Change Log: Date, Tool, What changed, Changed by, Approved by.
+3. Review Log: Date, Tool, Checklist used, Decision (Approved / Not approved), Reviewer, Evidence.
+4. Summary: formula counts of tools, cleared, not cleared, no sign-off owner, reviews overdue; plus input cells for the register owner and its next review date.
+Use formulas, not typed results. Do not invent tools, people or dates. Then tell me which of these requirements the workbook does not meet: [paste the nine requirements].</pre></div></article>
+<article class="card"><div class="icon">🗂️</div><h3>Build it as a SharePoint or Teams list</h3><div class="pwrap"><div class="phead"><span class="plabel">Prompt (ChatGPT)</span><button class="copy" type="button">Copy</button></div><pre class="prompt">Design a Microsoft SharePoint list (usable in Microsoft Lists / Teams) called "AI Tool Register" with one item per AI tool.
+Give me: each column with its type and whether it is required; a calculated Status column that is "Cleared" only when the required fields are complete and a sign-off owner is named or "Builder owns outcome" is Yes; a view that shows reviews due or overdue; permissions so named owners edit and staff view; versioning settings for a change history; and how to import a CSV with these headers: [paste the header row of the register CSV].
+Columns: Tool name, What it does, Who uses it, Builder, Sign-off owner, Decisions it supports, Data it uses, Data it must never receive, Checklist it must pass, When it is wrong, Platform, Next review date, Builder owns outcome.
+Step by step, for someone who has not built a list before. Flag anything SharePoint cannot do directly.</pre></div></article>
+<article class="card"><div class="icon">🛠️</div><h3>Build it as a small tool</h3><div class="pwrap"><div class="phead"><span class="plabel">Prompt (ChatGPT or Claude)</span><button class="copy" type="button">Copy</button></div><pre class="prompt">Build a single-file HTML tool for tracking the AI tools a company uses. One record per tool with these fields: [paste the Tool Card fields].
+It must: calculate a Cleared / Not cleared status from the required fields; flag overdue review dates; keep a change log entry (date, field, old value, new value, who) every time a record is saved; import and export the whole register as a JSON file and export CSV; work with no internet; and store nothing outside this browser.
+Show a warning that data saved in the browser is lost if browser data is cleared, and prompt for an export after changes. Do not include sample people or dates.</pre></div></article>
 </div>
 </section>
 
@@ -520,7 +556,17 @@ var PRESETS={
     "Names, parcel, and contact details match the landowner record.",
     "The message was run through the Kretz DNA Assistant or matches the Kretz voice guide.",
     "No information about other landowners or internal deliberations is included.",
-    "The sender has read the final version in full."]}
+    "The sender has read the final version in full."]},
+  register:{name:"AI tool register (whatever system Kretz chooses)",owner:"",items:[
+    "Every AI tool in use has exactly one record.",
+    "Each record names a builder and a sign-off owner, or states that the builder owns the outcome.",
+    "Cleared / not-cleared status is calculated from the required fields, not typed by hand.",
+    "Each record has a next review date, and overdue reviews are visibly flagged.",
+    "Changes are logged with date, what changed, who changed it, and who approved it.",
+    "Checklist review results are recorded with date, decision and evidence.",
+    "Only named people can edit; everyone who uses the tools can view.",
+    "The register is backed up or versioned, and a copy can be exported.",
+    "The register itself has a named owner and a scheduled review date."]}
 };
 function blankChecklist(){return {name:"",owner:"",reviewed:"",next:"",items:[{text:"",result:null,note:""}],sugg:""}}
 var C=store.get("k3_checklist",null)||blankChecklist();
@@ -572,6 +618,7 @@ $$("[data-preset]").forEach(function(b){b.addEventListener("click",function(){cP
 $("#cResetMarks").addEventListener("click",function(){C.items.forEach(function(i){i.result=null;i.note=""});C.sugg="";$("#cSugg").value="";cRender();cOut()});
 $("#cClear").addEventListener("click",function(){cLoad(blankChecklist())});
 $("#loadValuation").addEventListener("click",function(){cPreset("valuation")});
+$("#loadRegisterReq").addEventListener("click",function(){cPreset("register")});
 cLoad(C);
 $("#cSaveFile").addEventListener("click",function(){saveWork("checklist",C,C.name)});
 openWork($("#cOpenFile"),"checklist",function(d){cLoad({name:String(d.name||""),owner:String(d.owner||""),reviewed:String(d.reviewed||""),next:String(d.next||""),sugg:String(d.sugg||""),items:Array.isArray(d.items)&&d.items.length?d.items.map(function(i){return {text:String(i.text||""),result:i.result==="pass"||i.result==="fail"?i.result:null,note:String(i.note||"")}}):[{text:"",result:null,note:""}]})},$("#cStatus"));
