@@ -190,6 +190,7 @@
 
 <section id="tools"><div class="sectionHead"><h2>Tools.</h2><p>Everything that works today, from the training and after it.</p></div>
 <div class="split"><div class="toolList">
+<a class="tool" href="kretz_land_deductions.html"><span class="badge">🧭</span><span><h3>Land Deductions Evaluator</h3><p>Value deductions for easements, wetlands, floodplain, soils, slope and access, applied to mapped acres with the evidence for each percentage.</p></span><span class="pill">Land</span></a>
 <a class="tool" href="https://kretzdemo-phi.vercel.app/" rel="noopener noreferrer" target="_blank"><span class="badge">🗺️</span><span><h3>Kretz Parcel Scout</h3><p>Parcel record, MFL status, soils, comparable land sales and lead signals for any location. Every number linked to its public source.</p></span><span class="pill">Land · Leads</span></a>
 <a class="tool" href="https://chatgpt.com/g/g-6a427b6a557c8191ab8ef594a604fa58-kretz-dna-assistant" rel="noopener noreferrer" target="_blank"><span class="badge">✉️</span><span><h3>Kretz DNA Assistant</h3><p>Rewrites outgoing messages in the Kretz voice and flags what needs review.</p></span><span class="pill">GPT</span></a>
 <a class="tool" href="https://chatgpt.com/g/g-6a427f689a888191b03c01b5608f45ec-kretz-ai-guide" rel="noopener noreferrer" target="_blank"><span class="badge">🧭</span><span><h3>Kretz AI Decision Guide</h3><p>Decides whether a problem needs AI, existing software, automation, process cleanup, or nothing yet.</p></span><span class="pill">GPT</span></a>
@@ -365,7 +366,7 @@ var PS="https://kretzdemo-phi.vercel.app/";
 function ms(title){return {id:uid("ms"),title:title,owner:"",due:"",status:"Not started"}}
 function defaultGoals(){return [
   {id:"land",lead:true,title:"Value land faster and more reliably",desc:"Timberland and hunting-property valuation built on public records, with every number traceable and a named person signing off.",
-   links:[["Parcel Scout",PS],["Valuation review checklist","kretz_session_3.html#review"],["Valuation procedure example","kretz_session_3.html#policy"]],
+   links:[["Parcel Scout",PS],["Land deductions evaluator","kretz_land_deductions.html"],["Valuation review checklist","kretz_session_3.html#review"],["Valuation procedure example","kretz_session_3.html#policy"]],
    milestones:[ms("Adopt the valuation procedure and name its sign-off owner"),ms("Run the current valuation tool through the valuation checklist; record the result"),ms("Pilot Parcel Scout with one or two foresters for 30 days and log every disagreement"),ms("Add timber volume (USFS TreeMap) and the DNR stumpage table as a labeled value range"),ms("Load two to three years of DOR land sales for Kretz counties into comparable sales")]},
   {id:"leads",title:"Find and reach the right landowners",desc:"Public-record lead signals turned into careful, on-brand outreach that never overstates what Kretz knows.",
    links:[["Parcel Scout lead signals",PS],["Landowner prospecting","kretz-landowner-prospecting.html"],["Kretz DNA Assistant","https://chatgpt.com/g/g-6a427b6a557c8191ab8ef594a604fa58-kretz-dna-assistant"],["Letter checklist","kretz_session_3.html#checklist"]],
